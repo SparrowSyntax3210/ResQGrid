@@ -1,4 +1,9 @@
 const loginBtn = document.querySelector(".login");
+const RegBtn = document.querySelector(".register");
+
+RegBtn.addEventListener("click" , (req,res)=> {
+    window.location.href = "register.html";
+})
 
 async function checkAuthStatus() {
     try {
