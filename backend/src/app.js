@@ -3,7 +3,7 @@ const path = require("path");
 const app = express();
 const AuthRoutes = require("../routes/user");
 const session = require("express-session");
-
+const Listing = require("../models/listing");
 
 app.use(
   session({
@@ -25,4 +25,18 @@ app.use("/auth", AuthRoutes);
 app.get("/test", (req, res) => {
   res.send("running");
 });
+
+app.post("/listing" , async (req,res)=>{
+  const {Image , Name , Physical , Location , Contact} = req.body;
+  const NewListing = new Listing({
+    Image,
+    Name,
+    Physical,
+    Location,
+    Contact
+  });
+
+  await NewListing.save();
+  res.send("Saved Successfully");
+})
 module.exports = app;

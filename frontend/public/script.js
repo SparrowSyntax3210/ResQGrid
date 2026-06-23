@@ -1,5 +1,10 @@
 const loginBtn = document.querySelector(".login");
 const RegBtn = document.querySelector(".register");
+const Listing = document.querySelector(".listing");
+
+Listing.addEventListener("click" , ()=> {
+    window.location.href = "listing.html";
+})
 
 RegBtn.addEventListener("click" , (req,res)=> {
     window.location.href = "register.html";
