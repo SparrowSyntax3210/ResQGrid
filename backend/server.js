@@ -1,11 +1,9 @@
-require("dotenv").config();
+const express = require("express");
 const app = require("./src/app");
-const connectDB = require("./db/db");
+const connectDB = require("./config/db");
 
-app.listen("4000", () => {
-  console.log("Server is running at 4000");
-});
-
-
+app.listen("5000", (req,res)=> {
+    console.log("server is running at 5000")
+})
 
 connectDB();
