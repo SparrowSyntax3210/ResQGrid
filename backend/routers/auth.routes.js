@@ -51,25 +51,89 @@ router.post("/register", async (req, res) => {
     }
 });
 
-router.post("/login" , (req,res)=> {
-    const {Email , Password} = req.body;
-    const existingUser = User.findOne({Email});
+router.post("/login", async (req, res) => {
+    try {
+        const { Email, Password } = req.body;
 
-    if(!existingUser){
-        res.redirect("/register.html")
+        if (!Email || !Password) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide all required fields."
+            });
+        }
+
+        const existingUser = await User.findOne({ Email });
+
+        if (!existingUser) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found."
+            });
+        }
+
+        const isMatch = await bcrypt.compare(
+            Password,
+            existingUser.Password
+        );
+
+        if (!isMatch) {
+            return res.status(401).json({
+                success: false,
+                message: "Invalid password."
+            });
+        }
+        req.session.user = {
+            id: existingUser._id,
+            name: existingUser.Name,
+            email: existingUser.Email,
+            role: existingUser.Role,
+        };
+        
+        return res.status(200).json({
+            success: true,
+            message: "Login successful.",
+            user: req.session.user,
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
     }
+});
 
-    if (!Email || !Password) {
-        return res.status(400).json({
-            message: "Please provide all required fields."
+router.post("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({
+                success: false,
+                message: "Logout failed",
+            });
+        }
+
+        res.clearCookie("connect.sid");
+
+        return res.status(200).json({
+            success: true,
+            message: "Logged out successfully",
+        });
+    });
+});
+
+router.get("/status", (req, res) => {
+    if (req.session.user) {
+        return res.status(200).json({
+            loggedIn: true,
+            user: req.session.user,
         });
     }
 
-    if(Email == User.Email && Password==User.Password){
-        res.redirect("index.html");
-        res.send(Email , hashedPassword)
-    }
-
-})
+    return res.status(200).json({
+        loggedIn: false,
+    });
+});
 
 module.exports = router

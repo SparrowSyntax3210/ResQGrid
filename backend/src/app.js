@@ -1,8 +1,21 @@
 const express = require("express");
 const app = express();
 const authrouter = require("../routers/auth.routes")
-const expresssession = require("express-session")
 const path = require("path")
+const session = require("express-session");
+
+app.use(
+    session({
+        secret: process.env.SESSION_SECRET || "your-secret-key",
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            httpOnly: true,
+            secure: false, // true if using HTTPS
+        },
+    })
+);
 
 
 app.use(express.json());
