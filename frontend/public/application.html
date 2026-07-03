@@ -315,234 +315,179 @@
     </style>
 </head>
 <body>
-
     <div class="container">
-        <!-- Brand Header -->
+
+        <!-- Header -->
         <div class="header">
             <div class="logo">ResQ<span>Grid</span></div>
-            <h1 id="form-title">Create Missing Person Case</h1>
-            <p id="form-subtitle">Step 1: Core Identification & Details</p>
+            <h1>Create Missing Person Case</h1>
+            <p>Fill in the details below to submit a missing person report.</p>
         </div>
-
-        <!-- Progress Timeline Indicator -->
-        <div class="progress-container">
-            <div class="progress-line"></div>
-            <div class="progress-line-fill" id="progress-fill"></div>
-            <div class="step-dot active" data-step="1">1</div>
-            <div class="step-dot" data-step="2">2</div>
-            <div class="step-dot" data-step="3">3</div>
-        </div>
-
-        <!-- Interactive Form -->
-        <form id="missingCaseForm">
-            
-            <!-- STEP 1: Basic Information -->
-            <div class="form-step active" id="step-1">
+    
+        <form id="missingCaseForm" action="/guardian/application" method="POST" enctype="multipart/form-data">
+    
+            <!-- Basic Information -->
+            <div class="form-group">
+                <label for="fullName">Full Name</label>
+                <input
+                    type="text"
+                    id="fullName"
+                    name="Name"
+                    placeholder="Enter full name"
+                    required>
+            </div>
+    
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" placeholder="Enter missing person's full name" required>
+                    <label for="age">Age</label>
+                    <input
+                        type="number"
+                        id="age"
+                        name="Age"
+                        min="0"
+                        max="130"
+                        required>
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="age">Age</label>
-                        <input type="number" id="age" min="0" max="130" placeholder="Age" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="gender">Gender</label>
-                        <select id="gender" required>
-                            <option value="" disabled selected>Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Non-binary">Non-binary</option>
-                            <option value="Other">Other</option>
-                            <option value="Prefer not to say">Prefer not to say</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="height">Height</label>
-                        <input type="text" id="height" placeholder="e.g., 5'8&quot; or 173 cm" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="guardianContact">Guardian Contact Info</label>
-                        <input type="tel" id="guardianContact" placeholder="Phone number / Email" required>
-                    </div>
+    
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="Gender" required>
+                        <option value="">Select Gender</option>
+                        <option>Male</option>
+                        <option>Female</option>
+                        <option>Other</option>
+                    </select>
                 </div>
             </div>
-
-            <!-- STEP 2: Profile Photo & Visual Appearance -->
-            <div class="form-step" id="step-2">
+    
+            <div class="form-row">
                 <div class="form-group">
-                    <label>Profile Image / Photo</label>
-                    <div class="photo-upload-zone" onclick="document.getElementById('photoInput').click()">
-                        <div id="upload-prompt">
-                            <div class="upload-icon">📷</div>
-                            <p style="font-size: 14px; color: var(--text-main); margin-bottom: 5px;">Upload a clear visual photo</p>
-                            <p style="font-size: 12px; color: var(--text-muted);">Click here to browse files</p>
-                        </div>
-                        <img id="photoPreview" alt="Missing Person Preview">
-                        <input type="file" id="photoInput" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                    </div>
+                    <label for="height">Height</label>
+                    <input
+                        type="text"
+                        id="height"
+                        name="Height"
+                        placeholder="e.g. 5'8&quot;"
+                        required>
                 </div>
-
+    
                 <div class="form-group">
-                    <label for="clothing">Clothing Description</label>
-                    <textarea id="clothing" placeholder="Describe the clothes, footwear, or accessories they were last wearing..." required></textarea>
+                    <label for="guardianContact">Guardian Contact</label>
+                    <input
+                        type="text"
+                        id="guardianContact"
+                        name="GuardianContact"
+                        placeholder="Phone Number"
+                        required>
                 </div>
             </div>
-
-            <!-- STEP 3: Last Seen & Incident Parameters -->
-            <div class="form-step" id="step-3">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="lastSeen">Last Seen Location</label>
-                        <input type="text" id="lastSeen" placeholder="Specific location / City" required>
+    
+            <!-- Photo -->
+            <div class="form-group">
+                <label for="photoInput">Photo</label>
+    
+                <div class="photo-upload-zone"
+                     onclick="document.getElementById('photoInput').click()">
+    
+                    <div id="upload-prompt">
+                        <div class="upload-icon">📷</div>
+                        <p>Click to upload a clear photo</p>
                     </div>
-                    <div class="form-group">
-                        <label for="dateTime">Date & Time Last Seen</label>
-                        <input type="datetime-local" id="dateTime" required>
-                    </div>
+    
+                    <img id="photoPreview" alt="Preview">
+    
+                    <input
+                        type="file"
+                        id="photoInput"
+                        name="Photo"
+                        accept="image/*"
+                        style="display:none"
+                        onchange="previewImage(event)">
                 </div>
-
+            </div>
+    
+            <!-- Clothing -->
+            <div class="form-group">
+                <label for="clothing">Clothing Description</label>
+                <textarea
+                    id="clothing"
+                    name="Clothing"
+                    rows="4"
+                    placeholder="Describe the clothing..."
+                    required></textarea>
+            </div>
+    
+            <!-- Last Seen -->
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="medicalConditions">Medical Conditions</label>
-                    <input type="text" id="medicalConditions" placeholder="Diabetic, Dementia, Allergies, none, etc.">
+                    <label for="lastSeen">Last Seen Location</label>
+                    <input
+                        type="text"
+                        id="lastSeen"
+                        name="LastSeen"
+                        required>
                 </div>
-
+    
                 <div class="form-group">
-                    <label for="description">Additional Case Details / Description</label>
-                    <textarea id="description" placeholder="Provide any other helpful details (distinguishing marks, tattoos, behavioral traits)..." required></textarea>
+                    <label for="dateTime">Date & Time</label>
+                    <input
+                        type="datetime-local"
+                        id="dateTime"
+                        name="dateTime"
+                        required>
                 </div>
             </div>
-
-            <!-- STEP 4: Successful Submission Frame -->
-            <div class="form-step" id="success-panel">
-                <div class="success-state">
-                    <div class="success-icon">✓</div>
-                    <h2>Live Alert Sent!</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 25px;">Your missing person case has been broadcast to the local ResQGrid active volunteer network.</p>
-                    <div style="background-color: var(--bg-main); border: 1px dashed var(--border-color); padding: 15px; border-radius: 8px; font-size: 14px; color: var(--accent-orange); font-weight: bold; letter-spacing: 1px;">
-                        CASE ID: RG-7842
-                    </div>
-                </div>
+    
+            <!-- Medical -->
+            <div class="form-group">
+                <label for="medicalConditions">Medical Conditions</label>
+                <input
+                    type="text"
+                    id="medicalConditions"
+                    name="MedicalConditions"
+                    placeholder="Leave blank if none">
             </div>
-
-            <!-- Dynamic Workflow Buttons -->
-            <div class="btn-container" id="action-buttons">
-                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="nextPrev(-1)" style="display: none;">Back</button>
-                <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextPrev(1)">Next Step</button>
+    
+            <!-- Description -->
+            <div class="form-group">
+                <label for="description">Additional Details</label>
+                <textarea
+                    id="description"
+                    name="Description"
+                    rows="5"
+                    placeholder="Any distinguishing marks, tattoos, behaviour, etc."
+                    required></textarea>
             </div>
-
+    
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">
+                    Submit Case
+                </button>
+            </div>
+    
         </form>
+    
     </div>
 
-    <!-- --- JAVASCRIPT LOGIC --- -->
     <script>
-        let currentStep = 0;
-        const steps = document.getElementsByClassName("form-step");
-        const stepDots = document.getElementsByClassName("step-dot");
-        const titleText = document.getElementById("form-title");
-        const subtitleText = document.getElementById("form-subtitle");
-
-        const stepMeta = [
-            { title: "Create Missing Person Case", subtitle: "Step 1: Core Identification & Details" },
-            { title: "Appearance Parameters", subtitle: "Step 2: Upload Photo & Clothing Details" },
-            { title: "Incident Logistics", subtitle: "Step 3: Critical Location & Context Timeline" }
-        ];
-
-        function updateStepView(n) {
-            steps[n].classList.add("active");
-            
-            // Adjust buttons visibility
-            if (n === 0) {
-                document.getElementById("prevBtn").style.display = "none";
-            } else {
-                document.getElementById("prevBtn").style.display = "inline-block";
-            }
-
-            if (n === (steps.length - 2)) { // Last interactive step
-                document.getElementById("nextBtn").innerText = "Submit Case & Alert Network";
-                document.getElementById("nextBtn").style.background = "linear-gradient(135deg, #FF6B00 0%, #FF3E00 100%)";
-            } else {
-                document.getElementById("nextBtn").innerText = "Next Step";
-                document.getElementById("nextBtn").style.background = "var(--accent-gradient)";
-            }
-
-            // Update Meta Headers
-            if(n < stepMeta.length) {
-                titleText.innerText = stepMeta[n].title;
-                subtitleText.innerText = stepMeta[n].subtitle;
-            }
-
-            // Update Progress Timeline Indicator Dots
-            for (let i = 0; i < stepDots.length; i++) {
-                stepDots[i].className = stepDots[i].className.replace(" active", "");
-                stepDots[i].className = stepDots[i].className.replace(" completed", "");
-                if (i < n) {
-                    stepDots[i].classList.add("completed");
-                }
-            }
-            if(n < stepDots.length) {
-                stepDots[n].classList.add("active");
-            }
-
-            // Move the background tracking bar fill
-            const progressPercent = (n / (stepDots.length - 1)) * 100;
-            document.getElementById("progress-fill").style.width = `${progressPercent}%`;
-        }
-
-        function nextPrev(n) {
-            // Validate step requirements before pushing forward
-            if (n === 1 && !validateFormStep()) return false;
-
-            steps[currentStep].classList.remove("active");
-            currentStep = currentStep + n;
-
-            if (currentStep >= steps.length - 1) {
-                // Final submission state triggered
-                document.getElementById("action-buttons").style.display = "none";
-                titleText.innerText = "Broadcast Initiated";
-                subtitleText.innerText = "ResQGrid Emergency Operations Center";
-                for(let dot of stepDots) { dot.classList.add("completed"); }
-                document.getElementById("progress-fill").style.width = "100%";
-            }
-            
-            updateStepView(currentStep);
-        }
-
-        function validateFormStep() {
-            const activeStepContainer = steps[currentStep];
-            const inputs = activeStepContainer.querySelectorAll("input[required], select[required], textarea[required]");
-            let valid = true;
-
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    input.style.borderColor = "var(--accent-orange)";
-                    valid = false;
-                } else {
-                    input.style.borderColor = "var(--border-color)";
-                }
-            });
-
-            return valid;
-        }
-
         function previewImage(event) {
+            const file = event.target.files[0];
+        
+            if (!file) return;
+        
             const reader = new FileReader();
-            reader.onload = function() {
-                const output = document.getElementById('photoPreview');
-                const prompt = document.getElementById('upload-prompt');
-                output.src = reader.result;
-                output.style.display = "block";
+        
+            reader.onload = function (e) {
+                const preview = document.getElementById("photoPreview");
+                const prompt = document.getElementById("upload-prompt");
+        
+                preview.src = e.target.result;
+                preview.style.display = "block";
                 prompt.style.display = "none";
-            }
-            if(event.target.files[0]) {
-                reader.readAsDataURL(event.target.files[0]);
-            }
+            };
+        
+            reader.readAsDataURL(file);
         }
-    </script>
+        </script>
 </body>
 </html>

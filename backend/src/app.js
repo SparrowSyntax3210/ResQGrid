@@ -3,6 +3,7 @@ const app = express();
 const authrouter = require("../routers/auth.routes")
 const path = require("path")
 const session = require("express-session");
+const guardianroutes = require("../routers/guardian.routes")
 
 app.use(
     session({
@@ -22,6 +23,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname, "../../frontend/public")))
 app.use("/auth" , authrouter)
+app.use("/guardian" , guardianroutes)
+app.use("/uploads",express.static(path.join(__dirname, "../uploads")));
 
 app.get("/test" , (req,res)=>{
     res.send("route is running")
