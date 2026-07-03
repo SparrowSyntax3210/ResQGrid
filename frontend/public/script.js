@@ -34,3 +34,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   counters.forEach((counter) => observer.observe(counter));
 });
+
+const SignIn = document.getElementById("signup");
+
+SignIn.addEventListener("click", ()=> {
+  window.location.href="/role-selection"
+});

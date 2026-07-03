@@ -28,4 +28,8 @@ app.get("/test" , (req,res)=>{
 
 })
 
+app.get("/role-selection" , (req,res)=> {
+    res.redirect("role-selection.html")
+})
+
 module.exports = app;

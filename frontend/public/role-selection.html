@@ -210,12 +210,18 @@
         const volunteerBtn = document.getElementById("BtnVolunteer");
     
         guardianBtn.addEventListener("click", () => {
+            localStorage.setItem("role" , guardianBtn.dataset.role);
             console.log("Guardian selected");
+            window.location.href="register.html"
         });
     
         volunteerBtn.addEventListener("click", () => {
+            localStorage.setItem("role" , volunteerBtn.dataset.role);
             console.log("Volunteer selected");
+            window.location.href="register.html"
         });
+
+        
     });
     </script>
 </body>
