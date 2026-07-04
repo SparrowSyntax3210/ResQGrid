@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/user.schema");
 const bcrypt = require("bcrypt");
 const expresssession = require("express-session")
+const jwt = require("jsonwebtoken");
 
 // Register User
 router.post("/register", async (req, res) => {
@@ -86,11 +87,13 @@ router.post("/login", async (req, res) => {
             role: existingUser.Role,
         };
         
-        return res.status(200).json({
-            success: true,
-            message: "Login successful.",
-            user: req.session.user,
-        });
+        // return res.status(200).json({
+        //     success: true,
+        //     message: "Login successful.",
+        //     user: req.session.user,
+        // });
+
+        return res.redirect(`/${existingUser.Role.toLowerCase()}.html`);
 
     } catch (error) {
         console.error(error);

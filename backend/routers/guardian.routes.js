@@ -19,6 +19,7 @@ router.post("/application",upload.single("Photo"), async (req, res) => {
             }
 
             const newApplication = await Application.create({
+                guardianId: req.session.user.id,
                 Photo,
                 Name,
                 Age,
@@ -29,7 +30,8 @@ router.post("/application",upload.single("Photo"), async (req, res) => {
                 LastSeen,
                 dateTime,
                 Description,
-                GuardianContact
+                GuardianContact,
+                status: "active"
             });
 
             return res.status(201).json({
@@ -49,4 +51,56 @@ router.post("/application",upload.single("Photo"), async (req, res) => {
     }
 );
 
+router.patch("/application/close", async (req, res) => {
+        console.log(req.session);
+        console.log(req.session.user);
+    try {
+        if (!req.session.user) {
+            return res.status(401).json({
+                success: false,
+                message: "Please login first."
+            });
+        }
+
+        const application = await Application.findOneAndUpdate(
+            {
+                guardianId: req.session.user.id,
+                status: "active"
+            },
+            {
+                status: "closed"
+            },
+            {
+                returnDocument: "after"
+            }
+        );
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "No active application found."
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Application closed successfully.",
+            application
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+});
+
+
+router.get("/application", async (req, res) => {
+    const applications = await Application.find({ status: "active" });
+    res.json(applications);
+});
 module.exports = router;

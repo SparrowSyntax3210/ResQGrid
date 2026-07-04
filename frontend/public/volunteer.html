@@ -7,5 +7,27 @@
 </head>
 <body>
     <h1>Volunteer</h1>
+    <button id="show-active">Show Active Cases</button>
+    <div id="cases"></div>
+
+    <script>
+        const container = document.getElementById("cases");
+
+document.getElementById("show-active").addEventListener("click", async () => {
+    const res = await fetch("http://localhost:5000/guardian/application");
+    const data = await res.json();
+
+    container.innerHTML = "";
+
+    data.forEach(app => {
+        container.innerHTML += `
+            <h2>${app.Name}</h2>
+            <p>Age: ${app.Age}</p>
+            <p>Last Seen: ${app.LastSeen}</p>
+        `;
+    });
+});
+    </script>
 </body>
+
 </html>

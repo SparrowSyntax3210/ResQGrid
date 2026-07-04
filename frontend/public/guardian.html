@@ -8,11 +8,30 @@
 <body>
     <h1>Guardian</h1>
     <button id="Create-application">Create Application</button>
+    <button id="show-status">Show Status</button>
+    <button id="close-application">Close</button>
     <script>
         const Application = document.getElementById("Create-application");
         Application.addEventListener("click", ()=> {
             window.location.href="application.html"
-        })
+        });
+
+        document.getElementById("close-application")
+.addEventListener("click", async () => {
+
+    const res = await fetch(
+        "http://localhost:5000/guardian/application/close",
+        {
+            method: "PATCH",
+            credentials: "include"
+        }
+    );
+
+    const data = await res.json();
+
+    console.log(data);
+
+});
     </script>
 </body>
 </html>

@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 
 const Application = new mongoose.Schema({
+    guardianId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true
+    },
+    
     Name:{
         type:String,
         required:true
@@ -43,6 +49,12 @@ const Application = new mongoose.Schema({
     },
     Photo:{
         type:String,
+    },
+    
+    status: {
+        type: String,
+        enum: ["active", "closed"],
+        default: "active"
     }
 })
 
