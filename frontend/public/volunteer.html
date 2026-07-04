@@ -11,21 +11,44 @@
     <div id="cases"></div>
 
     <script>
-        const container = document.getElementById("cases");
+const container = document.getElementById("cases");
 
 document.getElementById("show-active").addEventListener("click", async () => {
+
     const res = await fetch("http://localhost:5000/guardian/application");
     const data = await res.json();
 
     container.innerHTML = "";
 
     data.forEach(app => {
+
         container.innerHTML += `
-            <h2>${app.Name}</h2>
-            <p>Age: ${app.Age}</p>
-            <p>Last Seen: ${app.LastSeen}</p>
+            <div class="case">
+                <h2>${app.Name}</h2>
+                <p>Age: ${app.Age}</p>
+                <p>Last Seen: ${app.LastSeen}</p>
+
+                <button
+                    class="accept-btn"
+                    data-location="${app.LastSeen}">
+                    Accept
+                </button>
+            </div>
         `;
+
     });
+
+});
+
+document.addEventListener("click", (e) => {
+
+    if (!e.target.classList.contains("accept-btn")) return;
+
+    const location = e.target.dataset.location;
+
+    window.location.href =
+        `map.html?location=${encodeURIComponent(location)}`;
+
 });
     </script>
 </body>

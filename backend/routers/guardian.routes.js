@@ -98,9 +98,20 @@ router.patch("/application/close", async (req, res) => {
     }
 });
 
-
 router.get("/application", async (req, res) => {
-    const applications = await Application.find({ status: "active" });
+
+    if (!req.session.user) {
+        return res.status(401).json({
+            message: "Please login first"
+        });
+    }
+
+    const applications = await Application.find({
+        guardianId: req.session.user.id
+    });
+
     res.json(applications);
 });
+
+
 module.exports = router;

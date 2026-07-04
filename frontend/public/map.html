@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map</title>
+
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        #map{
+            height:100vh;
+            width:100%;
+        }
+      
+.grid-label{
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-weight: bold;
+    font-size: 16px;
+    color: black;
+}
+    </style>
+</head>
+
+<body>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+const params = new URLSearchParams(window.location.search);
+const lastSeenLocation = "GTB Nagar Delhi";
+
+console.log(lastSeenLocation);
+
+const map = L.map("map").setView([20.5937,78.9629],5);
+
+L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        attribution:"© OpenStreetMap contributors"
+    }
+).addTo(map);
+
+async function showLocation() {
+
+const res = await fetch(
+    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lastSeenLocation)}`
+);
+
+const data = await res.json();
+
+console.log(data);
+
+if (data.length === 0) {
+    alert("Location not found");
+    return;
+}
+
+const lat = parseFloat(data[0].lat);
+const lon = parseFloat(data[0].lon);
+
+map.setView([lat, lon], 16);
+
+// Draw search radius
+L.circle([lat, lon], {
+    radius: 1000
+}).addTo(map);
+
+const latStep = 0.003;
+const lonStep = 0.003;
+
+const rows = ["A", "B", "C"];
+
+for (let i = 0; i < 3; i++) {
+
+    for (let j = 0; j < 3; j++) {
+
+        const southWest = [
+            lat + (i - 1) * latStep,
+            lon + (j - 1) * lonStep
+        ];
+
+        const northEast = [
+            lat + i * latStep,
+            lon + j * lonStep
+        ];
+
+        const rectangle = L.rectangle(
+            [southWest, northEast],
+            {
+                weight: 2
+            }
+        ).addTo(map);
+
+        const gridName = `${rows[i]}${j + 1}`;
+
+        rectangle.bindTooltip(gridName, {
+            permanent: true,
+            direction: "center",
+            className: "grid-label"
+        });
+
+    }
+
+}
+
+}
+
+showLocation();
+
+</script>
+
+</body>
+</html>
