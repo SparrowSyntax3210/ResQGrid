@@ -4,153 +4,153 @@ const { Server } = require("socket.io");
 
 const app = require("./src/app");
 
-const activeCases = {};
-
 const server = http.createServer(app);
 
-const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+const io = new Server(server,{
+    cors:{
+        origin:"*",
+        methods:["GET","POST","PATCH"]
     }
 });
 
-io.on("connection", (socket) => {
+app.set("io",io);
 
-    console.log("Volunteer connected:", socket.id);
+const activeCases={};
 
-    // ==========================
-    // JOIN CASE
-    // ==========================
-    socket.on("join_case", (caseId) => {
+io.on("connection",(socket)=>{
+
+    console.log("Socket Connected:",socket.id);
+
+    // Volunteer Dashboard
+    socket.on("join_volunteers",()=>{
+
+        socket.join("volunteers");
+
+        console.log(socket.id,"joined volunteer room");
+
+    });
+
+    // Guardian or Volunteer joins case
+    socket.on("join_case",(caseId)=>{
 
         socket.join(`case_${caseId}`);
 
-        console.log(`${socket.id} joined room case_${caseId}`);
+        console.log(socket.id,"joined",caseId);
 
-        if (!activeCases[caseId]) {
+        if(!activeCases[caseId]){
 
-            activeCases[caseId] = {
+            activeCases[caseId]={
 
-                totalVolunteers: 0,
+                totalVolunteers:0,
 
-                volunteers: {},
+                volunteers:{},
 
-                grids: {
-
-                    A1: { volunteers: [], count: 0 },
-                    A2: { volunteers: [], count: 0 },
-                    A3: { volunteers: [], count: 0 },
-
-                    B1: { volunteers: [], count: 0 },
-                    B2: { volunteers: [], count: 0 },
-                    B3: { volunteers: [], count: 0 },
-
-                    C1: { volunteers: [], count: 0 },
-                    C2: { volunteers: [], count: 0 },
-                    C3: { volunteers: [], count: 0 }
-
+                grids:{
+                    A1:{volunteers:[],count:0},
+                    A2:{volunteers:[],count:0},
+                    A3:{volunteers:[],count:0},
+                    B1:{volunteers:[],count:0},
+                    B2:{volunteers:[],count:0},
+                    B3:{volunteers:[],count:0},
+                    C1:{volunteers:[],count:0},
+                    C2:{volunteers:[],count:0},
+                    C3:{volunteers:[],count:0}
                 }
 
             };
 
         }
 
-        activeCases[caseId].volunteers[socket.id] = true;
+        // Count volunteer only once
+        if(!activeCases[caseId].volunteers[socket.id]){
 
-        activeCases[caseId].totalVolunteers =
-            Object.keys(activeCases[caseId].volunteers).length;
+            activeCases[caseId].volunteers[socket.id]=true;
 
-        io.to(`case_${caseId}`).emit(
-            "volunteer_joined",
-            {
-                socketId: socket.id
-            }
-        );
+        }
 
-        io.to(`case_${caseId}`).emit(
-            "case_state",
-            activeCases[caseId]
-        );
+        activeCases[caseId].totalVolunteers=
+        Object.keys(activeCases[caseId].volunteers).length;
+
+        io.to(`case_${caseId}`).emit("case_state",{
+
+            caseId,
+
+            ...activeCases[caseId]
+
+        });
 
     });
 
-    // ==========================
-    // CLAIM GRID
-    // ==========================
-    socket.on("claim_grid", ({ caseId, gridId }) => {
+    socket.on("leave_case",(caseId)=>{
 
-        const currentCase = activeCases[caseId];
-    
-        if (!currentCase) return;
-    
-        // Remove volunteer from any previously claimed grid
-        for (const grid in currentCase.grids) {
-    
-            currentCase.grids[grid].volunteers =
-                currentCase.grids[grid].volunteers.filter(
-                    id => id !== socket.id
-                );
-    
-        }
-    
-        // Add volunteer to the selected grid
-        if (!currentCase.grids[gridId].volunteers.includes(socket.id)) {
-    
-            currentCase.grids[gridId].volunteers.push(socket.id);
-    
-        }
-    
-        // Update counts
-        for (const grid in currentCase.grids) {
-    
-            currentCase.grids[grid].count =
-                currentCase.grids[grid].volunteers.length;
-    
-        }
-    
-        currentCase.totalVolunteers =
-            Object.keys(currentCase.volunteers).length;
-    
-        io.to(`case_${caseId}`).emit(
-            "case_state",
-            currentCase
-        );
-    
+        socket.leave(`case_${caseId}`);
+
     });
 
-    // ==========================
-    // DISCONNECT
-    // ==========================
-    socket.on("disconnect", () => {
+    socket.on("claim_grid",({caseId,gridId})=>{
 
-        console.log("Volunteer disconnected:", socket.id);
+        const currentCase=activeCases[caseId];
 
-        for (const caseId in activeCases) {
+        if(!currentCase) return;
 
-            // Remove volunteer from case
+        for(const grid in currentCase.grids){
+
+            currentCase.grids[grid].volunteers=
+            currentCase.grids[grid].volunteers.filter(
+                id=>id!==socket.id
+            );
+
+        }
+
+        currentCase.grids[gridId].volunteers.push(socket.id);
+
+        for(const grid in currentCase.grids){
+
+            currentCase.grids[grid].count=
+            currentCase.grids[grid].volunteers.length;
+
+        }
+
+        io.to(`case_${caseId}`).emit("case_state",{
+
+            caseId,
+
+            ...currentCase
+
+        });
+
+    });
+
+    socket.on("disconnect",()=>{
+
+        console.log(socket.id,"Disconnected");
+
+        for(const caseId in activeCases){
+
             delete activeCases[caseId].volunteers[socket.id];
 
-            // Remove volunteer from all grids
-            for (const grid in activeCases[caseId].grids) {
+            for(const grid in activeCases[caseId].grids){
 
-                activeCases[caseId].grids[grid].volunteers =
-                    activeCases[caseId].grids[grid].volunteers.filter(
-                        id => id !== socket.id
-                    );
+                activeCases[caseId].grids[grid].volunteers=
+                activeCases[caseId].grids[grid].volunteers.filter(
+                    id=>id!==socket.id
+                );
 
-                activeCases[caseId].grids[grid].count =
-                    activeCases[caseId].grids[grid].volunteers.length;
+                activeCases[caseId].grids[grid].count=
+                activeCases[caseId].grids[grid].volunteers.length;
 
             }
 
-            activeCases[caseId].totalVolunteers =
-                Object.keys(activeCases[caseId].volunteers).length;
+            activeCases[caseId].totalVolunteers=
+            Object.keys(activeCases[caseId].volunteers).length;
 
-            io.to(`case_${caseId}`).emit(
-                "case_state",
-                activeCases[caseId]
-            );
+            io.to(`case_${caseId}`).emit("case_state",{
+
+                caseId,
+
+                ...activeCases[caseId]
+
+            });
 
         }
 
@@ -158,8 +158,10 @@ io.on("connection", (socket) => {
 
 });
 
-server.listen(5000, () => {
-    console.log("Server running on port 5000");
+server.listen(5000,()=>{
+
+    console.log("Server Running");
+
 });
 
 connectDB();

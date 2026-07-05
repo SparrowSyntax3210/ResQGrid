@@ -12,70 +12,95 @@
     <button id="show-active">Show Active Cases</button>
 
     <div id="cases"></div>
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
 
-    <script>
+<script>
 
-        const container = document.getElementById("cases");
+const container = document.getElementById("cases");
 
-        document.getElementById("show-active").addEventListener("click", async () => {
+// Socket Connection
+const socket = io("http://localhost:5000");
 
-            try {
+socket.on("connect", () => {
 
-                const res = await fetch("http://localhost:5000/guardian/application");
+    console.log("Connected:", socket.id);
 
-                const data = await res.json();
+    socket.emit("join_volunteers");
 
-                container.innerHTML = "";
+});
 
-                if (!data.length) {
-                    container.innerHTML = "<h3>No active cases found.</h3>";
-                    return;
-                }
+// Function to display a case
+function addCase(app) {
 
-                data.forEach(app => {
+    container.innerHTML += `
+        <div class="case" style="border:1px solid #000;padding:15px;margin:15px;">
 
-                    container.innerHTML += `
-                        <div class="case" style="border:1px solid #000;padding:15px;margin:15px;">
+            <h2>${app.Name}</h2>
 
-                            <h2>${app.Name}</h2>
+            <p><strong>Age:</strong> ${app.Age}</p>
 
-                            <p>Age: ${app.Age}</p>
+            <p><strong>Last Seen:</strong> ${app.LastSeen}</p>
 
-                            <p>Last Seen: ${app.LastSeen}</p>
+            <button
+                class="accept-btn"
+                data-id="${app._id}"
+                data-location="${app.LastSeen}">
 
-                            <button
-                                class="accept-btn"
-                                data-id="${app._id}"
-                                data-location="${app.LastSeen}">
-                                Accept
-                            </button>
+                Accept
 
-                        </div>
-                    `;
+            </button>
 
-                });
+        </div>
+    `;
 
-            } catch (err) {
+}
 
-                console.error(err);
+// Load existing active cases
+document.getElementById("show-active").addEventListener("click", async () => {
 
-            }
+    try {
 
-        });
+        const res = await fetch("http://localhost:5000/guardian/application");
 
-        document.addEventListener("click", (e) => {
+        const data = await res.json();
 
-            if (!e.target.classList.contains("accept-btn")) return;
+        container.innerHTML = "";
 
-            const caseId = e.target.dataset.id;
-            const location = e.target.dataset.location;
+        data.forEach(addCase);
 
-            window.location.href =
-                `map.html?id=${caseId}&location=${encodeURIComponent(location)}`;
+    }
 
-        });
+    catch (err) {
 
-    </script>
+        console.error(err);
+
+    }
+
+});
+
+// Receive new cases in real time
+socket.on("new_case", (app) => {
+
+    console.log("New Case Received:", app);
+
+    addCase(app);
+
+});
+
+// Accept button
+document.addEventListener("click", (e) => {
+
+    if (!e.target.classList.contains("accept-btn")) return;
+
+    const caseId = e.target.dataset.id;
+    const location = e.target.dataset.location;
+
+    window.location.href =
+        `map.html?id=${caseId}&location=${encodeURIComponent(location)}`;
+
+});
+
+</script>
 
 </body>
 </html>
