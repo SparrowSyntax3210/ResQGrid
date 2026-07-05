@@ -3,54 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Volunteer Dashboard</title>
 </head>
 <body>
+
     <h1>Volunteer</h1>
+
     <button id="show-active">Show Active Cases</button>
+
     <div id="cases"></div>
 
     <script>
-const container = document.getElementById("cases");
 
-document.getElementById("show-active").addEventListener("click", async () => {
+        const container = document.getElementById("cases");
 
-    const res = await fetch("http://localhost:5000/guardian/application");
-    const data = await res.json();
+        document.getElementById("show-active").addEventListener("click", async () => {
 
-    container.innerHTML = "";
+            try {
 
-    data.forEach(app => {
+                const res = await fetch("http://localhost:5000/guardian/application");
 
-        container.innerHTML += `
-            <div class="case">
-                <h2>${app.Name}</h2>
-                <p>Age: ${app.Age}</p>
-                <p>Last Seen: ${app.LastSeen}</p>
+                const data = await res.json();
 
-                <button
-                    class="accept-btn"
-                    data-location="${app.LastSeen}">
-                    Accept
-                </button>
-            </div>
-        `;
+                container.innerHTML = "";
 
-    });
+                if (!data.length) {
+                    container.innerHTML = "<h3>No active cases found.</h3>";
+                    return;
+                }
 
-});
+                data.forEach(app => {
 
-document.addEventListener("click", (e) => {
+                    container.innerHTML += `
+                        <div class="case" style="border:1px solid #000;padding:15px;margin:15px;">
 
-    if (!e.target.classList.contains("accept-btn")) return;
+                            <h2>${app.Name}</h2>
 
-    const location = e.target.dataset.location;
+                            <p>Age: ${app.Age}</p>
 
-    window.location.href =
-`map.html?id=${app._id}&location=${encodeURIComponent(app.LastSeen)}`;
+                            <p>Last Seen: ${app.LastSeen}</p>
 
-});
+                            <button
+                                class="accept-btn"
+                                data-id="${app._id}"
+                                data-location="${app.LastSeen}">
+                                Accept
+                            </button>
+
+                        </div>
+                    `;
+
+                });
+
+            } catch (err) {
+
+                console.error(err);
+
+            }
+
+        });
+
+        document.addEventListener("click", (e) => {
+
+            if (!e.target.classList.contains("accept-btn")) return;
+
+            const caseId = e.target.dataset.id;
+            const location = e.target.dataset.location;
+
+            window.location.href =
+                `map.html?id=${caseId}&location=${encodeURIComponent(location)}`;
+
+        });
+
     </script>
-</body>
 
+</body>
 </html>

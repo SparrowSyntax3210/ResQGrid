@@ -1,115 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardian Dashboard</title>
+
+<style>
+body{
+    font-family:Arial, Helvetica, sans-serif;
+    margin:30px;
+}
+
+.application{
+    border:1px solid #ccc;
+    padding:15px;
+    margin:20px 0;
+    border-radius:10px;
+}
+
+.status-box{
+    margin-top:15px;
+    border:1px solid #ddd;
+    background:#f5f5f5;
+    padding:10px;
+}
+</style>
+
 </head>
 <body>
-    <h1>Guardian</h1>
-    <button id="Create-application">Create Application</button>
-    <button id="my-applications">My applications</button>
-    <div id="my-application-container"></div>
-    <button id="close-application">Close</button>
-    <button id="status-btn">Live Status</button>
 
-<div id="status-container"></div>
-    <script>
-        
-        const Application = document.getElementById("Create-application");
-        Application.addEventListener("click", ()=> {
-            window.location.href="application.html"
+<h1>Guardian Dashboard</h1>
+
+<button id="Create-application">Create Application</button>
+<button id="my-applications">My Applications</button>
+
+<hr>
+
+<div id="my-application-container"></div>
+
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+
+<script>
+
+const container = document.getElementById("my-application-container");
+
+let currentCase = null;
+let currentStatusBox = null;
+
+// ---------------- Socket ----------------
+
+if(typeof io==="undefined"){
+    alert("Socket.IO failed to load.");
+}
+
+const socket = io("http://localhost:5000",{
+    withCredentials:true
+});
+
+socket.on("connect",()=>{
+    console.log("Guardian Connected:",socket.id);
+});
+
+socket.on("disconnect",()=>{
+    console.log("Disconnected");
+});
+
+// ---------------- Create Application ----------------
+
+document.getElementById("Create-application").onclick=()=>{
+    window.location.href="application.html";
+};
+
+// ---------------- My Applications ----------------
+
+document.getElementById("my-applications").onclick=async()=>{
+
+    try{
+
+        const res=await fetch(
+            "http://localhost:5000/guardian/application",
+            {
+                credentials:"include"
+            }
+        );
+
+        const applications=await res.json();
+
+        container.innerHTML="";
+
+        if(applications.length===0){
+
+            container.innerHTML="<h3>No Applications Found</h3>";
+            return;
+
+        }
+
+        applications.forEach(app=>{
+
+            container.innerHTML+=`
+
+            <div class="application">
+
+                <h2>${app.Name}</h2>
+
+                <p><b>Age:</b> ${app.Age}</p>
+
+                <p><b>Status:</b> ${app.status}</p>
+
+                <p><b>Last Seen:</b> ${app.LastSeen}</p>
+
+                <button
+                    class="track-btn"
+                    data-id="${app._id}">
+                    Track Status
+                </button>
+
+                <div
+                    id="status-${app._id}"
+                    class="status-box">
+
+                </div>
+
+            </div>
+
+            `;
+
         });
 
-        const My_Application = document.getElementById("my-applications");
+        document.querySelectorAll(".track-btn").forEach(button=>{
 
-My_Application.addEventListener("click", async () => {
+            button.onclick=()=>{
 
-    const res = await fetch(
-        "http://localhost:5000/guardian/application",
-        {
-            credentials: "include"
-        }
-    );
+                const caseId=button.dataset.id;
 
-    const data = await res.json();
+                if(currentCase){
 
-    container.innerHTML = "";
+                    socket.emit("leave_case",currentCase);
 
-    data.forEach(app => {
-        container.innerHTML += `
-            <h2>${app.Name}</h2>
-            <p>Age: ${app.Age}</p>
-            <p>Last Seen: ${app.LastSeen}</p>
-            <p>Status: ${app.status}</p>
-        `;
-    });
+                }
 
-});
+                currentCase=caseId;
 
-        document.getElementById("close-application")
-.addEventListener("click", async () => {
+                currentStatusBox=document.getElementById(`status-${caseId}`);
 
-    const res = await fetch(
-        "http://localhost:5000/guardian/application/close",
-        {
-            method: "PATCH",
-            credentials: "include"
-        }
-    );
+                currentStatusBox.innerHTML="<b>Waiting for live updates...</b>";
 
-    const data = await res.json();
+                socket.emit("join_case",caseId);
 
-    console.log(data);
+                console.log("Joined Case:",caseId);
 
-});
+            };
 
-const socket = io("http://localhost:5000");
+        });
 
-document.getElementById("status-btn").addEventListener("click", async () => {
-
-    const res = await fetch(
-        "http://localhost:5000/guardian/application",
-        {
-            credentials: "include"
-        }
-    );
-
-    const applications = await res.json();
-
-    if (!applications.length) {
-        alert("No application found");
-        return;
     }
 
-    const caseId = applications[0]._id;
+    catch(err){
 
-    socket.emit("join_case", caseId);
+        console.error(err);
 
-});
+    }
 
-const statusContainer = document.getElementById("status-container");
+};
 
-socket.on("case_state", (state) => {
+// ---------------- Live Updates ----------------
 
-    statusContainer.innerHTML = "";
+socket.on("case_state",(state)=>{
 
-    statusContainer.innerHTML += `
-        <h2>Active Volunteers: ${state.totalVolunteers}</h2>
+    console.log("Received State",state);
+
+    if(!currentStatusBox) return;
+
+    let html=`
+        <h3>Live Status</h3>
+
+        <p>
+            <b>Total Volunteers:</b>
+            ${state.totalVolunteers}
+        </p>
     `;
 
-    for (const grid in state.grids) {
+    if(state.grids){
 
-        statusContainer.innerHTML += `
+        html+="<h4>Grid Distribution</h4>";
+
+        for(const grid in state.grids){
+
+            html+=`
             <p>
-                <strong>${grid}</strong>
-                : ${state.grids[grid].count} volunteer(s)
+                ${grid}
+                :
+                ${state.grids[grid].count}
+                volunteer(s)
             </p>
-        `;
+            `;
+
+        }
 
     }
 
+    currentStatusBox.innerHTML=html;
+
 });
-    </script>
+
+</script>
+
 </body>
 </html>
