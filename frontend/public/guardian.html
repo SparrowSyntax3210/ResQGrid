@@ -11,6 +11,9 @@
     <button id="my-applications">My applications</button>
     <div id="my-application-container"></div>
     <button id="close-application">Close</button>
+    <button id="status-btn">Live Status</button>
+
+<div id="status-container"></div>
     <script>
         
         const Application = document.getElementById("Create-application");
@@ -58,6 +61,53 @@ My_Application.addEventListener("click", async () => {
     const data = await res.json();
 
     console.log(data);
+
+});
+
+const socket = io("http://localhost:5000");
+
+document.getElementById("status-btn").addEventListener("click", async () => {
+
+    const res = await fetch(
+        "http://localhost:5000/guardian/application",
+        {
+            credentials: "include"
+        }
+    );
+
+    const applications = await res.json();
+
+    if (!applications.length) {
+        alert("No application found");
+        return;
+    }
+
+    const caseId = applications[0]._id;
+
+    socket.emit("join_case", caseId);
+
+});
+
+const statusContainer = document.getElementById("status-container");
+
+socket.on("case_state", (state) => {
+
+    statusContainer.innerHTML = "";
+
+    statusContainer.innerHTML += `
+        <h2>Active Volunteers: ${state.totalVolunteers}</h2>
+    `;
+
+    for (const grid in state.grids) {
+
+        statusContainer.innerHTML += `
+            <p>
+                <strong>${grid}</strong>
+                : ${state.grids[grid].count} volunteer(s)
+            </p>
+        `;
+
+    }
 
 });
     </script>

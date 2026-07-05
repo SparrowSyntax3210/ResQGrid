@@ -26,12 +26,12 @@ router.post("/register", async (req, res) => {
             });
         }
 
-        const hashedPassword = await bcrypt.hash(Password, 10);
+        // const hashedPassword = await bcrypt.hash(Password, 10);
 
         const newUser = new User({
             Name,
             Email,
-            Password: hashedPassword,
+            Password,
             ContactNumber,
             Role
         });

@@ -30,91 +30,145 @@
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 
 <script>
 
-const params = new URLSearchParams(window.location.search);
-const lastSeenLocation = "GTB Nagar Delhi";
+    const params = new URLSearchParams(window.location.search);
+    
+    const caseId = params.get("id");
+    const lastSeenLocation = params.get("location");
+    
+    const socket = io("http://localhost:5000");
+    
+    const gridRectangles = {};
+    
+    const map = L.map("map").setView([20.5937,78.9629],5);
+    
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            attribution:"© OpenStreetMap contributors"
+        }
+    ).addTo(map);
+    
+    socket.on("connect", () => {
+    
+        console.log("Connected");
+    
+        console.log(socket.id);
+    
+        socket.emit("join_case", caseId);
+    
+    });
+    
+    socket.on("volunteer_joined",(data)=>{
+    
+        console.log("Volunteer Joined");
+    
+        console.log(data);
+    
+    });
+    
+    socket.on("case_state", (state) => {
 
-console.log(lastSeenLocation);
+console.log(state);
 
-const map = L.map("map").setView([20.5937,78.9629],5);
+for (const grid in state.grids) {
 
-L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-    {
-        attribution:"© OpenStreetMap contributors"
-    }
-).addTo(map);
+    console.log(
+        grid,
+        state.grids[grid].count,
+        typeof state.grids[grid].count
+    );
 
-async function showLocation() {
-
-const res = await fetch(
-    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lastSeenLocation)}`
-);
-
-const data = await res.json();
-
-console.log(data);
-
-if (data.length === 0) {
-    alert("Location not found");
-    return;
 }
 
-const lat = parseFloat(data[0].lat);
-const lon = parseFloat(data[0].lon);
+});
+    
+    async function showLocation(){
+    
+        const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lastSeenLocation)}`
+        );
+    
+        const data = await res.json();
+    
+        if(data.length===0){
+    
+            alert("Location not found");
+    
+            return;
+    
+        }
+    
+        const lat = parseFloat(data[0].lat);
+        const lon = parseFloat(data[0].lon);
+    
+        map.setView([lat,lon],16);
+    
+        L.circle([lat,lon],{
+    
+            radius:1000
+    
+        }).addTo(map);
+    
+        const latStep=0.003;
+        const lonStep=0.003;
+    
+        const rows=["A","B","C"];
+    
+        for(let i=0;i<3;i++){
+    
+            for(let j=0;j<3;j++){
+    
+                const southWest=[
+                    lat+(i-1)*latStep,
+                    lon+(j-1)*lonStep
+                ];
+    
+                const northEast=[
+                    lat+i*latStep,
+                    lon+j*lonStep
+                ];
+    
+                const rectangle=L.rectangle(
+                    [southWest,northEast],
+                    {
+                        weight:2
+                    }
+                ).addTo(map);
+    
+                const gridName=`${rows[i]}${j+1}`;
+    
+                gridRectangles[gridName]=rectangle;
+    
+                rectangle.bindTooltip(gridName,{
+                    permanent:true,
+                    direction:"center",
+                    className:"grid-label"
+                });
+    
+                rectangle.on("click", () => {
 
-map.setView([lat, lon], 16);
+console.log("Clicked", gridName);
 
-// Draw search radius
-L.circle([lat, lon], {
-    radius: 1000
-}).addTo(map);
+socket.emit("claim_grid", {
+    caseId,
+    gridId: gridName
+});
 
-const latStep = 0.003;
-const lonStep = 0.003;
-
-const rows = ["A", "B", "C"];
-
-for (let i = 0; i < 3; i++) {
-
-    for (let j = 0; j < 3; j++) {
-
-        const southWest = [
-            lat + (i - 1) * latStep,
-            lon + (j - 1) * lonStep
-        ];
-
-        const northEast = [
-            lat + i * latStep,
-            lon + j * lonStep
-        ];
-
-        const rectangle = L.rectangle(
-            [southWest, northEast],
-            {
-                weight: 2
+});
+    
             }
-        ).addTo(map);
-
-        const gridName = `${rows[i]}${j + 1}`;
-
-        rectangle.bindTooltip(gridName, {
-            permanent: true,
-            direction: "center",
-            className: "grid-label"
-        });
-
+    
+        }
+    
     }
-
-}
-
-}
-
-showLocation();
-
-</script>
+    
+    showLocation();
+    
+    </script>
 
 </body>
 </html>

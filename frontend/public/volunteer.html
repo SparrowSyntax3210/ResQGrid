@@ -47,7 +47,7 @@ document.addEventListener("click", (e) => {
     const location = e.target.dataset.location;
 
     window.location.href =
-        `map.html?location=${encodeURIComponent(location)}`;
+`map.html?id=${app._id}&location=${encodeURIComponent(app.LastSeen)}`;
 
 });
     </script>
