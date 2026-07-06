@@ -32,7 +32,7 @@ async function loadUser() {
         if (!res.ok) return;
 
         const user = await res.json();
-        console.log("Logged in user:", user);
+        console.log("user loaded:", user);
 
         profileName.textContent = user.name;
 
@@ -248,83 +248,6 @@ socket.on("case_state", (state) => {
     currentStatusBox.innerHTML = html;
 });
 
-// =======================================
-// VOLUNTEERS (BACKEND)
-// =======================================
-
-async function loadVolunteers() {
-    try {
-        const res = await fetch("http://localhost:5000/volunteers", {
-            credentials: "include"
-        });
-
-        const volunteers = await res.json();
-
-        volunteerContainer.innerHTML = "";
-
-        volunteers.forEach(v => {
-            volunteerContainer.innerHTML += `
-                <div class="volunteer">
-
-                    <div class="volunteer-left">
-
-                        <img src="${v.img || "https://via.placeholder.com/50"}">
-
-                        <div>
-                            <h4>${v.name}</h4>
-                            <p>${v.area}</p>
-                        </div>
-
-                    </div>
-
-                </div>
-            `;
-        });
-
-    } catch (err) {
-        console.error("Volunteers failed:", err);
-    }
-}
-
-// =======================================
-// ACTIVITY FEED (BACKEND)
-// =======================================
-
-async function loadActivities() {
-    try {
-        const res = await fetch("http://localhost:5000/guardian/activity", {
-            credentials: "include"
-        });
-
-        const activities = await res.json();
-
-        activityList.innerHTML = "";
-
-        activities.forEach(a => {
-            activityList.innerHTML += `
-                <li>
-                    <div class="activity-icon" style="background:${a.color}">
-                        <i class="fa-solid ${a.icon}"></i>
-                    </div>
-
-                    <div>
-                        <h4>${a.text}</h4>
-                        <span>${a.time}</span>
-                    </div>
-                </li>
-            `;
-        });
-
-    } catch (err) {
-        console.error("Activity failed:", err);
-    }
-}
-
-// =======================================
-// INIT
-// =======================================
 
 loadUser();
 loadApplications();
-loadVolunteers();
-loadActivities();

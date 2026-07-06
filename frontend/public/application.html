@@ -338,6 +338,25 @@ textarea {
     </div>
 
     <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+        
+            if (!file) return;
+        
+            const reader = new FileReader();
+        
+            reader.onload = function (e) {
+                const preview = document.getElementById("photoPreview");
+                const prompt = document.getElementById("upload-prompt");
+        
+                preview.src = e.target.result;
+                preview.style.display = "block";
+                prompt.style.display = "none";
+            };
+        
+            reader.readAsDataURL(file);
+            
+        }
         document.getElementById("missingCaseForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -367,25 +386,6 @@ textarea {
         alert(err.message);
     }
 });
-        const API = "http://100.94.168.26:5000";
-        function previewImage(event) {
-            const file = event.target.files[0];
-        
-            if (!file) return;
-        
-            const reader = new FileReader();
-        
-            reader.onload = function (e) {
-                const preview = document.getElementById("photoPreview");
-                const prompt = document.getElementById("upload-prompt");
-        
-                preview.src = e.target.result;
-                preview.style.display = "block";
-                prompt.style.display = "none";
-            };
-        
-            reader.readAsDataURL(file);
-        }
         </script>
 </body>
 </html>
