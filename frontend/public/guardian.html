@@ -1,209 +1,415 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guardian Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GuardianNet Dashboard</title>
 
-<style>
-body{
-    font-family:Arial, Helvetica, sans-serif;
-    margin:30px;
-}
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
 
-.application{
-    border:1px solid #ccc;
-    padding:15px;
-    margin:20px 0;
-    border-radius:10px;
-}
+    <!-- Icons -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
 
-.status-box{
-    margin-top:15px;
-    border:1px solid #ddd;
-    background:#f5f5f5;
-    padding:10px;
-}
-</style>
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Chart -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="./css/guardian.css">
 
 </head>
+
 <body>
 
-<h1>Guardian Dashboard</h1>
+<div class="dashboard">
 
-<button id="Create-application">Create Application</button>
-<button id="my-applications">My Applications</button>
+    <!-- ================= Sidebar ================= -->
 
-<hr>
+    <aside class="sidebar">
 
-<div id="my-application-container"></div>
+        <div class="logo">
 
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+            <div class="logo-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
 
-<script>
+            <div>
 
-const container = document.getElementById("my-application-container");
+                <h2>ResQGrid</h2>
 
-let currentCase = null;
-let currentStatusBox = null;
+            </div>
 
-// ---------------- Socket ----------------
+        </div>
 
-if(typeof io==="undefined"){
-    alert("Socket.IO failed to load.");
-}
+        <ul class="menu">
 
-const socket = io("http://localhost:5000",{
-    withCredentials:true
-});
+            <li class="active">
+                <i class="fa-solid fa-house"></i>
+                Dashboard
+            </li>
 
-socket.on("connect",()=>{
-    console.log("Guardian Connected:",socket.id);
-});
+            <li>
+                <i class="fa-regular fa-calendar-check"></i>
+                Active Cases
+            </li>
 
-socket.on("disconnect",()=>{
-    console.log("Disconnected");
-});
+            <li class="case-listing">
+                <i class="fa-regular fa-folder-open"></i>
+                Case Listing
+            </li>
 
-// ---------------- Create Application ----------------
+            <li>
+                <i class="fa-solid fa-location-dot"></i>
+                Map View
+            </li>
 
-document.getElementById("Create-application").onclick=()=>{
-    window.location.href="application.html";
-};
+            <li>
+                <i class="fa-solid fa-users"></i>
+                Volunteers
+            </li>
 
-// ---------------- My Applications ----------------
+            <li>
+                <i class="fa-regular fa-envelope"></i>
+                Messages
+                <span>3</span>
+            </li>
 
-document.getElementById("my-applications").onclick=async()=>{
+            <li>
+                <i class="fa-regular fa-bell"></i>
+                Notifications
+                <span>5</span>
+            </li>
 
-    try{
+            <li>
+                <i class="fa-solid fa-chart-column"></i>
+                Reports
+            </li>
 
-        const res=await fetch(
-            "http://localhost:5000/guardian/application",
-            {
-                credentials:"include"
-            }
-        );
+            <li>
+                <i class="fa-solid fa-chart-line"></i>
+                Analytics
+            </li>
 
-        const applications=await res.json();
+            <li>
+                <i class="fa-solid fa-gear"></i>
+                Settings
+            </li>
 
-        container.innerHTML="";
+            <li>
+                <i class="fa-regular fa-circle-question"></i>
+                Help & Support
+            </li>
 
-        if(applications.length===0){
+        </ul>
 
-            container.innerHTML="<h3>No Applications Found</h3>";
-            return;
+        <div class="support-card">
 
-        }
+            <h3>Need Immediate Help?</h3>
 
-        applications.forEach(app=>{
+            <p>Contact emergency support team</p>
 
-            container.innerHTML+=`
+            <button>
+                Emergency Contact
+            </button>
 
-            <div class="application">
+        </div>
 
-                <h2>${app.Name}</h2>
+    </aside>
 
-                <p><b>Age:</b> ${app.Age}</p>
+    <!-- ================= Main ================= -->
 
-                <p><b>Status:</b> ${app.status}</p>
+    <main class="content">
 
-                <p><b>Last Seen:</b> ${app.LastSeen}</p>
+        <!-- Header -->
 
-                <button
-                    class="track-btn"
-                    data-id="${app._id}">
-                    Track Status
+        <header>
+
+            <div>
+
+                <p>You're an active Guardian. We're here to help.</p>
+
+            </div>
+
+            <div class="header-right">
+
+                <div class="search">
+
+                    <input
+                        type="text"
+                        placeholder="Search cases, volunteers...">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                </div>
+
+                <button class="notify">
+
+                    <i class="fa-regular fa-bell"></i>
+
+                    <span></span>
+
                 </button>
 
-                <div
-                    id="status-${app._id}"
-                    class="status-box">
+                <div class="profile">
+
+                    <div>
+
+                        <h4></h4>
+
+                        <small></small>
+
+                    </div>
+
+                    <i class="fa-solid fa-angle-down"></i>
 
                 </div>
 
             </div>
 
-            `;
+        </header>
 
-        });
+        <!-- ================= Statistics ================= -->
 
-        document.querySelectorAll(".track-btn").forEach(button=>{
+        <section class="stats">
 
-            button.onclick=()=>{
+            <div class="stat-card purple">
 
-                const caseId=button.dataset.id;
+                <div class="icon">
+                    <i class="fa-solid fa-folder"></i>
+                </div>
 
-                if(currentCase){
+                <div>
 
-                    socket.emit("leave_case",currentCase);
+                    <h4>Active Cases</h4>
 
-                }
+                    <h2>2</h2>
 
-                currentCase=caseId;
+                    <p>Currently Tracking</p>
 
-                currentStatusBox=document.getElementById(`status-${caseId}`);
+                </div>
 
-                currentStatusBox.innerHTML="<b>Waiting for live updates...</b>";
+            </div>
 
-                socket.emit("join_case",caseId);
+            <div class="stat-card blue">
 
-                console.log("Joined Case:",caseId);
+                <div class="icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
 
-            };
+                <div>
 
-        });
+                    <h4>Total Volunteers</h4>
 
-    }
+                    <h2>24</h2>
 
-    catch(err){
+                    <p>Online & Active</p>
 
-        console.error(err);
+                </div>
 
-    }
+            </div>
 
-};
+            <div class="stat-card green">
 
-// ---------------- Live Updates ----------------
+                <div class="icon">
+                    <i class="fa-solid fa-crosshairs"></i>
+                </div>
 
-socket.on("case_state",(state)=>{
+                <div>
 
-    console.log("Received State",state);
+                    <h4>Areas Being Searched</h4>
 
-    if(!currentStatusBox) return;
+                    <h2>12</h2>
 
-    let html=`
-        <h3>Live Status</h3>
+                    <p>Across all cases</p>
 
-        <p>
-            <b>Total Volunteers:</b>
-            ${state.totalVolunteers}
-        </p>
-    `;
+                </div>
 
-    if(state.grids){
+            </div>
 
-        html+="<h4>Grid Distribution</h4>";
+            <div class="stat-card orange">
 
-        for(const grid in state.grids){
+                <div class="icon">
+                    <i class="fa-solid fa-eye"></i>
+                </div>
 
-            html+=`
-            <p>
-                ${grid}
-                :
-                ${state.grids[grid].count}
-                volunteer(s)
-            </p>
-            `;
+                <div>
 
-        }
+                    <h4>Total Sightings</h4>
 
-    }
+                    <h2>5</h2>
 
-    currentStatusBox.innerHTML=html;
+                    <p>Reported Today</p>
 
-});
+                </div>
 
-</script>
+            </div>
+
+        </section>
+
+        <!-- ================= Middle ================= -->
+
+        <section class="middle-grid">
+
+            <!-- Active Cases -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h2>Active Cases</h2>
+
+                    <i class="fa-solid fa-ellipsis"></i>
+
+                </div>
+
+                <div id="caseContainer">
+
+                    <!-- JS inserts cards -->
+
+                </div>
+
+            </div>
+
+            <!-- Map -->
+
+            <div class="right-column">
+
+                <div class="panel map-panel">
+
+                    <div class="panel-header">
+
+                        <h2>Live Search Map</h2>
+
+                        <select>
+
+                            <option>Aarav Sharma</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="map">
+
+                        <div class="grid"></div>
+
+                        <div class="pin one"></div>
+                        <div class="pin two"></div>
+                        <div class="pin three"></div>
+                        <div class="pin four"></div>
+
+                    </div>
+
+                </div>
+
+                <div class="panel activity">
+
+                    <div class="panel-header">
+
+                        <h2>Live Activity</h2>
+
+                        <a href="#">View All</a>
+
+                    </div>
+
+                    <ul id="activityList">
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ================= Bottom ================= -->
+
+        <section class="bottom-grid">
+
+            <!-- Volunteers -->
+
+            <div class="panel volunteers">
+
+                <div class="panel-header">
+
+                    <h2>Top Volunteers</h2>
+
+                    <a href="#">View All</a>
+
+                </div>
+
+                <div id="volunteerContainer">
+
+                </div>
+
+            </div>
+
+            <!-- Quick Actions -->
+
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <h2>Quick Actions</h2>
+
+                </div>
+
+                <div class="actions">
+
+                    <button>
+                        <i class="fa-solid fa-eye"></i>
+                        Report Sighting
+                    </button>
+
+                    <button>
+                        <i class="fa-solid fa-users"></i>
+                        Contact Volunteers
+                    </button>
+
+                    <button>
+                        <i class="fa-solid fa-share-nodes"></i>
+                        Share Case
+                    </button>
+
+                    <button class="danger">
+                        <i class="fa-solid fa-bell"></i>
+                        Emergency Alert
+                    </button>
+
+                </div>
+
+            </div>
+
+            <!-- Chart -->
+
+            <div class="panel chart">
+
+                <div class="panel-header">
+
+                    <h2>Case Statistics</h2>
+
+                    <select>
+
+                        <option>This Week</option>
+
+                    </select>
+
+                </div>
+
+                <canvas id="chart"></canvas>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<script src="./js/guardian.js"></script>
 
 </body>
 </html>

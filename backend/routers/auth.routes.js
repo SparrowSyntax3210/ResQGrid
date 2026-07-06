@@ -95,6 +95,7 @@ router.post("/login", async (req, res) => {
 
         return res.redirect(`/${existingUser.Role.toLowerCase()}.html`);
 
+
     } catch (error) {
         console.error(error);
 
@@ -134,6 +135,14 @@ router.get("/status", (req, res) => {
     return res.status(200).json({
         loggedIn: false,
     });
+});
+
+router.get("/auth/me", (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ message: "Not logged in" });
+    }
+
+    res.json(req.session.user);
 });
 
 module.exports = router

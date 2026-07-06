@@ -33,13 +33,15 @@
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
-
+const API = "http://100.94.168.26:5000";
     const params = new URLSearchParams(window.location.search);
     
     const caseId = params.get("id");
     const lastSeenLocation = params.get("location");
     
-    const socket = io("http://localhost:5000");
+    const socket = io(API, {
+    withCredentials: true
+});
     
     const gridRectangles = {};
     
