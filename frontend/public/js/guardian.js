@@ -2,7 +2,7 @@
 const caseContainer = document.getElementById("caseContainer");
 const activityList = document.getElementById("activityList");
 const volunteerContainer = document.getElementById("volunteerContainer");
-const profileName = document.getElementById("profileName"); // add in UI
+const profileName = document.querySelector("#profileName h4");
 
 let currentCase = null;
 let currentStatusBox = null;
@@ -32,13 +32,12 @@ async function loadUser() {
         if (!res.ok) return;
 
         const user = await res.json();
+        console.log("Logged in user:", user);
 
-        if (profileName) {
-            profileName.innerText = user.name;
-        }
+        profileName.textContent = user.name;
 
     } catch (err) {
-        console.error("User load failed", err);
+        console.error(err);
     }
 }
 
@@ -52,6 +51,10 @@ async function loadApplications() {
             credentials: "include"
         });
 
+        if (!res.ok) {
+            throw new Error("Failed to load applications.");
+        }
+
         const applications = await res.json();
 
         caseContainer.innerHTML = "";
@@ -64,28 +67,25 @@ async function loadApplications() {
                 </div>
             `;
 
-            document.getElementById("createCaseBtn").onclick = () => {
+            document.getElementById("createCaseBtn").addEventListener("click", () => {
                 window.location.href = "/application.html";
-            };
+            });
 
             return;
         }
 
         applications.forEach(app => {
-
             caseContainer.innerHTML += `
                 <div class="case-card">
 
                     <div class="case-top">
                         <div class="case-user">
-
-                            <img src="${app.Photo || "https://via.placeholder.com/70"}">
+                            <img src="${app.Photo || "https://via.placeholder.com/70"}" alt="Missing Person">
 
                             <div>
                                 <h3>${app.Name}</h3>
                                 <p>Age ${app.Age} • ${app.status}</p>
                             </div>
-
                         </div>
                     </div>
 
@@ -114,8 +114,8 @@ async function loadApplications() {
                             Track Case
                         </button>
 
-                        <button class="open-btn" data-id="${app._id}">
-                            Open
+                        <button class="close-btn" data-id="${app._id}">
+                            Close
                         </button>
 
                         <div id="status-${app._id}" class="status-box"></div>
@@ -126,13 +126,60 @@ async function loadApplications() {
             `;
         });
 
+        // Existing track button handlers
         attachCaseHandlers();
+
+        // Close button handlers
+        // Close button handlers
+document.querySelectorAll(".close-btn").forEach(button => {
+
+    button.addEventListener("click", async () => {
+
+        const caseId = button.dataset.id;
+
+        if (!caseId) {
+            alert("Invalid case ID.");
+            return;
+        }
+
+        const confirmClose = confirm("Are you sure you want to close this case?");
+
+        if (!confirmClose) return;
+
+        try {
+
+            const res = await fetch(
+                `http://localhost:5000/guardian/application/close/${caseId}`,
+                {
+                    method: "PATCH",
+                    credentials: "include"
+                }
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.message || "Failed to close case.");
+            }
+
+            alert(data.message);
+
+            // Reload the application list
+            loadApplications();
+
+        } catch (err) {
+            console.error("Failed to close case:", err);
+            alert(err.message);
+        }
+
+    });
+
+});
 
     } catch (err) {
         console.error("Applications load failed:", err);
     }
 }
-
 // =======================================
 // CASE BUTTON HANDLERS
 // =======================================

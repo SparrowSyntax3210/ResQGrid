@@ -192,7 +192,7 @@ textarea {
             <p>Fill in the details below to submit a missing person report.</p>
         </div>
     
-        <form id="missingCaseForm" action="/guardian/application" method="POST" enctype="multipart/form-data">
+        <form id="missingCaseForm" enctype="multipart/form-data">
     
             <!-- Basic Information -->
             <div class="form-group">
@@ -338,6 +338,35 @@ textarea {
     </div>
 
     <script>
+        document.getElementById("missingCaseForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+
+    try {
+        const res = await fetch("http://localhost:5000/guardian/application", {
+            method: "POST",
+            body: formData,
+            credentials: "include"
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to submit case");
+        }
+
+        alert("Case submitted successfully");
+
+        // redirect AFTER success
+        window.location.href = "/guardian.html";
+
+    } catch (err) {
+        console.error(err);
+        alert(err.message);
+    }
+});
         const API = "http://100.94.168.26:5000";
         function previewImage(event) {
             const file = event.target.files[0];

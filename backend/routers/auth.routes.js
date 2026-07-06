@@ -137,7 +137,7 @@ router.get("/status", (req, res) => {
     });
 });
 
-router.get("/auth/me", (req, res) => {
+router.get("/me", (req, res) => {
     if (!req.session.user) {
         return res.status(401).json({ message: "Not logged in" });
     }

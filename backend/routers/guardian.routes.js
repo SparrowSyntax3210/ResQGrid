@@ -102,9 +102,7 @@ router.post("/application", upload.single("Photo"), async (req, res) => {
 
 });
 
-router.patch("/application/close", async (req, res) => {
-        console.log(req.session);
-        console.log(req.session.user);
+router.patch("/application/close/:id", async (req, res) => {
     try {
         if (!req.session.user) {
             return res.status(401).json({
@@ -115,6 +113,7 @@ router.patch("/application/close", async (req, res) => {
 
         const application = await Application.findOneAndUpdate(
             {
+                _id: req.params.id,
                 guardianId: req.session.user.id,
                 status: "active"
             },
@@ -122,14 +121,14 @@ router.patch("/application/close", async (req, res) => {
                 status: "closed"
             },
             {
-                returnDocument: "after"
+                new: true
             }
         );
 
         if (!application) {
             return res.status(404).json({
                 success: false,
-                message: "No active application found."
+                message: "Application not found or already closed."
             });
         }
 
@@ -157,9 +156,10 @@ router.get("/application", async (req, res) => {
         });
     }
 
-    const applications = await Application.find({
-        guardianId: req.session.user.id
-    });
+        const applications = await Application.find({
+            guardianId: req.session.user.id,
+            status: "active"
+        });
 
     res.json(applications);
 });
