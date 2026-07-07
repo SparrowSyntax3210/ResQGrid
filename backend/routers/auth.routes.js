@@ -86,12 +86,6 @@ router.post("/login", async (req, res) => {
             email: existingUser.Email,
             role: existingUser.Role,
         };
-        
-        // return res.status(200).json({
-        //     success: true,
-        //     message: "Login successful.",
-        //     user: req.session.user,
-        // });
 
         return res.redirect(`/${existingUser.Role.toLowerCase()}.html`);
 

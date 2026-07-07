@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volunteer Chat</title>
+
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        background: #ece5dd;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .chat-container {
+        width: 900px;
+        height: 90vh;
+        background: white;
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+      }
+
+      .header {
+        height: 70px;
+        background: #075e54;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+      }
+
+      .header-left h2 {
+        font-size: 22px;
+      }
+
+      .header-left p {
+        font-size: 14px;
+        opacity: 0.8;
+      }
+
+      #onlineCount {
+        font-weight: bold;
+      }
+
+      .messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px;
+        background: #efeae2;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .message {
+        max-width: 70%;
+        padding: 10px;
+        border-radius: 10px;
+        word-wrap: break-word;
+      }
+
+      .self {
+        background: #dcf8c6;
+        align-self: flex-end;
+      }
+
+      .other {
+        background: white;
+        align-self: flex-start;
+      }
+
+      .sender {
+        font-size: 13px;
+        font-weight: bold;
+        color: #075e54;
+        margin-bottom: 5px;
+      }
+
+      .time {
+        font-size: 11px;
+        text-align: right;
+        margin-top: 5px;
+        opacity: 0.7;
+      }
+
+      .typing {
+        height: 25px;
+        padding-left: 15px;
+        color: #555;
+        font-size: 14px;
+      }
+
+      .footer {
+        height: 70px;
+        display: flex;
+        padding: 10px;
+        gap: 10px;
+        background: white;
+      }
+
+      .footer input {
+        flex: 1;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+      }
+
+      .footer button {
+        width: 120px;
+        background: #075e54;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+
+      .footer button:hover {
+        background: #0b7d6f;
+      }
+
+      .system {
+        align-self: center;
+        background: #fff3cd;
+        padding: 8px 12px;
+        border-radius: 15px;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="chat-container">
+      <div class="header">
+        <div class="header-left">
+          <h2>Volunteer Chat</h2>
+
+          <p id="caseTitle">Loading...</p>
+        </div>
+
+        <div>
+          Online :
+          <span id="onlineCount">0</span>
+        </div>
+      </div>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="typing" id="typing"></div>
+
+      <div class="footer">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+
+    <script>
+      const API = "http://localhost:5000";
+
+      const socket = io(API, {
+        withCredentials: true,
+      });
+
+      const params = new URLSearchParams(window.location.search);
+
+      const caseId = params.get("id");
+
+      const messages = document.getElementById("messages");
+
+      const input = document.getElementById("messageInput");
+
+      const sendBtn = document.getElementById("sendBtn");
+
+      const typing = document.getElementById("typing");
+
+      const online = document.getElementById("onlineCount");
+
+      const caseTitle = document.getElementById("caseTitle");
+
+      let currentUser = null;
+
+      let typingTimeout = null;
+
+      // ----------------------------
+      // LOAD USER
+      // ----------------------------
+
+      async function loadUser() {
+        try {
+          const res = await fetch(`${API}/auth/me`, {
+            credentials: "include",
+          });
+
+          if (!res.ok) {
+            alert("Login Required");
+
+            window.location = "/login.html";
+
+            return;
+          }
+
+          currentUser = await res.json();
+
+          console.log(currentUser);
+
+          socket.emit("join_chat", {
+            caseId,
+
+            user: {
+              id: currentUser._id,
+
+              name: currentUser.name,
+
+              role: currentUser.role,
+            },
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      // ----------------------------
+      // LOAD CASE INFO
+      // ----------------------------
+
+      async function loadCase() {
+        try {
+          const res = await fetch(`${API}/application/${caseId}`);
+
+          if (!res.ok) return;
+
+          const app = await res.json();
+
+          caseTitle.innerHTML = `
+Case : <b>${app.Name}</b>
+`;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      // ----------------------------
+      // ADD MESSAGE
+      // ----------------------------
+
+      function addMessage(msg) {
+        const div = document.createElement("div");
+
+        if (msg.system) {
+          div.className = "system";
+
+          div.innerHTML = msg.text;
+
+          messages.appendChild(div);
+
+          messages.scrollTop = messages.scrollHeight;
+
+          return;
+        }
+
+        const mine = currentUser && msg.sender === currentUser.name;
+
+        div.className = `message ${mine ? "self" : "other"}`;
+
+        div.innerHTML = `
+
+<div class="sender">
+
+${msg.sender}
+
+</div>
+
+<div>
+
+${msg.text}
+
+</div>
+
+<div class="time">
+
+${new Date(msg.time).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+})}
+
+</div>
+
+`;
+
+        messages.appendChild(div);
+
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      // ----------------------------
+      // SOCKET EVENTS
+      // ----------------------------
+
+      socket.on("connect", () => {
+        console.log(socket.id);
+      });
+
+      socket.on("system_message", (msg) => {
+        addMessage({
+          system: true,
+
+          text: msg.text,
+        });
+      });
+
+      socket.on("receive_message", (msg) => {
+        addMessage(msg);
+      });
+
+      socket.on("online_users", (count) => {
+        online.textContent = count;
+      });
+
+      socket.on("user_typing", (name) => {
+        typing.innerHTML = `${name} is typing...`;
+
+        clearTimeout(typingTimeout);
+
+        typingTimeout = setTimeout(() => {
+          typing.innerHTML = "";
+        }, 1500);
+      });
+
+      // ----------------------------
+      // SEND MESSAGE
+      // ----------------------------
+
+      function sendMessage() {
+        const text = input.value.trim();
+
+        if (text === "") return;
+
+        socket.emit("send_message", {
+          caseId,
+
+          sender: currentUser.name,
+
+          role: currentUser.role,
+
+          text,
+        });
+
+        input.value = "";
+
+        typing.innerHTML = "";
+      }
+
+      // ----------------------------
+      // BUTTON
+      // ----------------------------
+
+      sendBtn.addEventListener("click", sendMessage);
+
+      // ----------------------------
+      // ENTER KEY
+      // ----------------------------
+
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      // ----------------------------
+      // TYPING INDICATOR
+      // ----------------------------
+
+      input.addEventListener("input", () => {
+        if (!currentUser) return;
+
+        socket.emit("typing", {
+          caseId,
+
+          name: currentUser.name,
+        });
+      });
+
+      // ----------------------------
+      // AUTO FOCUS
+      // ----------------------------
+
+      window.onload = () => {
+        input.focus();
+      };
+
+      // ----------------------------
+      // CLEANUP
+      // ----------------------------
+
+      window.addEventListener("beforeunload", () => {
+        socket.emit("leave_chat", {
+          caseId,
+
+          user: currentUser,
+        });
+      });
+
+      // ----------------------------
+      // START
+      // ----------------------------
+
+      loadUser();
+
+      loadCase();
+    </script>
+  </body>
+</html>

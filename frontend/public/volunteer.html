@@ -4,87 +4,222 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Volunteer Dashboard</title>
+    <link rel="stylesheet" href="./css/volunteer.css" />
   </head>
   <body>
-    <h1>Volunteer</h1>
+        <div class="dashboard">
+      <!-- ================= Sidebar ================= -->
 
-    <button id="show-active">Show Active Cases</button>
+      <aside class="sidebar">
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+
+          <div>
+            <h2>ResQGrid</h2>
+          </div>
+        </div>
+
+        <ul class="menu">
+          <li class="active">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+          </li>
+
+          <li>
+            <i class="fa-regular fa-calendar-check"></i>
+            Chat
+          </li>
+
+          <li class="case-listing">
+            <i class="fa-regular fa-folder-open"></i>
+            Reports
+          </li>
+
+          <li onclick="window.location.href = '/map.html'">
+            <i class="fa-solid fa-location-dot"></i>
+            Map View
+          </li>
+
+          <li>
+            <i class="fa-solid fa-users"></i>
+            Leaderboard
+          </li>
+
+          <li>
+            <i class="fa-regular fa-envelope"></i>
+            Messages
+            <span></span>
+          </li>
+
+          <li>
+            <i class="fa-regular fa-bell"></i>
+            Notifications
+            <span></span>
+          </li>
+
+          <li>
+            <i class="fa-solid fa-gear"></i>
+            Settings
+          </li>
+
+          <li>
+            <i class="fa-regular fa-circle-question"></i>
+            Help & Support
+          </li>
+        </ul>
+
+        <div class="support-card">
+          <h3>Need Immediate Help?</h3>
+
+          <p>Contact emergency support team</p>
+
+          <button>Emergency Contact</button>
+        </div>
+      </aside>
+
+      <!-- ================= Main ================= -->
+
+      <main class="content">
+        <!-- Header -->
+
+        <header>
+          <div>
+            <p>You're an active Volunteer. Please review the following cases.</p>
+          </div>
+
+          <div class="header-right">
+            <div class="search">
+              <input type="text" placeholder="Search cases, volunteers..." />
+
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+
+            <button class="notify">
+              <i class="fa-regular fa-bell"></i>
+
+              <span></span>
+            </button>
+
+            <div class="profile">
+              <div id="profileName">
+                <h4></h4>
+
+                <small></small>
+              </div>
+
+              <i class="fa-solid fa-angle-down"></i>
+            </div>
+          </div>
+        </header>
+
+        <!-- ================= Statistics ================= -->
+
+        <section class="stats">
+          <div class="stat-card purple">
+            <div class="icon">
+              <i class="fa-solid fa-folder"></i>
+            </div>
+
+            <div>
+              <h4>Active Cases</h4>
+
+              <h2></h2>
+
+              <p>Currently Tracking</p>
+            </div>
+          </div>
+
+          <div class="stat-card blue">
+            <div class="icon">
+              <i class="fa-solid fa-users"></i>
+            </div>
+
+            <div>
+              <h4>Total Volunteers</h4>
+
+              <h2></h2>
+
+              <p>Online & Active</p>
+            </div>
+          </div>
+
+          <div class="stat-card green">
+            <div class="icon">
+              <i class="fa-solid fa-crosshairs"></i>
+            </div>
+
+            <div>
+              <h4>Areas Being Searched</h4>
+
+              <h2></h2>
+
+              <p>Across all cases</p>
+            </div>
+          </div>
+
+          <div class="stat-card orange">
+            <div class="icon">
+              <i class="fa-solid fa-eye"></i>
+            </div>
+
+            <div>
+              <h4>Total Sightings</h4>
+
+              <h2></h2>
+
+              <p>Reported Today</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= Middle ================= -->
+
+        <section class="middle-grid">
+          <!-- Active Cases -->
+
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Active Cases</h2>
+
+              <i class="fa-solid fa-ellipsis"></i>
+            </div>
+
+            <div id="caseContainer">
+              <!-- JS inserts cards -->
+            </div>
+          </div>
+
+          <!-- Map -->
+
+          <div class="right-column">
+            <div class="panel map-panel">
+              <div class="panel-header">
+                <h2>Live Search Map</h2>
+
+                <select>
+                  <option>Show Name of person through backend</option>
+                </select>
+              </div>
+
+              <div class="map">
+                <div class="grid"></div>
+
+                <div class="pin one"></div>
+                <div class="pin two"></div>
+                <div class="pin three"></div>
+                <div class="pin four"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
 
     <div id="cases"></div>
     <script src="http://localhost:5000/socket.io/socket.io.js"></script>
 
-    <script>
-      const container = document.getElementById("cases");
-
-      // Socket Connection
-      const socket = io("http://localhost:5000");
-
-      socket.on("connect", () => {
-        console.log("Connected:", socket.id);
-
-        socket.emit("join_volunteers");
-      });
-
-      // Function to display a case
-      function addCase(app) {
-        container.innerHTML += `
-        <div class="case" style="border:1px solid #000;padding:15px;margin:15px;">
-
-            <h2>${app.Name}</h2>
-
-            <p><strong>Age:</strong> ${app.Age}</p>
-
-            <p><strong>Last Seen:</strong> ${app.LastSeen}</p>
-
-            <button
-                class="accept-btn"
-                data-id="${app._id}"
-                data-location="${app.LastSeen}">
-
-                Accept
-
-            </button>
-
-        </div>
-    `;
-      }
-
-      // Load existing active cases
-      document
-        .getElementById("show-active")
-        .addEventListener("click", async () => {
-          try {
-            const res = await fetch(
-              "http://localhost:5000/guardian/application",
-            );
-
-            const data = await res.json();
-
-            container.innerHTML = "";
-
-            data.forEach(addCase);
-          } catch (err) {
-            console.error(err);
-          }
-        });
-
-      // Receive new cases in real time
-      socket.on("new_case", (app) => {
-        console.log("New Case Received:", app);
-
-        addCase(app);
-      });
-
-      // Accept button
-      document.addEventListener("click", (e) => {
-        if (!e.target.classList.contains("accept-btn")) return;
-
-        const caseId = e.target.dataset.id;
-        const location = e.target.dataset.location;
-
-        window.location.href =
-`/map.html?id=${caseId}&location=${encodeURIComponent(location)}`;
-      });
-    </script>
+    <script src="./js/volunteer.js"></script>
   </body>
 </html>

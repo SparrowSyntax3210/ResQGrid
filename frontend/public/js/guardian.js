@@ -238,6 +238,11 @@ data-location="${encodeURIComponent(app.LastSeen)}">
 Track Case
 
 </button>
+<button
+class="chat-btn"
+data-id="${app._id}">
+💬 Chat
+</button>
 
 
 
@@ -285,6 +290,14 @@ class="status-box">
 // ===============================
 // BUTTON HANDLERS
 // ===============================
+
+document.querySelectorAll(".chat-btn").forEach((btn) => {
+  btn.onclick = () => {
+    const id = btn.dataset.id;
+
+    window.location.href = `/chat-guardian.html?id=${id}`;
+  };
+});
 
 function attachHandlers() {
   // TRACK

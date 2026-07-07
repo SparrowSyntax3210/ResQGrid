@@ -3,7 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 
 const Application = require("./models/application.schema");
-
+const chatSocket = require("./socket/chat.socket");
 const app = require("./src/app");
 
 const server = http.createServer(app);
@@ -62,7 +62,9 @@ function calculateGridPriorities(caseData) {
 }
 
 io.on("connection", (socket) => {
-  console.log("Socket Connected:", socket.id);
+  console.log("Connected:", socket.id);
+
+  chatSocket(io, socket);
 
   // ==========================================
   // VOLUNTEER ROOM
