@@ -1,316 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GuardianNet Dashboard</title>
 
     <!-- CSS -->
-    <link rel="stylesheet" href="./css/guardian.css">
+    <link rel="stylesheet" href="./css/guardian.css" />
 
     <!-- Icons -->
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
 
     <!-- Chart -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="./css/guardian.css">
+    <link rel="stylesheet" href="./css/guardian.css" />
+  </head>
 
-</head>
+  <body>
+    <div class="dashboard">
+      <!-- ================= Sidebar ================= -->
 
-<body>
-
-<div class="dashboard">
-
-    <!-- ================= Sidebar ================= -->
-
-    <aside class="sidebar">
-
+      <aside class="sidebar">
         <div class="logo">
+          <div class="logo-icon">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
 
-            <div class="logo-icon">
-                <i class="fa-solid fa-shield-halved"></i>
-            </div>
-
-            <div>
-
-                <h2>ResQGrid</h2>
-
-            </div>
-
+          <div>
+            <h2>ResQGrid</h2>
+          </div>
         </div>
 
         <ul class="menu">
+          <li class="active">
+            <i class="fa-solid fa-house"></i>
+            Dashboard
+          </li>
 
-            <li class="active">
-                <i class="fa-solid fa-house"></i>
-                Dashboard
-            </li>
+          <li>
+            <i class="fa-regular fa-calendar-check"></i>
+            Active Cases
+          </li>
 
-            <li>
-                <i class="fa-regular fa-calendar-check"></i>
-                Active Cases
-            </li>
+          <li class="case-listing">
+            <i class="fa-regular fa-folder-open"></i>
+            Case Listing
+          </li>
 
-            <li class="case-listing">
-                <i class="fa-regular fa-folder-open"></i>
-                Case Listing
-            </li>
+          <li onclick="window.location.href = '/map.html'">
+            <i class="fa-solid fa-location-dot"></i>
 
-            <li>
-                <i class="fa-solid fa-location-dot"></i>
-                Map View
-            </li>
+            Map View
+          </li>
 
-            <li>
-                <i class="fa-solid fa-users"></i>
-                Volunteers
-            </li>
+          <li>
+            <i class="fa-solid fa-users"></i>
+            Volunteers
+          </li>
 
-            <li>
-                <i class="fa-regular fa-envelope"></i>
-                Messages
-                <span>3</span>
-            </li>
+          <li>
+            <i class="fa-regular fa-envelope"></i>
+            Messages
+            <span>3</span>
+          </li>
 
-            <li>
-                <i class="fa-regular fa-bell"></i>
-                Notifications
-                <span>5</span>
-            </li>
+          <li>
+            <i class="fa-regular fa-bell"></i>
+            Notifications
+            <span>5</span>
+          </li>
 
-            <li>
-                <i class="fa-solid fa-chart-column"></i>
-                Reports
-            </li>
+          <li>
+            <i class="fa-solid fa-chart-column"></i>
+            Reports
+          </li>
 
-            <li>
-                <i class="fa-solid fa-chart-line"></i>
-                Analytics
-            </li>
+          <li>
+            <i class="fa-solid fa-chart-line"></i>
+            Analytics
+          </li>
 
-            <li>
-                <i class="fa-solid fa-gear"></i>
-                Settings
-            </li>
+          <li>
+            <i class="fa-solid fa-gear"></i>
+            Settings
+          </li>
 
-            <li>
-                <i class="fa-regular fa-circle-question"></i>
-                Help & Support
-            </li>
-
+          <li>
+            <i class="fa-regular fa-circle-question"></i>
+            Help & Support
+          </li>
         </ul>
 
         <div class="support-card">
+          <h3>Need Immediate Help?</h3>
 
-            <h3>Need Immediate Help?</h3>
+          <p>Contact emergency support team</p>
 
-            <p>Contact emergency support team</p>
-
-            <button>
-                Emergency Contact
-            </button>
-
+          <button>Emergency Contact</button>
         </div>
+      </aside>
 
-    </aside>
+      <!-- ================= Main ================= -->
 
-    <!-- ================= Main ================= -->
-
-    <main class="content">
-
+      <main class="content">
         <!-- Header -->
 
         <header>
+          <div>
+            <p>You're an active Guardian. We're here to help.</p>
+          </div>
 
-            <div>
+          <div class="header-right">
+            <div class="search">
+              <input type="text" placeholder="Search cases, volunteers..." />
 
-                <p>You're an active Guardian. We're here to help.</p>
-
+              <i class="fa-solid fa-magnifying-glass"></i>
             </div>
 
-            <div class="header-right">
+            <button class="notify">
+              <i class="fa-regular fa-bell"></i>
 
-                <div class="search">
+              <span></span>
+            </button>
 
-                    <input
-                        type="text"
-                        placeholder="Search cases, volunteers...">
+            <div class="profile">
+              <div id="profileName">
+                <h4></h4>
 
-                    <i class="fa-solid fa-magnifying-glass"></i>
+                <small></small>
+              </div>
 
-                </div>
-
-                <button class="notify">
-
-                    <i class="fa-regular fa-bell"></i>
-
-                    <span></span>
-
-                </button>
-
-                <div class="profile">
-
-                    <div id="profileName">
-
-                        <h4></h4>
-
-                        <small></small>
-
-                    </div>
-
-                    <i class="fa-solid fa-angle-down"></i>
-
-                </div>
-
+              <i class="fa-solid fa-angle-down"></i>
             </div>
-
+          </div>
         </header>
 
         <!-- ================= Statistics ================= -->
 
         <section class="stats">
-
-            <div class="stat-card purple">
-
-                <div class="icon">
-                    <i class="fa-solid fa-folder"></i>
-                </div>
-
-                <div>
-
-                    <h4>Active Cases</h4>
-
-                    <h2></h2>
-
-                    <p>Currently Tracking</p>
-
-                </div>
-
+          <div class="stat-card purple">
+            <div class="icon">
+              <i class="fa-solid fa-folder"></i>
             </div>
 
-            <div class="stat-card blue">
+            <div>
+              <h4>Active Cases</h4>
 
-                <div class="icon">
-                    <i class="fa-solid fa-users"></i>
-                </div>
+              <h2></h2>
 
-                <div>
+              <p>Currently Tracking</p>
+            </div>
+          </div>
 
-                    <h4>Total Volunteers</h4>
-
-                    <h2></h2>
-
-                    <p>Online & Active</p>
-
-                </div>
-
+          <div class="stat-card blue">
+            <div class="icon">
+              <i class="fa-solid fa-users"></i>
             </div>
 
-            <div class="stat-card green">
+            <div>
+              <h4>Total Volunteers</h4>
 
-                <div class="icon">
-                    <i class="fa-solid fa-crosshairs"></i>
-                </div>
+              <h2></h2>
 
-                <div>
+              <p>Online & Active</p>
+            </div>
+          </div>
 
-                    <h4>Areas Being Searched</h4>
-
-                    <h2></h2>
-
-                    <p>Across all cases</p>
-
-                </div>
-
+          <div class="stat-card green">
+            <div class="icon">
+              <i class="fa-solid fa-crosshairs"></i>
             </div>
 
-            <div class="stat-card orange">
+            <div>
+              <h4>Areas Being Searched</h4>
 
-                <div class="icon">
-                    <i class="fa-solid fa-eye"></i>
-                </div>
+              <h2></h2>
 
-                <div>
+              <p>Across all cases</p>
+            </div>
+          </div>
 
-                    <h4>Total Sightings</h4>
-
-                    <h2></h2>
-
-                    <p>Reported Today</p>
-
-                </div>
-
+          <div class="stat-card orange">
+            <div class="icon">
+              <i class="fa-solid fa-eye"></i>
             </div>
 
+            <div>
+              <h4>Total Sightings</h4>
+
+              <h2></h2>
+
+              <p>Reported Today</p>
+            </div>
+          </div>
         </section>
 
         <!-- ================= Middle ================= -->
 
         <section class="middle-grid">
+          <!-- Active Cases -->
 
-            <!-- Active Cases -->
+          <div class="panel">
+            <div class="panel-header">
+              <h2>Active Cases</h2>
 
-            <div class="panel">
-
-                <div class="panel-header">
-
-                    <h2>Active Cases</h2>
-
-                    <i class="fa-solid fa-ellipsis"></i>
-
-                </div>
-
-                <div id="caseContainer">
-
-                    <!-- JS inserts cards -->
-
-                </div>
-
+              <i class="fa-solid fa-ellipsis"></i>
             </div>
 
-            <!-- Map -->
-
-            <div class="right-column">
-
-                <div class="panel map-panel">
-
-                    <div class="panel-header">
-
-                        <h2>Live Search Map</h2>
-
-                        <select>
-
-                            <option>Show Name of person through backend</option>
-
-                        </select>
-
-                    </div>
-
-                    <div class="map">
-
-                        <div class="grid"></div>
-
-                        <div class="pin one"></div>
-                        <div class="pin two"></div>
-                        <div class="pin three"></div>
-                        <div class="pin four"></div>
-
-                    </div>
-
-                </div>
+            <div id="caseContainer">
+              <!-- JS inserts cards -->
             </div>
+          </div>
+
+          <!-- Map -->
+
+          <div class="right-column">
+            <div class="panel map-panel">
+              <div class="panel-header">
+                <h2>Live Search Map</h2>
+
+                <select>
+                  <option>Show Name of person through backend</option>
+                </select>
+              </div>
+
+              <div class="map">
+                <div class="grid"></div>
+
+                <div class="pin one"></div>
+                <div class="pin two"></div>
+                <div class="pin three"></div>
+                <div class="pin four"></div>
+              </div>
+            </div>
+          </div>
         </section>
+      </main>
+    </div>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 
-    </main>
-</div>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-
-<script src="./js/guardian.js"></script>
-
-</body>
+    <script src="./js/guardian.js"></script>
+  </body>
 </html>

@@ -1,38 +1,33 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Volunteer Dashboard</title>
-</head>
-<body>
-
+  </head>
+  <body>
     <h1>Volunteer</h1>
 
     <button id="show-active">Show Active Cases</button>
 
     <div id="cases"></div>
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
 
-<script>
+    <script>
+      const container = document.getElementById("cases");
 
-const container = document.getElementById("cases");
+      // Socket Connection
+      const socket = io("http://localhost:5000");
 
-// Socket Connection
-const socket = io("http://localhost:5000");
+      socket.on("connect", () => {
+        console.log("Connected:", socket.id);
 
-socket.on("connect", () => {
+        socket.emit("join_volunteers");
+      });
 
-    console.log("Connected:", socket.id);
-
-    socket.emit("join_volunteers");
-
-});
-
-// Function to display a case
-function addCase(app) {
-
-    container.innerHTML += `
+      // Function to display a case
+      function addCase(app) {
+        container.innerHTML += `
         <div class="case" style="border:1px solid #000;padding:15px;margin:15px;">
 
             <h2>${app.Name}</h2>
@@ -52,55 +47,44 @@ function addCase(app) {
 
         </div>
     `;
+      }
 
-}
+      // Load existing active cases
+      document
+        .getElementById("show-active")
+        .addEventListener("click", async () => {
+          try {
+            const res = await fetch(
+              "http://localhost:5000/guardian/application",
+            );
 
-// Load existing active cases
-document.getElementById("show-active").addEventListener("click", async () => {
+            const data = await res.json();
 
-    try {
+            container.innerHTML = "";
 
-        const res = await fetch("http://localhost:5000/guardian/application");
+            data.forEach(addCase);
+          } catch (err) {
+            console.error(err);
+          }
+        });
 
-        const data = await res.json();
+      // Receive new cases in real time
+      socket.on("new_case", (app) => {
+        console.log("New Case Received:", app);
 
-        container.innerHTML = "";
+        addCase(app);
+      });
 
-        data.forEach(addCase);
+      // Accept button
+      document.addEventListener("click", (e) => {
+        if (!e.target.classList.contains("accept-btn")) return;
 
-    }
+        const caseId = e.target.dataset.id;
+        const location = e.target.dataset.location;
 
-    catch (err) {
-
-        console.error(err);
-
-    }
-
-});
-
-// Receive new cases in real time
-socket.on("new_case", (app) => {
-
-    console.log("New Case Received:", app);
-
-    addCase(app);
-
-});
-
-// Accept button
-document.addEventListener("click", (e) => {
-
-    if (!e.target.classList.contains("accept-btn")) return;
-
-    const caseId = e.target.dataset.id;
-    const location = e.target.dataset.location;
-
-    window.location.href =
-        `map.html?id=${caseId}&location=${encodeURIComponent(location)}`;
-
-});
-
-</script>
-
-</body>
+        window.location.href =
+`/map.html?id=${caseId}&location=${encodeURIComponent(location)}`;
+      });
+    </script>
+  </body>
 </html>

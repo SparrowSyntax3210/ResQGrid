@@ -1,253 +1,431 @@
-
 const caseContainer = document.getElementById("caseContainer");
-const activityList = document.getElementById("activityList");
-const volunteerContainer = document.getElementById("volunteerContainer");
+
 const profileName = document.querySelector("#profileName h4");
+const profileRole = document.querySelector("#profileName small");
+
+const API = "http://localhost:5000";
 
 let currentCase = null;
 let currentStatusBox = null;
 
-// =======================================
-// SOCKET SETUP
-// =======================================
+// ===============================
+// SOCKET
+// ===============================
 
-const socket = io("http://localhost:5000", {
-    withCredentials: true
+const socket = io(API, {
+  withCredentials: true,
 });
 
 socket.on("connect", () => {
-    console.log("Connected:", socket.id);
+  console.log("Socket Connected:", socket.id);
 });
 
-// =======================================
-// LOAD LOGGED IN USER (SESSION BASED)
-// =======================================
+// ===============================
+// LOAD USER
+// ===============================
 
 async function loadUser() {
-    try {
-        const res = await fetch("http://localhost:5000/auth/me", {
-            credentials: "include"
-        });
+  try {
+    const res = await fetch(`${API}/auth/me`, {
+      credentials: "include",
+    });
 
-        if (!res.ok) return;
+    if (!res.ok) return;
 
-        const user = await res.json();
-        console.log("user loaded:", user);
+    const user = await res.json();
 
-        profileName.textContent = user.name;
+    console.log("User:", user);
 
-    } catch (err) {
-        console.error(err);
-    }
+    profileName.textContent = user.name;
+
+    profileRole.textContent = "Guardian";
+  } catch (error) {
+    console.error("User Error:", error);
+  }
 }
 
-// =======================================
-// LOAD APPLICATIONS (ACTIVE CASES)
-// =======================================
+// ===============================
+// LOAD APPLICATIONS
+// ===============================
 
 async function loadApplications() {
-    try {
-        const res = await fetch("http://localhost:5000/guardian/application", {
-            credentials: "include"
-        });
+  try {
+    const res = await fetch(
+      `${API}/guardian/application`,
+
+      {
+        credentials: "include",
+      },
+    );
+
+    if (!res.ok) {
+      throw new Error("Failed loading applications");
+    }
+
+    const applications = await res.json();
+
+    console.log("Applications:", applications);
+
+    caseContainer.innerHTML = "";
+
+    if (applications.length === 0) {
+      caseContainer.innerHTML = `
+
+<div class="case-card">
+
+<h3>
+No Active Cases
+</h3>
+
+
+<button id="createCaseBtn">
+Create New Case
+</button>
+
+
+</div>
+
+`;
+
+      document.getElementById("createCaseBtn").onclick = () => {
+        window.location.href = "/application.html";
+      };
+
+      return;
+    }
+
+    applications.forEach((app) => {
+      caseContainer.innerHTML += `
+
+
+<div class="case-card">
+
+
+<div class="case-top">
+
+
+<div class="case-user">
+
+
+<img src="${app.Photo || "https://via.placeholder.com/70"}">
+
+
+<div>
+
+<h3>
+${app.Name}
+</h3>
+
+
+<p>
+Age ${app.Age}
+•
+${app.status}
+</p>
+
+
+</div>
+
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="case-info">
+
+
+
+<div class="info-box">
+
+<h4>
+Last Seen
+</h4>
+
+<p>
+${app.LastSeen}
+</p>
+
+</div>
+
+
+
+
+<div class="info-box">
+
+<h4>
+Missing Since
+</h4>
+
+
+<p>
+${new Date(app.dateTime).toLocaleString()}
+</p>
+
+
+</div>
+
+
+
+
+
+<div class="info-box">
+
+<h4>
+Priority
+</h4>
+
+
+<p>
+
+${app.priorityLevel || "Pending"}
+
+<br>
+
+Score:
+${app.priorityScore || 0}/100
+
+</p>
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div class="priority-reason">
+
+
+<h4>
+AI Analysis
+</h4>
+
+
+<p>
+
+${app.priorityReason || "Analysing priority..."}
+
+</p>
+
+
+</div>
+
+
+
+
+
+
+<div class="case-buttons">
+
+
+
+<button 
+class="track-btn"
+
+data-id="${app._id}"
+
+data-location="${encodeURIComponent(app.LastSeen)}">
+
+Track Case
+
+</button>
+
+
+
+
+
+<button
+
+class="close-btn"
+
+data-id="${app._id}">
+
+Close
+
+</button>
+
+
+
+
+
+<div 
+id="status-${app._id}"
+class="status-box">
+
+</div>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+`;
+    });
+
+    attachHandlers();
+  } catch (error) {
+    console.error("Application Error:", error);
+  }
+}
+
+// ===============================
+// BUTTON HANDLERS
+// ===============================
+
+function attachHandlers() {
+  // TRACK
+
+  document.querySelectorAll(".track-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+
+      const location = decodeURIComponent(btn.dataset.location);
+
+      console.log("Opening map:", id, location);
+
+      window.location.href = `/map.html?id=${id}&location=${encodeURIComponent(location)}`;
+    };
+  });
+
+  // CLOSE
+
+  document.querySelectorAll(".close-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      const id = btn.dataset.id;
+
+      const confirmClose = confirm("Are you sure you want to close this case?");
+
+      if (!confirmClose) return;
+
+      try {
+        console.log("Closing:", id);
+
+        const res = await fetch(
+          `${API}/guardian/application/close/${id}`,
+
+          {
+            method: "PATCH",
+
+            credentials: "include",
+          },
+        );
+
+        const data = await res.json();
+
+        console.log("Close Response:", data);
 
         if (!res.ok) {
-            throw new Error("Failed to load applications.");
+          throw new Error(data.message || "Unable to close case");
         }
 
-        const applications = await res.json();
+        alert(data.message);
 
-        caseContainer.innerHTML = "";
+        loadApplications();
+      } catch (error) {
+        console.error("Close Error:", error);
 
-        if (!applications.length) {
-            caseContainer.innerHTML = `
-                <div class="case-card">
-                    <h3>No Active Cases</h3>
-                    <button id="createCaseBtn">Create New Case</button>
-                </div>
-            `;
+        alert(error.message);
+      }
+    };
+  });
 
-            document.getElementById("createCaseBtn").addEventListener("click", () => {
-                window.location.href = "/application.html";
-            });
+  // CREATE BUTTON
 
-            return;
-        }
+  const create = document.getElementById("createCaseBtn");
 
-        applications.forEach(app => {
-            caseContainer.innerHTML += `
-                <div class="case-card">
-
-                    <div class="case-top">
-                        <div class="case-user">
-                            <img src="${app.Photo || "https://via.placeholder.com/70"}" alt="Missing Person">
-
-                            <div>
-                                <h3>${app.Name}</h3>
-                                <p>Age ${app.Age} • ${app.status}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="case-info">
-
-                        <div class="info-box">
-                            <h4>Last Seen</h4>
-                            <p>${app.LastSeen}</p>
-                        </div>
-
-                        <div class="info-box">
-                            <h4>Missing Since</h4>
-                            <p>${app.dateTime || "-"}</p>
-                        </div>
-
-                        <div class="info-box">
-                            <h4>Volunteers</h4>
-                            <p id="volunteer-${app._id}">0</p>
-                        </div>
-
-                    </div>
-
-                    <div class="case-buttons">
-
-                        <button class="track-btn" data-id="${app._id}">
-                            Track Case
-                        </button>
-
-                        <button class="close-btn" data-id="${app._id}">
-                            Close
-                        </button>
-
-                        <div id="status-${app._id}" class="status-box"></div>
-
-                    </div>
-
-                </div>
-            `;
-        });
-
-        // Existing track button handlers
-        attachCaseHandlers();
-
-        // Close button handlers
-        // Close button handlers
-document.querySelectorAll(".close-btn").forEach(button => {
-
-    button.addEventListener("click", async () => {
-
-        const caseId = button.dataset.id;
-
-        if (!caseId) {
-            alert("Invalid case ID.");
-            return;
-        }
-
-        const confirmClose = confirm("Are you sure you want to close this case?");
-
-        if (!confirmClose) return;
-
-        try {
-
-            const res = await fetch(
-                `http://localhost:5000/guardian/application/close/${caseId}`,
-                {
-                    method: "PATCH",
-                    credentials: "include"
-                }
-            );
-
-            const data = await res.json();
-
-            if (!res.ok) {
-                throw new Error(data.message || "Failed to close case.");
-            }
-
-            alert(data.message);
-
-            // Reload the application list
-            loadApplications();
-
-        } catch (err) {
-            console.error("Failed to close case:", err);
-            alert(err.message);
-        }
-
-    });
-
-});
-
-    } catch (err) {
-        console.error("Applications load failed:", err);
-    }
-}
-// =======================================
-// CASE BUTTON HANDLERS
-// =======================================
-
-function attachCaseHandlers() {
-
-    // TRACK BUTTON
-    document.querySelectorAll(".track-btn").forEach(btn => {
-
-        btn.onclick = () => {
-
-            const caseId = btn.dataset.id;
-            const statusBox = document.getElementById(`status-${caseId}`);
-
-            if (currentCase) socket.emit("leave_case", currentCase);
-
-            currentCase = caseId;
-            currentStatusBox = statusBox;
-
-            currentStatusBox.innerHTML = "Connecting live updates...";
-
-            socket.emit("join_case", caseId);
-        };
-    });
-
-    // OPEN CASE (redirect or future detail page)
-    document.querySelectorAll(".open-btn").forEach(btn => {
-
-        btn.onclick = () => {
-            const id = btn.dataset.id;
-            window.location.href = `/case.html?id=${id}`;
-        };
-    });
-
-    // CREATE NEW CASE (IMPORTANT FIX YOU ASKED)
-    document.getElementById("caseContainer")?.addEventListener("click", (e) => {
-        if (e.target.id === "createCaseBtn") {
-            window.location.href = "/application.html";
-        }
-    });
+  if (create) {
+    create.onclick = () => {
+      window.location.href = "/application.html";
+    };
+  }
 }
 
-// =======================================
-// LIVE SOCKET UPDATES
-// =======================================
+// ===============================
+// SOCKET LIVE STATUS
+// ===============================
 
-socket.on("case_state", (state) => {
+socket.on(
+  "case_state",
+
+  (state) => {
+    console.log("Live State:", state);
 
     if (!currentStatusBox) return;
 
     let html = `
-        <h3>Live Status</h3>
-        <p><b>Total Volunteers:</b> ${state.totalVolunteers}</p>
-    `;
 
-    if (state.grids) {
-        html += "<h4>Grid Activity</h4>";
 
-        for (const grid in state.grids) {
-            html += `
-                <p>${grid}: ${state.grids[grid].count} volunteers</p>
-            `;
-        }
+<h3>
+Live Status
+</h3>
+
+
+<p>
+<b>Total Volunteers:</b>
+
+${state.totalVolunteers}
+
+</p>
+
+
+`;
+
+    for (const grid in state.grids) {
+      const data = state.grids[grid];
+
+      html += `
+
+
+<div class="grid-status">
+
+
+<b>
+${grid}
+</b>
+
+
+<br>
+
+Volunteers:
+${data.count}
+
+
+<br>
+
+Priority:
+${data.priority || 0}
+
+
+
+</div>
+
+
+
+`;
     }
 
     currentStatusBox.innerHTML = html;
-});
+  },
+);
 
+// ===============================
+// START
+// ===============================
 
 loadUser();
+
 loadApplications();

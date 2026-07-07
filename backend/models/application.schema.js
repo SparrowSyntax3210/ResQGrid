@@ -55,7 +55,21 @@ const Application = new mongoose.Schema({
         type: String,
         enum: ["active", "closed"],
         default: "active"
-    }
+    },
+    priorityScore: {
+    type: Number,
+    default: 0
+},
+
+priorityLevel: {
+    type: String,
+    default: "Low"
+},
+
+priorityReason: {
+    type: String,
+    default: ""
+},
 })
 
 module.exports = mongoose.model ("application" , Application);

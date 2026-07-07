@@ -1,391 +1,402 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResQGrid - Report a Missing Person</title>
     <style>
-        :root {
-    --bg-main: #0B0E17;
-    --bg-card: #131926;
-    --bg-input: #1C2436;
-    --text-main: #FFFFFF;
-    --text-muted: #8F9CAE;
-    --accent-purple: #6366F1;
-    --accent-orange: #FF6B00;
-    --accent-gradient: linear-gradient(135deg, #6366F1 0%, #FF6B00 100%);
-    --border-color: #263147;
-}
+      :root {
+        --bg-main: #0b0e17;
+        --bg-card: #131926;
+        --bg-input: #1c2436;
+        --text-main: #ffffff;
+        --text-muted: #8f9cae;
+        --accent-purple: #6366f1;
+        --accent-orange: #ff6b00;
+        --accent-gradient: linear-gradient(135deg, #6366f1 0%, #ff6b00 100%);
+        --border-color: #263147;
+      }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
 
-body {
-    background: var(--bg-main);
-    color: var(--text-main);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background-image:
-        radial-gradient(circle at 10% 20%, rgba(99,102,241,.15) 0%, transparent 40%),
-        radial-gradient(circle at 90% 80%, rgba(255,107,0,.1) 0%, transparent 40%);
-}
+      body {
+        background: var(--bg-main);
+        color: var(--text-main);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        background-image:
+          radial-gradient(
+            circle at 10% 20%,
+            rgba(99, 102, 241, 0.15) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(255, 107, 0, 0.1) 0%,
+            transparent 40%
+          );
+      }
 
-.container {
-    width: 100%;
-    max-width: 650px;
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 40px;
-    position: relative;
-    box-shadow: 0 20px 40px rgba(0,0,0,.5);
-}
+      .container {
+        width: 100%;
+        max-width: 650px;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 40px;
+        position: relative;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      }
 
-.container::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 4px;
-    background: var(--accent-gradient);
-}
+      .container::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 4px;
+        background: var(--accent-gradient);
+      }
 
-.header {
-    text-align: center;
-    margin-bottom: 30px;
-}
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
 
-.logo {
-    font-size: 24px;
-    font-weight: 800;
-    margin-bottom: 8px;
-}
+      .logo {
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 8px;
+      }
 
-.logo span {
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
+      .logo span {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-.header h1 {
-    font-size: 22px;
-    margin-bottom: 6px;
-}
+      .header h1 {
+        font-size: 22px;
+        margin-bottom: 6px;
+      }
 
-.header p {
-    color: var(--text-muted);
-    font-size: 14px;
-}
+      .header p {
+        color: var(--text-muted);
+        font-size: 14px;
+      }
 
-.form-group {
-    margin-bottom: 20px;
-}
+      .form-group {
+        margin-bottom: 20px;
+      }
 
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-}
+      .form-row {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+      }
 
-label {
-    display: block;
-    margin-bottom: 8px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: .5px;
-}
+      label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-input,
-select,
-textarea {
-    width: 100%;
-    padding: 12px 16px;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-input);
-    color: var(--text-main);
-    font-size: 15px;
-    outline: none;
-    transition: .3s;
-}
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-input);
+        color: var(--text-main);
+        font-size: 15px;
+        outline: none;
+        transition: 0.3s;
+      }
 
-input:focus,
-select:focus,
-textarea:focus {
-    border-color: var(--accent-purple);
-    box-shadow: 0 0 8px rgba(99,102,241,.25);
-}
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent-purple);
+        box-shadow: 0 0 8px rgba(99, 102, 241, 0.25);
+      }
 
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
+      textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
 
-.photo-upload-zone {
-    padding: 30px;
-    border: 2px dashed var(--border-color);
-    border-radius: 8px;
-    text-align: center;
-    cursor: pointer;
-    background: rgba(28,36,54,.4);
-    transition: .3s;
-}
+      .photo-upload-zone {
+        padding: 30px;
+        border: 2px dashed var(--border-color);
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        background: rgba(28, 36, 54, 0.4);
+        transition: 0.3s;
+      }
 
-.photo-upload-zone:hover {
-    border-color: var(--accent-orange);
-}
+      .photo-upload-zone:hover {
+        border-color: var(--accent-orange);
+      }
 
-.photo-upload-zone img {
-    display: none;
-    max-width: 100%;
-    max-height: 180px;
-    margin: auto;
-    border-radius: 6px;
-}
+      .photo-upload-zone img {
+        display: none;
+        max-width: 100%;
+        max-height: 180px;
+        margin: auto;
+        border-radius: 6px;
+      }
 
-.upload-icon {
-    font-size: 32px;
-    margin-bottom: 10px;
-    color: var(--text-muted);
-}
+      .upload-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+        color: var(--text-muted);
+      }
 
-.btn-container {
-    margin-top: 30px;
-}
+      .btn-container {
+        margin-top: 30px;
+      }
 
-.btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    transition: .3s;
-}
+      .btn {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        transition: 0.3s;
+      }
 
-.btn-primary {
-    background: var(--accent-gradient);
-    color: #fff;
-}
+      .btn-primary {
+        background: var(--accent-gradient);
+        color: #fff;
+      }
 
-.btn-primary:hover {
-    opacity: .9;
-}
+      .btn-primary:hover {
+        opacity: 0.9;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <div class="logo">ResQ<span>Grid</span></div>
+        <h1>Create Missing Person Case</h1>
+        <p>Fill in the details below to submit a missing person report.</p>
+      </div>
 
-        <!-- Header -->
-        <div class="header">
-            <div class="logo">ResQ<span>Grid</span></div>
-            <h1>Create Missing Person Case</h1>
-            <p>Fill in the details below to submit a missing person report.</p>
+      <form id="missingCaseForm" enctype="multipart/form-data">
+        <!-- Basic Information -->
+        <div class="form-group">
+          <label for="fullName">Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            name="Name"
+            placeholder="Enter full name"
+            required
+          />
         </div>
-    
-        <form id="missingCaseForm" enctype="multipart/form-data">
-    
-            <!-- Basic Information -->
-            <div class="form-group">
-                <label for="fullName">Full Name</label>
-                <input
-                    type="text"
-                    id="fullName"
-                    name="Name"
-                    placeholder="Enter full name"
-                    required>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="age">Age</label>
+            <input
+              type="number"
+              id="age"
+              name="Age"
+              min="0"
+              max="130"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="Gender" required>
+              <option value="">Select Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="height">Height</label>
+            <input
+              type="text"
+              id="height"
+              name="Height"
+              placeholder="e.g. 5'8&quot;"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="guardianContact">Guardian Contact</label>
+            <input
+              type="text"
+              id="guardianContact"
+              name="GuardianContact"
+              placeholder="Phone Number"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Photo -->
+        <div class="form-group">
+          <label for="photoInput">Photo</label>
+
+          <div
+            class="photo-upload-zone"
+            onclick="document.getElementById('photoInput').click()"
+          >
+            <div id="upload-prompt">
+              <div class="upload-icon">📷</div>
+              <p>Click to upload a clear photo</p>
             </div>
-    
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="age">Age</label>
-                    <input
-                        type="number"
-                        id="age"
-                        name="Age"
-                        min="0"
-                        max="130"
-                        required>
-                </div>
-    
-                <div class="form-group">
-                    <label for="gender">Gender</label>
-                    <select id="gender" name="Gender" required>
-                        <option value="">Select Gender</option>
-                        <option>Male</option>
-                        <option>Female</option>
-                        <option>Other</option>
-                    </select>
-                </div>
-            </div>
-    
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="height">Height</label>
-                    <input
-                        type="text"
-                        id="height"
-                        name="Height"
-                        placeholder="e.g. 5'8&quot;"
-                        required>
-                </div>
-    
-                <div class="form-group">
-                    <label for="guardianContact">Guardian Contact</label>
-                    <input
-                        type="text"
-                        id="guardianContact"
-                        name="GuardianContact"
-                        placeholder="Phone Number"
-                        required>
-                </div>
-            </div>
-    
-            <!-- Photo -->
-            <div class="form-group">
-                <label for="photoInput">Photo</label>
-    
-                <div class="photo-upload-zone"
-                     onclick="document.getElementById('photoInput').click()">
-    
-                    <div id="upload-prompt">
-                        <div class="upload-icon">📷</div>
-                        <p>Click to upload a clear photo</p>
-                    </div>
-    
-                    <img id="photoPreview" alt="Preview">
-    
-                    <input
-                        type="file"
-                        id="photoInput"
-                        name="Photo"
-                        accept="image/*"
-                        style="display:none"
-                        onchange="previewImage(event)">
-                </div>
-            </div>
-    
-            <!-- Clothing -->
-            <div class="form-group">
-                <label for="clothing">Clothing Description</label>
-                <textarea
-                    id="clothing"
-                    name="Clothing"
-                    rows="4"
-                    placeholder="Describe the clothing..."
-                    required></textarea>
-            </div>
-    
-            <!-- Last Seen -->
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="lastSeen">Last Seen Location</label>
-                    <input
-                        type="text"
-                        id="lastSeen"
-                        name="LastSeen"
-                        required>
-                </div>
-    
-                <div class="form-group">
-                    <label for="dateTime">Date & Time</label>
-                    <input
-                        type="datetime-local"
-                        id="dateTime"
-                        name="dateTime"
-                        required>
-                </div>
-            </div>
-    
-            <!-- Medical -->
-            <div class="form-group">
-                <label for="medicalConditions">Medical Conditions</label>
-                <input
-                    type="text"
-                    id="medicalConditions"
-                    name="MedicalConditions"
-                    placeholder="Leave blank if none">
-            </div>
-    
-            <!-- Description -->
-            <div class="form-group">
-                <label for="description">Additional Details</label>
-                <textarea
-                    id="description"
-                    name="Description"
-                    rows="5"
-                    placeholder="Any distinguishing marks, tattoos, behaviour, etc."
-                    required></textarea>
-            </div>
-    
-            <div class="btn-container">
-                <button type="submit" class="btn btn-primary">
-                    Submit Case
-                </button>
-            </div>
-    
-        </form>
-    
+
+            <img id="photoPreview" alt="Preview" />
+
+            <input
+              type="file"
+              id="photoInput"
+              name="Photo"
+              accept="image/*"
+              style="display: none"
+              onchange="previewImage(event)"
+            />
+          </div>
+        </div>
+
+        <!-- Clothing -->
+        <div class="form-group">
+          <label for="clothing">Clothing Description</label>
+          <textarea
+            id="clothing"
+            name="Clothing"
+            rows="4"
+            placeholder="Describe the clothing..."
+            required
+          ></textarea>
+        </div>
+
+        <!-- Last Seen -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lastSeen">Last Seen Location</label>
+            <input type="text" id="lastSeen" name="LastSeen" required />
+          </div>
+
+          <div class="form-group">
+            <label for="dateTime">Date & Time</label>
+            <input
+              type="datetime-local"
+              id="dateTime"
+              name="dateTime"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- Medical -->
+        <div class="form-group">
+          <label for="medicalConditions">Medical Conditions</label>
+          <input
+            type="text"
+            id="medicalConditions"
+            name="MedicalConditions"
+            placeholder="Leave blank if none"
+          />
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="description">Additional Details</label>
+          <textarea
+            id="description"
+            name="Description"
+            rows="5"
+            placeholder="Any distinguishing marks, tattoos, behaviour, etc."
+            required
+          ></textarea>
+        </div>
+
+        <div class="btn-container">
+          <button type="submit" class="btn btn-primary">Submit Case</button>
+        </div>
+      </form>
     </div>
 
     <script>
-        function previewImage(event) {
-            const file = event.target.files[0];
-        
-            if (!file) return;
-        
-            const reader = new FileReader();
-        
-            reader.onload = function (e) {
-                const preview = document.getElementById("photoPreview");
-                const prompt = document.getElementById("upload-prompt");
-        
-                preview.src = e.target.result;
-                preview.style.display = "block";
-                prompt.style.display = "none";
-            };
-        
-            reader.readAsDataURL(file);
-            
-        }
-        document.getElementById("missingCaseForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+      function previewImage(event) {
+        const file = event.target.files[0];
 
-    const form = e.target;
-    const formData = new FormData(form);
+        if (!file) return;
 
-    try {
-        const res = await fetch("http://localhost:5000/guardian/application", {
-            method: "POST",
-            body: formData,
-            credentials: "include"
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+          const preview = document.getElementById("photoPreview");
+          const prompt = document.getElementById("upload-prompt");
+
+          preview.src = e.target.result;
+          preview.style.display = "block";
+          prompt.style.display = "none";
+        };
+
+        reader.readAsDataURL(file);
+      }
+      document
+        .getElementById("missingCaseForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const form = e.target;
+          const formData = new FormData(form);
+
+          try {
+            const res = await fetch(
+              "http://localhost:5000/guardian/application",
+              {
+                method: "POST",
+                body: formData,
+                credentials: "include",
+              },
+            );
+
+            const data = await res.json();
+
+            if (!res.ok) {
+              throw new Error(data.message || "Failed to submit case");
+            }
+
+            alert("Case submitted successfully");
+
+            // redirect AFTER success
+            window.location.href = "/guardian.html";
+          } catch (err) {
+            console.error(err);
+            alert(err.message);
+          }
         });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            throw new Error(data.message || "Failed to submit case");
-        }
-
-        alert("Case submitted successfully");
-
-        // redirect AFTER success
-        window.location.href = "/guardian.html";
-
-    } catch (err) {
-        console.error(err);
-        alert(err.message);
-    }
-});
-        </script>
-</body>
+    </script>
+  </body>
 </html>

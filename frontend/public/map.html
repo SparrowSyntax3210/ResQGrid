@@ -1,175 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Map</title>
 
-    <link rel="stylesheet"
-          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
 
     <style>
-        #map{
-            height:100vh;
-            width:100%;
-        }
-      
-.grid-label{
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    font-weight: bold;
-    font-size: 16px;
-    color: black;
-}
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+
+      .grid-label {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        font-weight: bold;
+        font-size: 16px;
+        color: black;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
+    <div id="map"></div>
 
-<div id="map"></div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="/socket.io/socket.io.js"></script>
+    <script>
+      const params = new URLSearchParams(window.location.search);
 
-<script>
-    const params = new URLSearchParams(window.location.search);
-    
-    const caseId = params.get("id");
-    const lastSeenLocation = params.get("location");
-    
-    const socket = io(API, {
-    withCredentials: true
-});
-    
-    const gridRectangles = {};
-    
-    const map = L.map("map").setView([20.5937,78.9629],5);
-    
-    L.tileLayer(
-        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-        {
-            attribution:"© OpenStreetMap contributors"
-        }
-    ).addTo(map);
-    
-    socket.on("connect", () => {
-    
-        console.log("Connected");
-    
-        console.log(socket.id);
-    
+      const caseId = params.get("id");
+      const lastSeenLocation = params.get("location");
+      const API = "http://localhost:5000";
+
+      const socket = io(API, {
+        withCredentials: true,
+      });
+
+      const gridRectangles = {};
+
+      const map = L.map("map").setView([20.5937, 78.9629], 5);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
+
+      // ======================================
+      // SOCKET CONNECTION
+      // ======================================
+
+      socket.on("connect", () => {
+        console.log("Socket Connected:", socket.id);
+
+        console.log("Joining Case:", caseId);
+
         socket.emit("join_case", caseId);
-    
-    });
-    
-    socket.on("volunteer_joined",(data)=>{
-    
-        console.log("Volunteer Joined");
-    
-        console.log(data);
-    
-    });
-    
-    socket.on("case_state", (state) => {
+      });
 
-console.log(state);
+      // ======================================
+      // RECEIVE LIVE GRID DATA
+      // ======================================
 
-for (const grid in state.grids) {
+      socket.on("case_state", (state) => {
+        console.log("CASE UPDATE:", state);
 
-    console.log(
-        grid,
-        state.grids[grid].count,
-        typeof state.grids[grid].count
-    );
+        if (!state.grids) return;
 
-}
+        for (const grid in state.grids) {
+          const data = state.grids[grid];
 
-});
-    
-    async function showLocation(){
-    
-        const res = await fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lastSeenLocation)}`
-        );
-    
-        const data = await res.json();
-    
-        if(data.length===0){
-    
-            alert("Location not found");
-    
-            return;
-    
-        }
-    
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-    
-        map.setView([lat,lon],16);
-    
-        L.circle([lat,lon],{
-    
-            radius:1000
-    
-        }).addTo(map);
-    
-        const latStep=0.003;
-        const lonStep=0.003;
-    
-        const rows=["A","B","C"];
-    
-        for(let i=0;i<3;i++){
-    
-            for(let j=0;j<3;j++){
-    
-                const southWest=[
-                    lat+(i-1)*latStep,
-                    lon+(j-1)*lonStep
-                ];
-    
-                const northEast=[
-                    lat+i*latStep,
-                    lon+j*lonStep
-                ];
-    
-                const rectangle=L.rectangle(
-                    [southWest,northEast],
-                    {
-                        weight:2
-                    }
-                ).addTo(map);
-    
-                const gridName=`${rows[i]}${j+1}`;
-    
-                gridRectangles[gridName]=rectangle;
-    
-                rectangle.bindTooltip(gridName,{
-                    permanent:true,
-                    direction:"center",
-                    className:"grid-label"
-                });
-    
-                rectangle.on("click", () => {
+          console.log(
+            grid,
+            "Priority:",
+            data.priority,
+            "Volunteers:",
+            data.count,
+          );
 
-console.log("Clicked", gridName);
+          const rectangle = gridRectangles[grid];
 
-socket.emit("claim_grid", {
-    caseId,
-    gridId: gridName
-});
+          if (rectangle) {
+            let priority = data.priority || 0;
 
-});
-    
+            let level = "Low";
+
+            if (priority >= 80) {
+              level = "Critical";
+            } else if (priority >= 50) {
+              level = "Medium";
             }
-    
-        }
-    
-    }
-    
-    showLocation();
-    
-    </script>
 
-</body>
+            rectangle.setTooltipContent(
+              `
+
+<div>
+
+<b>${grid}</b>
+
+<br>
+
+Priority:
+${priority}/100
+
+<br>
+
+Status:
+${level}
+
+<br>
+
+Volunteers:
+${data.count}
+
+</div>
+
+`,
+            );
+          }
+        }
+      });
+
+      // ======================================
+      // LOAD LOCATION
+      // ======================================
+
+      async function showLocation() {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lastSeenLocation)}`,
+          );
+
+          const data = await res.json();
+
+          if (data.length === 0) {
+            alert("Location not found");
+
+            return;
+          }
+
+          const lat = parseFloat(data[0].lat);
+
+          const lon = parseFloat(data[0].lon);
+
+          console.log("Coordinates:", lat, lon);
+
+          map.setView([lat, lon], 16);
+
+          L.circle([lat, lon], {
+            radius: 1000,
+          }).addTo(map);
+
+          createGrid(lat, lon);
+        } catch (err) {
+          console.log("Map Error:", err);
+        }
+      }
+
+      // ======================================
+      // CREATE GRID
+      // ======================================
+
+      function createGrid(lat, lon) {
+        const latStep = 0.003;
+
+        const lonStep = 0.003;
+
+        const rows = ["A", "B", "C"];
+
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            const southWest = [
+              lat + (i - 1) * latStep,
+
+              lon + (j - 1) * lonStep,
+            ];
+
+            const northEast = [lat + i * latStep, lon + j * lonStep];
+
+            const rectangle = L.rectangle(
+              [southWest, northEast],
+
+              {
+                weight: 2,
+              },
+            ).addTo(map);
+
+            const gridName = `${rows[i]}${j + 1}`;
+
+            gridRectangles[gridName] = rectangle;
+
+            rectangle.bindTooltip(
+              `
+
+<div>
+
+<b>${gridName}</b>
+
+<br>
+
+Priority:
+0/100
+
+<br>
+
+Volunteers:
+0
+
+</div>
+
+`,
+
+              {
+                permanent: true,
+
+                direction: "center",
+
+                className: "grid-label",
+              },
+            );
+
+            rectangle.on("click", () => {
+              console.log("Claiming Grid:", gridName);
+
+              socket.emit("claim_grid", {
+                caseId,
+
+                gridId: gridName,
+              });
+            });
+          }
+        }
+      }
+
+      showLocation();
+    </script>
+  </body>
 </html>
