@@ -176,69 +176,70 @@
 
         socket.emit("join_case", caseId);
       });
+      setInterval(() => {
+
+    socket.emit("heartbeat", {
+
+        caseId
+
+    });
+
+}, 20000);
 
       // ======================================
       // RECEIVE LIVE GRID DATA
       // ======================================
+socket.on("case_state",(state)=>{
 
-      socket.on("case_state", (state) => {
-        console.log("CASE UPDATE:", state);
+    if(!state.grids) return;
 
-        if (!state.grids) return;
+    for(const grid in state.grids){
 
-        for (const grid in state.grids) {
-          const data = state.grids[grid];
+        const data=state.grids[grid];
 
-          console.log(
-            grid,
-            "Priority:",
-            data.priority,
-            "Volunteers:",
-            data.count,
-          );
+        const rectangle=gridRectangles[grid];
 
-          const rectangle = gridRectangles[grid];
+        if(!rectangle) continue;
 
-          if (rectangle) {
-            let priority = data.priority || 0;
+        let color="#22c55e";
+        let level="Low";
 
-            let level = "Low";
+        if(data.priority>=80){
 
-            if (priority >= 80) {
-              level = "Critical";
-            } else if (priority >= 50) {
-              level = "Medium";
-            }
+            color="#ef4444";
+            level="Critical";
 
-            rectangle.setTooltipContent(
-              `
-
-<div>
-
-<b>${grid}</b>
-
-<br>
-
-Priority:
-${priority}/100
-
-<br>
-
-Status:
-${level}
-
-<br>
-
-Volunteers:
-${data.count}
-
-</div>
-
-`,
-            );
-          }
         }
-      });
+        else if(data.priority>=50){
+
+            color="#f59e0b";
+            level="Medium";
+
+        }
+
+        rectangle.setStyle({
+
+            color,
+            fillColor:color,
+            fillOpacity:.25
+
+        });
+
+        rectangle.setTooltipContent(
+            `
+            <div>
+                <b>${grid}</b><br>
+                Priority: ${data.priority}/100<br>
+                Status: ${level}<br>
+                Searched: ${data.searched}%<br>
+                Volunteers: ${data.count}
+            </div>
+            `
+        );
+
+    }
+
+});
 
       // ======================================
       // LOAD LOCATION
@@ -279,78 +280,80 @@ ${data.count}
       // ======================================
       // CREATE GRID
       // ======================================
+function createGrid(lat, lon) {
 
-      function createGrid(lat, lon) {
-        const latStep = 0.003;
+    const latStep = 0.003;
+    const lonStep = 0.003;
 
-        const lonStep = 0.003;
+    const rows = ["A","B","C"];
 
-        const rows = ["A", "B", "C"];
+    for(let i=0;i<3;i++){
 
-        for (let i = 0; i < 3; i++) {
-          for (let j = 0; j < 3; j++) {
-            const southWest = [
-              lat + (i - 1) * latStep,
+        for(let j=0;j<3;j++){
 
-              lon + (j - 1) * lonStep,
+            const southWest=[
+                lat+(i-1)*latStep,
+                lon+(j-1)*lonStep
             ];
 
-            const northEast = [lat + i * latStep, lon + j * lonStep];
+            const northEast=[
+                lat+i*latStep,
+                lon+j*lonStep
+            ];
 
-            const rectangle = L.rectangle(
-              [southWest, northEast],
+            const gridName=`${rows[i]}${j+1}`;
 
-              {
-                weight: 2,
-              },
+            const rectangle=L.rectangle(
+                [southWest,northEast],
+                {
+                    color:"#22c55e",
+                    fillColor:"#22c55e",
+                    fillOpacity:.25,
+                    weight:2
+                }
             ).addTo(map);
 
-            const gridName = `${rows[i]}${j + 1}`;
-
-            gridRectangles[gridName] = rectangle;
+            gridRectangles[gridName]=rectangle;
 
             rectangle.bindTooltip(
-              `
-
-<div>
-
-<b>${gridName}</b>
-
-<br>
-
-Priority:
-0/100
-
-<br>
-
-Volunteers:
-0
-
-</div>
-
-`,
-
-              {
-                permanent: true,
-
-                direction: "center",
-
-                className: "grid-label",
-              },
+                `
+                <div>
+                    <b>${gridName}</b><br>
+                    Priority: 0/100<br>
+                    Searched: 0%<br>
+                    Volunteers: 0
+                </div>
+                `,
+                {
+                    permanent:true,
+                    direction:"center",
+                    className:"grid-label"
+                }
             );
 
-            rectangle.on("click", () => {
-              console.log("Claiming Grid:", gridName);
+            rectangle.on("click",()=>{
 
-              socket.emit("claim_grid", {
-                caseId,
+                socket.emit("claim_grid",{
+                    caseId,
+                    gridId:gridName
+                });
 
-                gridId: gridName,
-              });
             });
-          }
+
+            rectangle.on("contextmenu",()=>{
+
+                socket.emit("search_grid",{
+                    caseId,
+                    gridId:gridName
+                });
+
+            });
+
         }
-      }
+
+    }
+
+}
 
       showLocation();
       const overlay = document.getElementById("chatOverlay");
