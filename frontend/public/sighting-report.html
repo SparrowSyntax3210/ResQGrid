@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ResQGrid — Report a Sighting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #050813;
+    --card-bg: #0d1226;
+    --card-border: rgba(124,92,246,0.28);
+    --purple: #7c5cf6;
+    --purple-dark: #5b3fd1;
+    --purple-glow: rgba(124,92,246,0.45);
+    --orange: #f97316;
+    --orange-glow: rgba(249,115,22,0.45);
+    --danger: #ef4444;
+    --danger-glow: rgba(239,68,68,0.45);
+    --text: #f5f6fa;
+    --text-muted: #8b93ab;
+    --input-bg: #e9ebf7;
+    --input-text: #1a1d2e;
+    --input-placeholder: #7d829a;
+    --radius-lg: 26px;
+    --radius-sm: 12px;
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+
+  body{
+    font-family:'Inter', sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(124,92,246,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(249,115,22,0.08), transparent 40%),
+      var(--bg);
+    color: var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 40px 16px;
+  }
+
+  h1, .brand-name{ font-family:'Sora', sans-serif; }
+
+  .card{
+    width:100%;
+    max-width: 620px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 1px rgba(124,92,246,0.05), 0 30px 80px -20px rgba(0,0,0,0.6);
+    padding: 40px 40px 44px;
+    animation: cardIn 0.5s ease both;
+  }
+
+  @keyframes cardIn{
+    from{ opacity:0; transform: translateY(14px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 6px;
+  }
+
+  .brand-mark{
+    width:34px; height:34px;
+    border-radius:10px;
+    background: linear-gradient(135deg, var(--orange), #fb923c);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 0 18px var(--orange-glow);
+  }
+
+  .brand-name{ font-size: 20px; font-weight:700; letter-spacing:0.2px; }
+  .brand-name span{ color: var(--orange); }
+
+  .tagline{
+    font-size:12.5px;
+    color: var(--text-muted);
+    margin-bottom: 28px;
+  }
+
+  .page-header{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom: 32px;
+  }
+
+  .back-btn{
+    flex-shrink:0;
+    width:38px; height:38px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    color: var(--text);
+    font-size:18px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .back-btn:hover{ background: rgba(124,92,246,0.15); border-color: var(--purple); }
+
+  .page-header h1{ font-size: 24px; font-weight: 700; margin-bottom:4px; }
+  .page-header p{ font-size: 13.5px; color: var(--text-muted); }
+
+  form{ display:flex; flex-direction:column; gap:22px; }
+
+  .row-2{ display:grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+  .field label{
+    display:block;
+    font-size: 13px;
+    font-weight:600;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .optional-tag{
+    font-weight:500;
+    font-size:11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.06);
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+
+  .input-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background: var(--input-bg);
+    border-radius: var(--radius-sm);
+    padding: 13px 15px;
+    border: 1px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .input-wrap:focus-within{
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px rgba(124,92,246,0.18);
+  }
+  .input-wrap svg{ flex-shrink:0; color:#6b7089; }
+
+  .input-wrap input{
+    flex:1;
+    min-width:0;
+    border:none;
+    outline:none;
+    background:transparent;
+    font-size:14px;
+    color: var(--input-text);
+    font-family:'Inter', sans-serif;
+  }
+  .input-wrap input::placeholder{ color: var(--input-placeholder); }
+  .input-wrap input[type="date"], .input-wrap input[type="time"]{ color-scheme: light; }
+
+  textarea{
+    width:100%;
+    resize: vertical;
+    min-height: 96px;
+    background: var(--input-bg);
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    padding: 14px 16px;
+    font-size:14px;
+    font-family:'Inter', sans-serif;
+    color: var(--input-text);
+    outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  textarea:focus{ border-color: var(--purple); box-shadow: 0 0 0 3px rgba(124,92,246,0.18); }
+  textarea::placeholder{ color: var(--input-placeholder); }
+
+  .mini-btn{
+    flex-shrink:0;
+    border:none;
+    background: rgba(26,29,46,0.08);
+    color:#3b3f5c;
+    font-size:11.5px;
+    font-weight:600;
+    padding: 7px 11px;
+    border-radius: 8px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition: background 0.2s;
+  }
+  .mini-btn:hover{ background: rgba(26,29,46,0.16); }
+
+  /* segmented control */
+  .segmented{ display:flex; gap:8px; flex-wrap:wrap; }
+  .seg-btn{
+    flex:1;
+    min-width: 120px;
+    padding: 11px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.03);
+    color: var(--text-muted);
+    font-size: 12.5px;
+    font-weight:600;
+    font-family:'Inter', sans-serif;
+    cursor:pointer;
+    transition: all 0.2s;
+  }
+  .seg-btn:hover{ background: rgba(255,255,255,0.07); }
+  .seg-btn.active[data-value="alone"]{
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    border-color: transparent; color:#fff;
+    box-shadow: 0 0 16px var(--purple-glow);
+  }
+  .seg-btn.active[data-value="others"]{
+    background: linear-gradient(135deg, var(--orange), #ea580c);
+    border-color: transparent; color:#fff;
+    box-shadow: 0 0 16px var(--orange-glow);
+  }
+  .seg-btn.active[data-value="captor"]{
+    background: linear-gradient(135deg, var(--danger), #b91c1c);
+    border-color: transparent; color:#fff;
+    box-shadow: 0 0 16px var(--danger-glow);
+  }
+
+  .conditional{ animation: slideDown 0.25s ease both; }
+  @keyframes slideDown{
+    from{ opacity:0; transform: translateY(-6px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* dropzone */
+  .dropzone{
+    border: 1.5px dashed rgba(255,255,255,0.15);
+    border-radius: var(--radius-sm);
+    background: rgba(255,255,255,0.02);
+    padding: 20px;
+    text-align:center;
+    cursor:pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .dropzone.dragover{ border-color: var(--purple); background: rgba(124,92,246,0.08); }
+  .dropzone-empty svg{ color: var(--text-muted); margin-bottom:8px; }
+  .dropzone-empty p{ font-size:13px; font-weight:500; color:var(--text); }
+  .dropzone-empty span{ font-size:11px; color: var(--text-muted); display:block; margin-top:3px; }
+
+  .dropzone-preview{ display:flex; align-items:center; gap:14px; text-align:left; }
+  .dropzone-preview img{
+    width:56px; height:56px; object-fit:cover; border-radius:10px;
+    border:1px solid rgba(255,255,255,0.1);
+  }
+  .preview-info{ flex:1; min-width:0; }
+  .preview-info span{
+    display:block; font-size:13px; font-weight:600; color: var(--text);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .preview-info button{
+    margin-top:6px; background:none; border:none; color: var(--danger);
+    font-size:11.5px; font-weight:600; cursor:pointer; padding:0;
+  }
+
+  .submit-btn{
+    margin-top: 4px;
+    width:100%;
+    padding: 15px;
+    border:none;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color:#fff;
+    font-size: 15px;
+    font-weight:700;
+    font-family:'Sora', sans-serif;
+    cursor:pointer;
+    box-shadow: 0 8px 24px -8px rgba(124,92,246,0.6);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .submit-btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 28px -6px rgba(124,92,246,0.7); }
+  .submit-btn:active{ transform: translateY(0); }
+
+  .toast{
+    position:fixed; left:50%; bottom: 30px;
+    transform: translateX(-50%) translateY(20px);
+    background: #101532; border: 1px solid var(--purple); color:#fff;
+    padding: 14px 22px; border-radius: 14px; font-size:13.5px; font-weight:500;
+    box-shadow: 0 10px 30px -8px rgba(124,92,246,0.6);
+    opacity:0; pointer-events:none; transition: all 0.35s ease;
+    display:flex; align-items:center; gap:10px; z-index:50;
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 560px){
+    .card{ padding: 30px 24px 34px; }
+    .row-2{ grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <div class="brand">
+    <div class="brand-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5z" fill="white"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="brand-name">Res<span>Q</span>Grid</div>
+  </div>
+  <div class="tagline">Find. Connect. Reunite.</div>
+
+  <div class="page-header">
+    <button class="back-btn" type="button" aria-label="Go back">←</button>
+    <div>
+      <h1>Report a Sighting</h1>
+      <p>Every detail you share is pushed straight to the live search map.</p>
+    </div>
+  </div>
+
+  <form id="sightingForm">
+
+    <div class="field">
+      <label for="personName">Missing Person's Name</label>
+      <div class="input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+        <input type="text" id="personName" placeholder="e.g. Harsh Kumar" required>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="description">What did you see?</label>
+      <textarea id="description" placeholder="Describe clothing, behavior, direction of travel, physical condition..." required></textarea>
+    </div>
+
+    <div class="field">
+      <label for="locationInput">Location Sighted</label>
+      <div class="input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.1 7-11a7 7 0 10-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+        <input type="text" id="locationInput" placeholder="e.g. GTB Nagar, Delhi" required>
+        <button type="button" class="mini-btn" id="useLocationBtn">Use current</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Date &amp; Time Sighted</label>
+      <div class="row-2">
+        <div class="input-wrap">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          <input type="date" id="dateInput" required>
+        </div>
+        <div class="input-wrap">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+          <input type="time" id="timeInput" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Was the person alone?</label>
+      <div class="segmented" id="companySegment">
+        <button type="button" class="seg-btn active" data-value="alone">Alone</button>
+        <button type="button" class="seg-btn" data-value="others">With Others</button>
+        <button type="button" class="seg-btn" data-value="captor">Possible Captor(s)</button>
+      </div>
+    </div>
+
+    <div class="field conditional" id="companionField" hidden>
+      <label for="companionDetails">Describe the other person(s)</label>
+      <textarea id="companionDetails" placeholder="Appearance, approximate age, relationship if known, how they were behaving toward the missing person..."></textarea>
+    </div>
+
+    <div class="field">
+      <label>Photo of the Sighting <span class="optional-tag">Optional</span></label>
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="image/*" hidden>
+        <div class="dropzone-empty" id="dropzoneEmpty">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h3l2-2h6l2 2h3v13H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+          <p>Click or drag a photo here</p>
+          <span>PNG or JPG, up to 10MB</span>
+        </div>
+        <div class="dropzone-preview" id="dropzonePreview" hidden>
+          <img id="previewImg" alt="Sighting photo preview">
+          <div class="preview-info">
+            <span id="fileName"></span>
+            <button type="button" id="removeFile">Remove photo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn">Submit Sighting Report</button>
+  </form>
+</div>
+
+<div class="toast" id="toast">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+  <span>Sighting report submitted. Thank you for helping search.</span>
+</div>
+
+<script>
+  // ---------- Photo dropzone ----------
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const dropzoneEmpty = document.getElementById('dropzoneEmpty');
+  const dropzonePreview = document.getElementById('dropzonePreview');
+  const previewImg = document.getElementById('previewImg');
+  const fileNameEl = document.getElementById('fileName');
+  const removeFileBtn = document.getElementById('removeFile');
+
+  dropzone.addEventListener('click', (e) => {
+    if (e.target === removeFileBtn) return;
+    fileInput.click();
+  });
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files && fileInput.files[0]) showPreview(fileInput.files[0]);
+  });
+
+  ['dragover','dragenter'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      fileInput.files = e.dataTransfer.files;
+      showPreview(file);
+    }
+  });
+
+  function showPreview(file){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      fileNameEl.textContent = file.name;
+      dropzoneEmpty.hidden = true;
+      dropzonePreview.hidden = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  removeFileBtn.addEventListener('click', () => {
+    fileInput.value = '';
+    dropzoneEmpty.hidden = false;
+    dropzonePreview.hidden = true;
+  });
+
+  // ---------- Use current location ----------
+  document.getElementById('useLocationBtn').addEventListener('click', () => {
+    const locationInput = document.getElementById('locationInput');
+    if (!navigator.geolocation) {
+      locationInput.placeholder = "Location access not supported on this device";
+      return;
+    }
+    locationInput.placeholder = "Detecting location...";
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude.toFixed(4);
+        const lon = pos.coords.longitude.toFixed(4);
+        locationInput.value = `Lat ${lat}, Lon ${lon}`;
+      },
+      () => { locationInput.placeholder = "Couldn't detect location — enter manually"; }
+    );
+  });
+
+  // ---------- Companion segmented control ----------
+  const segBtns = document.querySelectorAll('.seg-btn');
+  const companionField = document.getElementById('companionField');
+
+  segBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      segBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      companionField.hidden = (btn.dataset.value === 'alone');
+    });
+  });
+
+  // ---------- Submit ----------
+  const form = document.getElementById('sightingForm');
+  const toast = document.getElementById('toast');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3200);
+
+    setTimeout(() => {
+      form.reset();
+      dropzoneEmpty.hidden = false;
+      dropzonePreview.hidden = true;
+      segBtns.forEach(b => b.classList.remove('active'));
+      document.querySelector('.seg-btn[data-value="alone"]').classList.add('active');
+      companionField.hidden = true;
+    }, 600);
+  });
+</script>
+
+</body>
+</html>
