@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Segoe UI",sans-serif;
+}
+
+:root{
+    --bg:#0f172a;
+    --card:#131d2f;
+    --card2:#17233b;
+    --border:#293246;
+    --purple:#7C3AED;
+    --green:#22c55e;
+    --yellow:#f59e0b;
+    --red:#ef4444;
+    --gray:#6b7280;
+    --text:#ffffff;
+    --muted:#9ca3af;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+}
+
+.dashboard{
+    max-width:1400px;
+    margin:auto;
+    padding:30px;
+}
+
+/* ===========================
+HEADER
+=========================== */
+
+.case-header{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:25px;
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+}
+
+.case-header img{
+
+    width:130px;
+
+    height:130px;
+
+    object-fit:cover;
+
+    border-radius:18px;
+
+    border:3px solid rgba(124,58,237,.35);
+
+}
+
+.case-info{
+
+    flex:1;
+
+}
+
+.case-info h1{
+
+    font-size:34px;
+
+    margin-bottom:12px;
+
+}
+
+.status-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
+.status{
+
+    padding:8px 18px;
+
+    border-radius:30px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+}
+
+.status.active{
+
+    background:rgba(34,197,94,.18);
+
+    color:var(--green);
+
+}
+
+#lastUpdated{
+
+    color:var(--muted);
+
+}
+
+/* ===========================
+STATS
+=========================== */
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(4,1fr);
+
+    gap:18px;
+
+    margin-bottom:25px;
+
+}
+
+.stat-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    text-align:center;
+
+    padding:25px;
+
+    transition:.25s;
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-4px);
+
+    border-color:var(--purple);
+
+}
+
+.stat-card h3{
+
+    font-size:34px;
+
+    margin-bottom:8px;
+
+}
+
+.stat-card p{
+
+    color:var(--muted);
+
+}
+
+/* ===========================
+PROGRESS
+=========================== */
+
+.progress-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+}
+
+.progress-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+.progress-top span{
+
+    color:var(--green);
+
+    font-size:22px;
+
+    font-weight:700;
+
+}
+
+.progress-bar{
+
+    height:14px;
+
+    background:#0d1325;
+
+    border-radius:30px;
+
+    overflow:hidden;
+
+}
+
+.progress-fill{
+
+    width:0%;
+
+    height:100%;
+
+    background:linear-gradient(90deg,#22c55e,#7C3AED);
+
+    transition:.4s;
+
+}
+
+/* ===========================
+GRID
+=========================== */
+
+.grid-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:25px;
+
+    margin-bottom:25px;
+
+}
+
+.grid-card h2{
+
+    margin-bottom:20px;
+
+}
+
+.grid-layout{
+
+    display:grid;
+
+    grid-template-columns:repeat(3,1fr);
+
+    gap:18px;
+
+}
+
+.grid-box{
+
+    background:#18253d;
+
+    border:2px solid var(--border);
+
+    border-radius:18px;
+
+    padding:20px;
+
+    min-height:135px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    transition:.3s;
+
+}
+
+.grid-box:hover{
+
+    transform:translateY(-5px);
+
+}
+
+.grid-box h3{
+
+    font-size:30px;
+
+    margin-bottom:12px;
+
+}
+
+.grid-box span{
+
+    font-size:15px;
+
+    font-weight:600;
+
+    margin-bottom:8px;
+
+}
+
+.grid-box small{
+
+    color:var(--muted);
+
+}
+
+/* ===========================
+GRID COLORS
+=========================== */
+
+.grid-green{
+
+    background:rgba(34,197,94,.12);
+
+    border-color:#22c55e;
+
+}
+
+.grid-yellow{
+
+    background:rgba(245,158,11,.12);
+
+    border-color:#f59e0b;
+
+}
+
+.grid-red{
+
+    background:rgba(239,68,68,.12);
+
+    border-color:#ef4444;
+
+}
+
+.grid-gray{
+
+    background:#1d2436;
+
+    border-color:#404b63;
+
+}
+
+/* ===========================
+DETAILS
+=========================== */
+
+.report-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+    margin-bottom:20px;
+
+}
+
+.report-card{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:25px;
+
+}
+
+.report-card h2{
+
+    margin-bottom:20px;
+
+}
+
+.detail{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:15px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.detail:last-child{
+
+    border:none;
+
+}
+
+.detail label{
+
+    color:var(--muted);
+
+}
+
+.description{
+
+    margin-top:15px;
+
+    background:#111b2e;
+
+    border-radius:15px;
+
+    border:1px solid var(--border);
+
+    padding:20px;
+
+    line-height:1.8;
+
+}
+
+/* ===========================
+TIMELINE
+=========================== */
+
+.timeline{
+
+    background:var(--card);
+
+    border:1px solid var(--border);
+
+    border-radius:18px;
+
+    padding:25px;
+
+    margin-top:25px;
+
+}
+
+.timeline h2{
+
+    margin-bottom:18px;
+
+}
+
+.activity{
+
+    padding:15px;
+
+    margin-bottom:12px;
+
+    border-left:4px solid var(--purple);
+
+    background:#18253d;
+
+    border-radius:10px;
+
+}
+
+.activity-time{
+
+    color:var(--muted);
+
+    font-size:13px;
+
+    margin-top:6px;
+
+}
+
+/* ===========================
+BUTTONS
+=========================== */
+
+.buttons{
+
+    display:flex;
+
+    gap:18px;
+
+    margin:35px 0;
+
+}
+
+.buttons button{
+
+    flex:1;
+
+    border:none;
+
+    border-radius:14px;
+
+    padding:16px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    color:white;
+
+}
+
+.buttons button:hover{
+
+    transform:translateY(-3px);
+
+}
+
+.primary{
+
+    background:linear-gradient(90deg,#7C3AED,#5b21b6);
+
+}
+
+.secondary{
+
+    background:#1f2937;
+
+}
+
+.danger{
+
+    background:#ef4444;
+
+}
+
+/* ===========================
+RESPONSIVE
+=========================== */
+
+@media(max-width:1000px){
+
+.stats-grid{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+.report-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.grid-layout{
+
+grid-template-columns:repeat(2,1fr);
+
+}
+
+.case-header{
+
+flex-direction:column;
+
+text-align:center;
+
+}
+
+.buttons{
+
+flex-direction:column;
+
+}
+
+}
+
+@media(max-width:650px){
+
+.grid-layout{
+
+grid-template-columns:1fr;
+
+}
+
+.stats-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.dashboard{
+
+padding:15px;
+
+}
+
+}
+</style>
+</head>
+<body>
+    <div class="dashboard">
+
+    <!-- =========================
+         HEADER
+    ========================== -->
+
+    <div class="case-header">
+
+        <img id="photo">
+
+        <div class="case-info">
+
+            <h1 id="name">Loading...</h1>
+
+            <div class="status-row">
+
+                <span id="status" class="status active">
+                    Active
+                </span>
+
+                <span id="lastUpdated">
+                    Updating...
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+          LIVE SEARCH STATS
+    ========================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+
+            <h3 id="onlineCount">0</h3>
+
+            <p>Volunteers Online</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h3 id="completedCount">0 / 9</h3>
+
+            <p>Completed Grids</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h3 id="activeCount">0</h3>
+
+            <p>Active Searches</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h3 id="remainingCount">9</h3>
+
+            <p>Remaining Grids</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+          PROGRESS
+    ========================== -->
+
+    <div class="progress-card">
+
+        <div class="progress-top">
+
+            <h2>Overall Search Progress</h2>
+
+            <span id="progressText">
+                0%
+            </span>
+
+        </div>
+
+        <div class="progress-bar">
+
+            <div
+                class="progress-fill"
+                id="progressFill">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+           GRID STATUS
+    ========================== -->
+
+    <div class="grid-card">
+
+        <h2>
+            Search Area
+        </h2>
+
+        <div class="grid-layout">
+
+            <div class="grid-box" id="A1">
+                <h3>A1</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="A2">
+                <h3>A2</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="A3">
+                <h3>A3</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="B1">
+                <h3>B1</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="B2">
+                <h3>B2</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="B3">
+                <h3>B3</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="C1">
+                <h3>C1</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="C2">
+                <h3>C2</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+            <div class="grid-box" id="C3">
+                <h3>C3</h3>
+                <span>Status</span>
+                <small>0 Volunteers</small>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+          DETAILS
+    ========================== -->
+
+    <div class="report-grid">
+
+        <div class="report-card">
+
+            <h2>Personal Details</h2>
+
+            <div class="detail">
+
+                <label>Age</label>
+
+                <span id="age"></span>
+
+            </div>
+
+            <div class="detail">
+
+                <label>Gender</label>
+
+                <span id="gender"></span>
+
+            </div>
+
+            <div class="detail">
+
+                <label>Height</label>
+
+                <span id="height"></span>
+
+            </div>
+
+            <div class="detail">
+
+                <label>Clothing</label>
+
+                <span id="clothing"></span>
+
+            </div>
+
+            <div class="detail">
+
+                <label>Medical Condition</label>
+
+                <span id="medical"></span>
+
+            </div>
+
+        </div>
+
+
+        <div class="report-card">
+
+            <h2>Case Information</h2>
+
+            <div class="detail">
+
+                <label>Last Seen</label>
+
+                <span id="lastSeen"></span>
+
+            </div>
+
+            <div class="detail">
+
+                <label>Date & Time</label>
+
+                <span id="dateTime"></span>
+
+            </div>
+
+            <div class="detail">
+
+                <label>Guardian Contact</label>
+
+                <span id="guardian"></span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         DESCRIPTION
+    ========================== -->
+
+    <div class="report-card">
+
+        <h2>Description</h2>
+
+        <div
+            class="description"
+            id="description">
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ACTIVITY
+    ========================== -->
+
+    <div class="timeline">
+
+        <h2>
+
+            Live Activity
+
+        </h2>
+
+        <div id="activityFeed">
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         ACTIONS
+    ========================== -->
+
+    <div class="buttons">
+
+        <button
+            id="chatBtn"
+            class="primary">
+
+            Open Volunteer Chat
+
+        </button>
+
+        <button
+            id="refreshBtn"
+            class="secondary">
+
+            Refresh
+
+        </button>
+
+        <button
+            id="closeCaseBtn"
+            class="danger">
+
+            Close Case
+
+        </button>
+
+    </div>
+
+</div>
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+<script>
+    const API = "http://localhost:5000";
+
+const params = new URLSearchParams(window.location.search);
+
+const caseId = params.get("id");
+
+const socket = io(API,{
+    withCredentials:true
+});
+
+let currentCase = null;
+
+const activityFeed = [];
+
+const gridIds = [
+    "A1","A2","A3",
+    "B1","B2","B3",
+    "C1","C2","C3"
+];
+
+// ==========================
+// DOM
+// ==========================
+
+const photo = document.getElementById("photo");
+const name = document.getElementById("name");
+const status = document.getElementById("status");
+
+const age = document.getElementById("age");
+const gender = document.getElementById("gender");
+const height = document.getElementById("height");
+const clothing = document.getElementById("clothing");
+const medical = document.getElementById("medical");
+
+const lastSeen = document.getElementById("lastSeen");
+const dateTime = document.getElementById("dateTime");
+const guardian = document.getElementById("guardian");
+const description = document.getElementById("description");
+
+const onlineCount = document.getElementById("onlineCount");
+const completedCount = document.getElementById("completedCount");
+const activeCount = document.getElementById("activeCount");
+const remainingCount = document.getElementById("remainingCount");
+
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
+
+const lastUpdated = document.getElementById("lastUpdated");
+
+// ==========================
+// LOAD CASE
+// ==========================
+
+async function loadCase(){
+
+    try{
+
+        const res = await fetch(
+            `${API}/guardian/application`
+        );
+
+        const cases = await res.json();
+
+        const app = cases.find(c=>c._id===caseId);
+
+        if(!app){
+
+            alert("Case not found");
+
+            return;
+
+        }
+
+        currentCase = app;
+
+        photo.src = app.Photo
+            ? `${API}/uploads/${app.Photo}`
+            : "./images/default-user.png";
+
+        name.innerText = app.Name;
+
+        status.innerText = app.status;
+
+        status.className =
+            `status ${app.status}`;
+
+        age.innerText = app.Age;
+
+        gender.innerText = app.Gender;
+
+        height.innerText = app.Height;
+
+        clothing.innerText = app.Clothing;
+
+        medical.innerText =
+            app.MedicalConditions || "None";
+
+        lastSeen.innerText = app.LastSeen;
+
+        dateTime.innerText = app.dateTime;
+
+        guardian.innerText =
+            app.GuardianContact;
+
+        description.innerText =
+            app.Description;
+
+    }
+
+    catch(err){
+
+        console.log(err);
+
+    }
+
+}
+
+// ==========================
+// SOCKET
+// ==========================
+
+socket.on("connect",()=>{
+
+    console.log("Socket Connected");
+
+    socket.emit("join_case",caseId);
+
+});
+
+// ==========================
+// HEARTBEAT
+// ==========================
+
+setInterval(()=>{
+
+    socket.emit("heartbeat",{
+
+        caseId
+
+    });
+
+},20000);
+
+// ==========================
+// TIME FORMAT
+// ==========================
+
+function getTime(){
+
+    return new Date().toLocaleTimeString([],{
+
+        hour:"2-digit",
+
+        minute:"2-digit"
+
+    });
+
+}
+
+// ==========================
+// ACTIVITY LOGGER
+// ==========================
+
+function addActivity(message){
+
+    activityFeed.unshift({
+
+        time:getTime(),
+
+        text:message
+
+    });
+
+    if(activityFeed.length>20){
+
+        activityFeed.pop();
+
+    }
+
+}
+
+// ==========================
+// INITIALIZE
+// ==========================
+
+loadCase();
+
+// ========================================
+// LIVE CASE UPDATES
+// ========================================
+
+socket.on("case_state", (state) => {
+
+    if (!state.grids) return;
+
+    let completed = 0;
+    let active = 0;
+
+    onlineCount.innerText = state.totalVolunteers;
+
+    gridIds.forEach((gridId) => {
+
+        const box = document.getElementById(gridId);
+
+        const data = state.grids[gridId];
+
+        if (!box || !data) return;
+
+        let statusText = "Waiting";
+        let color = "grid-gray";
+
+        if (data.completed) {
+
+            statusText = "Completed";
+            color = "grid-green";
+            completed++;
+
+        }
+
+        else if (data.count > 0) {
+
+            statusText = "Searching";
+            color = "grid-yellow";
+            active++;
+
+        }
+
+        else {
+
+            statusText = "Waiting";
+            color = "grid-gray";
+
+        }
+
+        box.className = `grid-box ${color}`;
+
+        box.querySelector("span").innerText = statusText;
+
+        box.querySelector("small").innerText =
+            `${data.count} Volunteer${data.count !== 1 ? "s" : ""}`;
+
+    });
+
+    // ==========================
+    // Statistics
+    // ==========================
+
+    completedCount.innerText = `${completed} / 9`;
+
+    activeCount.innerText = active;
+
+    remainingCount.innerText = 9 - completed;
+
+    // ==========================
+    // Progress Bar
+    // ==========================
+
+    const percent = Math.round((completed / 9) * 100);
+
+    progressFill.style.width = percent + "%";
+
+    progressText.innerText = percent + "%";
+
+    lastUpdated.innerText =
+        "Updated : " + getTime();
+
+    // ==========================
+    // Activity Feed
+    // ==========================
+
+    activityFeed.length = 0;
+
+    gridIds.forEach((gridId) => {
+
+        const data = state.grids[gridId];
+
+        if (!data) return;
+
+        if (data.completed) {
+
+            addActivity(`${gridId} completed`);
+
+        }
+
+        else if (data.count > 0) {
+
+            addActivity(
+                `${data.count} volunteer(s) searching ${gridId}`
+            );
+
+        }
+
+    });
+
+    renderActivities();
+
+});
+
+
+// ========================================
+// ACTIVITY UI
+// ========================================
+
+function renderActivities() {
+
+    const container =
+        document.getElementById("activityFeed");
+
+    container.innerHTML = "";
+
+    if (activityFeed.length === 0) {
+
+        container.innerHTML = `
+
+            <div class="activity">
+
+                Waiting for volunteers...
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    activityFeed.forEach((item) => {
+
+        container.innerHTML += `
+
+        <div class="activity">
+
+            <div>${item.text}</div>
+
+            <div class="activity-time">
+
+                ${item.time}
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+
+// ========================================
+// REFRESH BUTTON
+// ========================================
+
+document
+.getElementById("refreshBtn")
+.onclick = () => {
+
+    loadCase();
+
+};
+
+
+// ========================================
+// CHAT BUTTON
+// ========================================
+
+document
+.getElementById("chatBtn")
+.onclick = () => {
+
+    window.open(
+        `chat.html?id=${caseId}`,
+        "_blank"
+    );
+
+};
+
+
+// ========================================
+// CLOSE CASE
+// ========================================
+
+document
+.getElementById("closeCaseBtn")
+.onclick = async () => {
+
+    const ok = confirm(
+        "Are you sure you want to close this case?"
+    );
+
+    if (!ok) return;
+
+    try {
+
+        const res = await fetch(
+
+            `${API}/application/close/${caseId}`,
+
+            {
+                method: "PATCH",
+                credentials: "include"
+            }
+
+        );
+
+        const data = await res.json();
+
+        alert(data.message);
+
+        if (data.success) {
+
+            location.reload();
+
+        }
+
+    }
+
+    catch (err) {
+
+        console.log(err);
+
+    }
+
+};
+
+
+// ========================================
+// CLEANUP
+// ========================================
+
+window.addEventListener("beforeunload", () => {
+
+    socket.emit("leave_case", caseId);
+
+});
+</script>
+</body>
+</html>

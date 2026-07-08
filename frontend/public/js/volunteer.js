@@ -81,7 +81,7 @@ document.addEventListener("click",(e)=>{
     const id = card.dataset.id;
 
     window.location.href =
-    `/case-tracking.html?id=${id}`;
+    `/case-tracking-volunteer.html?id=${id}`;
 
 }); 
       

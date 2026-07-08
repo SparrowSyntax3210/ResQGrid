@@ -210,16 +210,18 @@ function attachHandlers() {
   // TRACK
 
   document.querySelectorAll(".track-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const id = btn.dataset.id;
 
-      const location = decodeURIComponent(btn.dataset.location);
+  btn.addEventListener("click", () => {
 
-      console.log("Opening map:", id, location);
+    const caseId = btn.dataset.id;
+    const location = btn.dataset.location;
 
-      window.location.href = `/map.html?id=${id}&location=${encodeURIComponent(location)}`;
-    };
+    window.location.href =
+      `/case-tracking-guardian.html?id=${caseId}&location=${location}`;
+
   });
+
+});
 
   // CLOSE
 
