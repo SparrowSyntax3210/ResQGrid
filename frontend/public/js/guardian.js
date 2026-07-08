@@ -110,7 +110,14 @@ async function loadApplications() {
 
           <div class="case-top">
             <div class="case-user">
-              <img src="${app.Photo || "https://via.placeholder.com/70"}">
+              <img
+  src="${
+    app.Photo
+      ? `http://localhost:5000/uploads/${app.Photo}`
+      : "./images/default-user.png"
+  }"
+  alt="${app.Name}"
+>
 
               <div>
                 <h3>${app.Name}</h3>

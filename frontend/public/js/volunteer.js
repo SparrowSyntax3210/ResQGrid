@@ -38,9 +38,14 @@ const container = document.getElementById("caseContainer");
       <div class="case-row">
 
         <div class="case-name">
-          <img src="https://ui-avatars.com/api/?name=${encodeURIComponent(app.Name)}&background=7C3AED&color=fff&size=128">
-          <span>${app.Name}</span>
-        </div>
+        <img
+  src="${
+    app.Photo
+      ? `http://localhost:5000/uploads/${app.Photo}`
+      : "./images/default-user.png"
+  }"
+  alt="https://ui-avatars.com/api/?name=${encodeURIComponent(app.Name)}&background=7C3AED&color=fff&size=128"
+>
 
         <div class="case-col">
           <small>Status</small>
@@ -78,7 +83,7 @@ document.addEventListener("click",(e)=>{
     window.location.href =
     `/case-tracking.html?id=${id}`;
 
-});
+}); 
       
     // Load existing active cases
       document.addEventListener("DOMContentLoaded", async () => {
