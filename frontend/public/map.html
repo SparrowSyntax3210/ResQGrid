@@ -24,11 +24,124 @@
         font-size: 16px;
         color: black;
       }
+      #chatToggle{
+
+    position:absolute;
+
+    bottom:30px;
+
+    right:30px;
+
+    z-index:1000;
+
+    padding:14px 24px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#7C3AED;
+
+    color:white;
+
+    font-size:16px;
+
+    cursor:pointer;
+
+    box-shadow:0 8px 30px rgba(0,0,0,.3);
+
+}
+
+#chatOverlay{
+
+    position:absolute;
+
+    top:50%;
+
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:600px;
+
+    height:600px;
+
+    background:white;
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    display:none;
+
+    z-index:9999;
+
+    box-shadow:0 20px 60px rgba(0,0,0,.45);
+
+}
+
+.chat-header{
+
+    height:55px;
+
+    background:#7C3AED;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:0 18px;
+
+}
+
+.chat-header button{
+
+    border:none;
+
+    background:none;
+
+    color:white;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+}
+
+#chatFrame{
+
+    width:100%;
+
+    height:545px;
+
+}
     </style>
   </head>
 
   <body>
     <div id="map"></div>
+    <button id="chatToggle">
+    💬 Chat
+</button>
+
+<div id="chatOverlay">
+
+    <div class="chat-header">
+
+        <button id="closeChat">✕</button>
+    </div>
+
+    <iframe
+        id="chatFrame"
+        src=""
+        frameborder="0">
+    </iframe>
+
+</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -240,6 +353,29 @@ Volunteers:
       }
 
       showLocation();
+      const overlay = document.getElementById("chatOverlay");
+
+const frame = document.getElementById("chatFrame");
+
+document
+.getElementById("chatToggle")
+.onclick = ()=>{
+
+    frame.src = `/chat-volunteer.html?id=${caseId}`;
+
+    overlay.style.display = "block";
+
+};
+
+document
+.getElementById("closeChat")
+.onclick = ()=>{
+
+    overlay.style.display = "none";
+
+    frame.src="";
+
+};
     </script>
   </body>
 </html>

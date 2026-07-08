@@ -13,7 +13,7 @@ async function loadUser() {
 
     profileName.textContent = user.name;
 
-    profileRole.textContent = "Guardian";
+    profileRole.textContent = "Volunteer";
   } catch (error) {
     console.error("User Error:", error);
   }
@@ -84,8 +84,11 @@ document.addEventListener("click",(e)=>{
       document.addEventListener("DOMContentLoaded", async () => {
           try {
             const res = await fetch(
-              "http://localhost:5000/guardian/application",
-            );
+  "http://localhost:5000/volunteer/application",
+  {
+    credentials: "include",
+  }
+);
             const data = await res.json();
 
             if (!res.ok) {

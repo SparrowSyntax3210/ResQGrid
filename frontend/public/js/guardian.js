@@ -50,13 +50,9 @@ async function loadUser() {
 
 async function loadApplications() {
   try {
-    const res = await fetch(
-      `${API}/guardian/application`,
-
-      {
-        credentials: "include",
-      },
-    );
+    const res = await fetch(`${API}/guardian/application`, {
+      credentials: "include",
+    });
 
     if (!res.ok) {
       throw new Error("Failed loading applications");
@@ -66,219 +62,124 @@ async function loadApplications() {
 
     console.log("Applications:", applications);
 
+    // Clear container
     caseContainer.innerHTML = "";
 
+    // Permanent Create Case Card
+    caseContainer.innerHTML += `
+      <div class="create-case-card">
+        <div class="create-left">
+          <h2>Create a New Missing Person Case</h2>
+          <p>
+            Register a new missing person report and immediately notify nearby
+            volunteers.
+          </p>
+        </div>
+
+        <button id="createCaseBtn">
+          <i class="fa-solid fa-plus"></i>
+          Create New Case
+        </button>
+      </div>
+    `;
+
+    // Create button click
+    document.getElementById("createCaseBtn").onclick = () => {
+      window.location.href = "/application.html";
+    };
+
+    // No active cases
     if (applications.length === 0) {
-      caseContainer.innerHTML = `
+      caseContainer.innerHTML += `
+        <div class="case-card">
+          <h3>No Active Cases</h3>
+          <p style="margin-top:10px;color:var(--muted);">
+            You don't have any active missing person cases.
+          </p>
+        </div>
+      `;
 
-<div class="case-card">
-
-<h3>
-No Active Cases
-</h3>
-
-
-<button id="createCaseBtn">
-Create New Case
-</button>
-
-
-</div>
-
-`;
-
-      document.getElementById("createCaseBtn").onclick = () => {
-        window.location.href = "/application.html";
-      };
-
+      attachHandlers();
       return;
     }
 
+    // Render all cases
     applications.forEach((app) => {
       caseContainer.innerHTML += `
-
-
-<div class="case-card">
-
-
-<div class="case-top">
-
-
-<div class="case-user">
-
-
-<img src="${app.Photo || "https://via.placeholder.com/70"}">
-
-
-<div>
-
-<h3>
-${app.Name}
-</h3>
-
-
-<p>
-Age ${app.Age}
-•
-${app.status}
-</p>
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-<div class="case-info">
-
-
-
-<div class="info-box">
-
-<h4>
-Last Seen
-</h4>
-
-<p>
-${app.LastSeen}
-</p>
-
-</div>
-
-
-
-
-<div class="info-box">
-
-<h4>
-Missing Since
-</h4>
-
-
-<p>
-${new Date(app.dateTime).toLocaleString()}
-</p>
-
-
-</div>
-
-
-
-
-
-<div class="info-box">
-
-<h4>
-Priority
-</h4>
-
-
-<p>
-
-${app.priorityLevel || "Pending"}
-
-<br>
-
-Score:
-${app.priorityScore || 0}/100
-
-</p>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-<div class="priority-reason">
-
-
-<h4>
-AI Analysis
-</h4>
-
-
-<p>
-
-${app.priorityReason || "Analysing priority..."}
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-<div class="case-buttons">
-
-
-
-<button 
-class="track-btn"
-
-data-id="${app._id}"
-
-data-location="${encodeURIComponent(app.LastSeen)}">
-
-Track Case
-
-</button>
-<button
-class="chat-btn"
-data-id="${app._id}">
-💬 Chat
-</button>
-
-
-
-
-
-<button
-
-class="close-btn"
-
-data-id="${app._id}">
-
-Close
-
-</button>
-
-
-
-
-
-<div 
-id="status-${app._id}"
-class="status-box">
-
-</div>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-`;
+        <div class="case-card">
+
+          <div class="case-top">
+            <div class="case-user">
+              <img src="${app.Photo || "https://via.placeholder.com/70"}">
+
+              <div>
+                <h3>${app.Name}</h3>
+
+                <p>
+                  Age ${app.Age} • ${app.status}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="case-info">
+
+            <div class="info-box">
+              <h4>Last Seen</h4>
+              <p>${app.LastSeen}</p>
+            </div>
+
+            <div class="info-box">
+              <h4>Missing Since</h4>
+              <p>${new Date(app.dateTime).toLocaleString()}</p>
+            </div>
+
+            <div class="info-box">
+              <h4>Priority</h4>
+              <p>
+                ${app.priorityLevel || "Pending"}
+                <br>
+                Score: ${app.priorityScore || 0}/100
+              </p>
+            </div>
+
+          </div>
+
+          <div class="priority-reason">
+            <h4>AI Analysis</h4>
+            <p>${app.priorityReason || "Analysing priority..."}</p>
+          </div>
+
+          <div class="case-buttons">
+
+            <button
+              class="track-btn"
+              data-id="${app._id}"
+              data-location="${encodeURIComponent(app.LastSeen)}">
+              Track Case
+            </button>
+
+            <button
+              class="chat-btn"
+              data-id="${app._id}">
+              💬 Chat
+            </button>
+
+            <button
+              class="close-btn"
+              data-id="${app._id}">
+              Close
+            </button>
+
+            <div
+              id="status-${app._id}"
+              class="status-box">
+            </div>
+
+          </div>
+
+        </div>
+      `;
     });
 
     attachHandlers();
@@ -292,11 +193,10 @@ class="status-box">
 // ===============================
 
 document.querySelectorAll(".chat-btn").forEach((btn) => {
-  btn.onclick = () => {
-    const id = btn.dataset.id;
-
-    window.location.href = `/chat-guardian.html?id=${id}`;
-  };
+    btn.onclick = () => {
+        const id = btn.dataset.id;
+        window.location.href = `/chat-guardian.html?id=${id}`;
+    };
 });
 
 function attachHandlers() {

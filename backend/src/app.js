@@ -24,6 +24,7 @@ app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname, "../../frontend/public")))
 app.use("/auth" , authrouter)
 app.use("/guardian" , guardianroutes)
+app.use("/volunteer" , require("../routers/volunteer.routes"))
 app.use("/uploads",express.static(path.join(__dirname, "../uploads")));
 
 app.get("/test" , (req,res)=>{

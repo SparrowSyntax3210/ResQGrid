@@ -415,11 +415,7 @@ body{
 <div class="action-buttons">
 
     <button id="mapBtn" class="primary-btn">
-        📍 Open Map
-    </button>
-
-    <button id="chatBtn" class="secondary-btn">
-        💬 Chat Guardian
+        Join Case
     </button>
 
 </div>
@@ -427,7 +423,11 @@ body{
 </div>
 <script src="http://localhost:5000/socket.io/socket.io.js"></script>
     <script>
- const socket = io("http://localhost:5000");
+        const API = "http://localhost:5000";
+
+const socket = io(API, {
+  withCredentials: true,
+});
 
 const params = new URLSearchParams(window.location.search);
 const caseId = params.get("id");
@@ -436,9 +436,9 @@ socket.on("connect", () => {
     console.log("Connected:", socket.id);
 
     socket.emit("join_volunteers");
-
-    loadCase();
 });
+
+loadCase();
 
 // Reload when this case is updated
 socket.on("case_updated", (updatedCase) => {
@@ -455,9 +455,9 @@ async function loadCase(){
 
     try{
 
-        const res = await fetch(
-            `http://localhost:5000/guardian/application/${caseId}`
-        );
+        const res = await fetch(`${API}/volunteer/application/${caseId}`, {
+    credentials: "include",
+});
 
         const data = await res.json();
 
@@ -538,16 +538,6 @@ document.addEventListener("click",(e)=>{
         `/map.html?id=${id}&location=${encodeURIComponent(location)}`;
 
     }
-
-    if(e.target.id==="chatBtn"){
-
-        const id=e.target.dataset.id;
-
-        window.location.href=
-        `/chat-volunteer.html?id=${id}`;
-
-    }
-
 });
     </script>
 </body>
