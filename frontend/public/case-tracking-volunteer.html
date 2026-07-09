@@ -389,6 +389,7 @@ body{
                 <label>Guardian Contact</label>
                 <span id="guardian"></span>
             </div>
+           
 
         </div>
 
@@ -417,6 +418,9 @@ body{
     <button id="mapBtn" class="primary-btn">
         Join Case
     </button>
+     <button class="primary-btn" id="SightingBtn" data-id="">
+    Report Sighting
+</button>
 
 </div>
 
@@ -522,7 +526,7 @@ function displayCase(app){
 
     document.getElementById("mapBtn").dataset.id = app._id;
     document.getElementById("mapBtn").dataset.location = app.LastSeen;
-
+    document.getElementById("SightingBtn").dataset.id = app._id;
     document.getElementById("chatBtn").dataset.id = app._id;
 
 }
@@ -538,6 +542,19 @@ document.addEventListener("click",(e)=>{
         `/map.html?id=${id}&location=${encodeURIComponent(location)}`;
 
     }
+});
+
+document.addEventListener("click",(e)=>{
+
+    if(e.target.id==="SightingBtn"){
+
+        const applicationId = e.target.dataset.id;
+
+        window.location.href =
+        `/sighting-report.html?id=${applicationId}&caseId=${caseId}`;
+
+    }
+
 });
     </script>
 </body>

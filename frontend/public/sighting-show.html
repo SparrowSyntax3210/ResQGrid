@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Sighting Details</h1>
+    <p><strong>Name:</strong> <span id="sighting-name"></span></p>
+    <p><strong>Description:</strong> <span id="sighting-description"></span></p>
+    <p><strong>Location:</strong> <span id="sighting-location"></span></p>
+    <p><strong>Date:</strong> <span id="sighting-date"></span></p>
+    <p><strong>Time:</strong> <span id="sighting-time"></span></p>
+    <p><strong>Photo:</strong> <img id="sighting-photo" src="" alt="Sighting Photo" /></p>
+    <p><strong>Companion Details:</strong> <span id="sighting-companion"></span></p>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+  <script>
+const API = "http://localhost:5000";
+
+const params = new URLSearchParams(window.location.search);
+
+const caseId = params.get("caseId");
+
+if (!caseId) {
+    alert("No case ID found.");
+}
+
+loadSighting();
+
+async function loadSighting() {
+
+    try {
+
+        const res = await fetch(`${API}/volunteer/sightings/${caseId}`, {
+            credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (!data.success) {
+            alert(data.message);
+            return;
+        }
+
+        if (!data.sightings || data.sightings.length === 0) {
+    alert("No sightings found.");
+    return;
+}
+
+displaySighting(data.sightings[0]);
+
+    } catch (err) {
+
+        console.log(err);
+
+    }
+
+}
+
+function displaySighting(sighting) {
+
+    document.getElementById("sighting-name").innerText =
+        sighting.Name;
+
+    document.getElementById("sighting-description").innerText =
+        sighting.Description || "N/A";
+
+    document.getElementById("sighting-location").innerText =
+        sighting.Location;
+
+    document.getElementById("sighting-date").innerText =
+        new Date(sighting.Date).toLocaleDateString();
+
+    document.getElementById("sighting-time").innerText =
+        sighting.Time;
+
+    document.getElementById("sighting-companion").innerText =
+        sighting.CompanionDetails || "None";
+
+    document.getElementById("sighting-photo").src =
+        sighting.Photo
+            ? `${API}/uploads/${sighting.Photo}`
+            : "./images/no-image.png";
+
+}
+
+
+const socket=io(API,{
+    withCredentials:true
+});
+
+socket.on("connect",()=>{
+
+    console.log("Connected",socket.id);
+
+    socket.emit("join_case",caseId);
+
+});
+
+loadSighting();
+</script>
+</body>
+</html>

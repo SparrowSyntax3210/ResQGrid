@@ -1,5 +1,5 @@
 const caseContainer = document.getElementById("caseContainer");
-
+const Report = document.getElementById("Report");
 const profileName = document.querySelector("#profileName h4");
 const profileRole = document.querySelector("#profileName small");
 
@@ -173,6 +173,12 @@ async function loadApplications() {
             </button>
 
             <button
+class="report-btn"
+data-id="${app._id}">
+Reports
+</button>
+
+            <button
               class="close-btn"
               data-id="${app._id}">
               Close
@@ -205,6 +211,7 @@ document.querySelectorAll(".chat-btn").forEach((btn) => {
         window.location.href = `/chat-guardian.html?id=${id}`;
     };
 });
+
 
 function attachHandlers() {
   // TRACK
@@ -264,6 +271,17 @@ function attachHandlers() {
       }
     };
   });
+  
+ document.querySelectorAll(".report-btn").forEach(btn=>{
+
+btn.onclick=()=>{
+
+window.location.href=
+`/sighting-show.html?caseId=${btn.dataset.id}`;
+
+};
+
+});
 
   // CREATE BUTTON
 

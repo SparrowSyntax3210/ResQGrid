@@ -5,260 +5,1038 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ResQGrid</title>
 <link rel="stylesheet" href="./css/style.css">
+<link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+        <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.7/dist/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.3.11/dist/lenis.min.js"></script>
 </head>
 <body>
 
-  <div class="app">
+  <!-- ================= Loader ================= -->
 
-    <button id="signup">SignIn</button>
+  <div class="wind-particles"></div>
 
-    <!-- ABOUT -->
-    <section class="card">
-      <h2 class="card-title">ABOUT RESQGRID</h2>
-      <p class="about-text">
-        ResQGrid is an AI-powered platform that connects communities
-        to find missing persons faster. We combine technology, compassion,
-        and people to bring loved ones home.
-      </p>
+<div class="loader" id="loader">
 
-      <div class="about-grid">
-        <div class="about-item">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/>
-            </svg>
-          </div>
-          <p class="about-item-title">AI-Powered Matching</p>
-          <p class="about-item-sub">Smart technology to find faster</p>
+    <div class="loader-content">
+
+        <h1 class="loader-logo">
+            ResQ<span>Grid</span>
+        </h1>
+
+        <div class="loader-progress">
+
+            <div class="loader-bar" id="loaderBar"></div>
+
         </div>
 
-        <div class="about-item">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <p class="about-item-title">Community Driven</p>
-          <p class="about-item-sub">Thousands of volunteers helping together</p>
+        <div class="loader-number">
+
+            <span id="loaderPercent">0</span>%
+
         </div>
 
-        <div class="about-item">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 21s-8-4.5-8-11.5A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 8 3.5C20 16.5 12 21 12 21z"/>
-            </svg>
-          </div>
-          <p class="about-item-title">Real Impact</p>
-          <p class="about-item-sub">Reuniting families, restoring hope</p>
+    </div>
+
+</div>
+
+   <!--========================-->
+    <!-- Background -->
+    <!--========================-->
+
+    <div class="background">
+
+        <div class="gradient"></div>
+
+        <div class="grid"></div>
+
+        <div class="purple-glow glow-1"></div>
+        <div class="purple-glow glow-2"></div>
+        <div class="blue-glow"></div>
+
+        <div class="fog"></div>
+
+        <div id="particles"></div>
+
+    </div>
+
+
+
+    <!--========================-->
+    <!-- Navbar -->
+    <!--========================-->
+
+    <header>
+
+        <div class="logo">
+
+            <img src="assets/logo.svg" alt="">
+
+            <span>ResQGrid</span>
+
         </div>
-      </div>
+
+        <nav>
+
+            <a href="#">How It Works</a>
+            <a href="#">For Volunteers</a>
+            <a href="#">Safety Tools</a>
+            <a href="#">For Guardians</a>
+            <a href="#">About Us</a>
+
+        </nav>
+
+        <a href="#" class="join-btn">
+
+            Join The Mission
+
+        </a>
+
+    </header>
+
+
+
+    <!--========================-->
+    <!-- Hero -->
+    <!--========================-->
+
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <h1>
+
+                <span class="line">Every Search</span>
+
+                <span class="line">Deserves <span class="highlight">Hope.</span></span>
+
+            </h1>
+
+            <p>
+
+                Connecting families, volunteers and communities
+                to reunite missing people through real-time collaboration.
+
+            </p>
+
+            <div class="buttons">
+
+                <a href="#" class="primary-btn">
+
+                    Report a Sighting
+
+                </a>
+
+                <a href="#" class="secondary-btn">
+
+                    Become a Volunteer
+
+                </a>
+
+            </div>
+
+        </div>
+
+
+
+        <!--========================-->
+        <!-- Center Illustration -->
+        <!--========================-->
+
+        <div class="hero-visual">
+
+            <!-- Radar Rings -->
+
+            <div class="rings">
+
+                <span class="ring"></span>
+                <span class="ring"></span>
+                <span class="ring"></span>
+                <span class="ring"></span>
+
+            </div>
+
+
+
+            <!-- Glow -->
+
+            <div class="pin-glow"></div>
+
+
+
+            <!-- Pin -->
+
+            <img
+                class="pin"
+                src="assets/Hero-img.png"
+                alt="Location Pin">
+
+
+
+            <!-- Floating Cards -->
+
+            <div class="floating-card card-left">
+
+                <span class="status"></span>
+
+                <h4>Verified Sighting</h4>
+
+                <small>2 min ago</small>
+
+            </div>
+
+            <div class="floating-card card-right">
+
+                <span class="status online"></span>
+
+                <h4>Volunteer Nearby</h4>
+
+                <small>1.3 km away</small>
+
+            </div>
+
+            <div class="floating-card card-bottom">
+
+                <h4>Live Cases</h4>
+
+                <strong>1,248</strong>
+
+            </div>
+
+
+
+            <!-- Scan Wave -->
+
+            <div class="scan-wave"></div>
+
+        </div>
+
     </section>
 
-    <!-- HOW IT WORKS -->
-    <section class="card">
-      <h2 class="card-title">HOW IT WORKS</h2>
 
-      <div class="steps-grid">
-        <div class="step">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="4" width="18" height="16" rx="2"/>
-              <path d="M3 9h18"/>
-              <path d="M9 4v16"/>
-            </svg>
-          </div>
-          <p class="step-title">Report / Accept</p>
-          <p class="step-sub">Report or accept a person or a missing mission</p>
+
+    <!--========================-->
+    <!-- Scroll Indicator -->
+    <!--========================-->
+
+    <div class="scroll-indicator">
+
+        <span></span>
+
+    </div>
+
+
+
+    <!--========================-->
+    <!-- Decorative Lights -->
+    <!--========================-->
+
+    <div class="light-beams">
+
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+
+    </div>
+
+
+
+   <section class="how-it-works" id="how">
+
+    <div class="container">
+
+        <div class="section-title">
+            <h2>How It Works</h2>
+            <p>Simple steps that bring us closer to hope.</p>
         </div>
 
-        <div class="arrow">→</div>
+        <div class="timeline">
 
-        <div class="step">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"/>
-              <path d="m21 21-4.35-4.35"/>
-            </svg>
-          </div>
-          <p class="step-title">Search &amp; Explore</p>
-          <p class="step-sub">Volunteers join to help verify leads in their area</p>
+            <div class="line"></div>
+
+            <!-- STEP 1 -->
+            <div class="step">
+                <div class="circle report">
+                    <i class="fa-solid fa-file-circle-plus"></i>
+                </div>
+
+                <div class="content">
+                    <h3>1. Report a Case</h3>
+                    <p>
+                        Share details about the missing person with photos,
+                        location and important information.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="step">
+                <div class="circle spread">
+                    <i class="fa-solid fa-bullhorn"></i>
+                </div>
+
+                <div class="content">
+                    <h3>2. Spread the Word</h3>
+                    <p>
+                        Nearby volunteers instantly receive alerts and begin
+                        sharing verified information.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="step">
+                <div class="circle search">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <div class="content">
+                    <h3>3. Join the Search</h3>
+                    <p>
+                        Volunteers coordinate safely, report sightings and help
+                        search together.
+                    </p>
+                </div>
+            </div>
+
+            <!-- STEP 4 -->
+            <div class="step">
+                <div class="circle hope">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+
+                <div class="content">
+                    <h3>4. Bring Them Home</h3>
+                    <p>
+                        Every lead brings families one step closer to reunion.
+                        Together we restore hope.
+                    </p>
+                </div>
+            </div>
+
         </div>
 
-        <div class="arrow">→</div>
+    </div>
 
-        <div class="step">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-            </svg>
-          </div>
-          <p class="step-title">Report Sightings</p>
-          <p class="step-sub">Submit sightings and communication in real-time</p>
+</section>
+
+<section class="volunteer-section" id="volunteer">
+
+    <div class="volunteer-bg-glow"></div>
+
+    <div class="volunteer-container">
+
+        <!-- LEFT -->
+
+        <div class="volunteer-left">
+
+            <span class="tag">
+                <i class="fa-solid fa-shield-heart"></i>
+                JOIN THE MISSION
+            </span>
+
+            <h2>
+                Become the reason
+                <span>someone comes home.</span>
+            </h2>
+
+            <p>
+                Every search starts with one volunteer willing to help.
+                Receive nearby alerts, coordinate safely with your community,
+                and make a real impact when every second matters.
+            </p>
+
+            <ul class="volunteer-list">
+
+                <li>
+                    <i class="fa-solid fa-location-dot"></i>
+                    Receive nearby emergency alerts
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-users"></i>
+                    Coordinate with verified volunteers
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-award"></i>
+                    Earn trust badges & recognition
+                </li>
+
+                <li>
+                    <i class="fa-solid fa-bolt"></i>
+                    AI assisted search coordination
+                </li>
+
+            </ul>
+
+            <button class="primary-btn btn">
+                Become a Volunteer
+            </button>
+
         </div>
 
-        <div class="arrow">→</div>
+        <!-- RIGHT -->
 
-        <div class="step">
-          <div class="icon-badge">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 1l4 4-4 4"/>
-              <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-              <path d="M7 23l-4-4 4-4"/>
-              <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-            </svg>
-          </div>
-          <p class="step-title">Reunite</p>
-          <p class="step-sub">We confirm and reunite families with their loved ones</p>
-        </div>
-      </div>
-    </section>
+        <div class="volunteer-right">
 
-    <!-- FEATURES -->
-    <section class="card">
-      <h2 class="card-title">FEATURES</h2>
+            <div class="dashboard">
 
-      <div class="features-grid">
-        <div class="feature-item">
-          <div class="icon-badge small icon-red">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2a7 7 0 0 0-7 7c0 5-2 6-2 6h18s-2-1-2-6a7 7 0 0 0-7-7z"/>
-              <path d="M10 21a2 2 0 0 0 4 0"/>
-            </svg>
-          </div>
-          <span>Live Alerts<br><small>Real-time mission notifications</small></span>
-        </div>
+                <div class="dashboard-header">
 
-        <div class="feature-item">
-          <div class="icon-badge small icon-yellow">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
-              <line x1="8" y1="2" x2="8" y2="18"/>
-              <line x1="16" y1="6" x2="16" y2="22"/>
-            </svg>
-          </div>
-          <span>Smart Maps<br><small>Priority grid based location &amp; urgency</small></span>
-        </div>
+                    <div class="status-dot"></div>
 
-        <div class="feature-item">
-          <div class="icon-badge small icon-green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-            </svg>
-          </div>
-          <span>In-App Chat &amp; Call<br><small>Connect with volunteers instantly</small></span>
-        </div>
+                    <span>Volunteer Dashboard</span>
 
-        <div class="feature-item">
-          <div class="icon-badge small icon-purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="8" r="7"/>
-              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
-            </svg>
-          </div>
-          <span>XP &amp; Leaderboard<br><small>Earn XP and climb the leaderboard</small></span>
-        </div>
-      </div>
-    </section>
+                </div>
 
-    <!-- IMPACT -->
-    <section class="card">
-      <h2 class="card-title">IMPACT</h2>
+                <div class="dashboard-main">
 
-      <div class="impact-grid">
-        <div class="impact-item">
-          <div class="icon-badge small icon-purple">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-              <circle cx="9" cy="7" r="4"/>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-            </svg>
-          </div>
-          <p class="impact-number" data-target="25000" data-suffix="+">0</p>
-          <p class="impact-label">Active Volunteers</p>
+                    <div class="avatar">
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                    </div>
+
+                    <h3>Active Volunteer</h3>
+
+                    <p>Verified Community Member</p>
+
+                </div>
+
+                <div class="dashboard-grid">
+
+                    <div class="stat-card">
+
+                        <h4>12,493</h4>
+
+                        <span>Active Volunteers</span>
+
+                    </div>
+
+                    <div class="stat-card">
+
+                        <h4>860+</h4>
+
+                        <span>Families Helped</span>
+
+                    </div>
+
+                    <div class="stat-card">
+
+                        <h4>154</h4>
+
+                        <span>Live Searches</span>
+
+                    </div>
+
+                    <div class="stat-card">
+
+                        <h4>98%</h4>
+
+                        <span>Trust Score</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="floating-badge badge3">
+
+                <i class="fa-solid fa-bolt"></i>
+
+                Instant Alert
+
+            </div>
+
         </div>
 
-        <div class="impact-item">
-          <div class="icon-badge small icon-green">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-          </div>
-          <p class="impact-number" data-target="8500" data-suffix="+">0</p>
-          <p class="impact-label">Missions Completed</p>
+    </div>
+
+</section>
+
+<section class="safety-tools" id="safety">
+
+    <div class="safety-bg"></div>
+
+    <div class="container">
+
+        <!-- Heading -->
+
+        <div class="section-title">
+
+            <span class="eyebrow">
+                BUILT FOR EVERY VOLUNTEER
+            </span>
+
+            <h2>Volunteer Safety Suite</h2>
+
+            <p>
+                Every volunteer is equipped with intelligent tools that improve
+                coordination, communication and safety during rescue operations.
+            </p>
+
         </div>
 
-        <div class="impact-item">
-          <div class="icon-badge small icon-orange">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 0 1 18 0z"/>
-              <circle cx="12" cy="10" r="3"/>
-            </svg>
-          </div>
-          <p class="impact-number" data-target="3200" data-suffix="+">0</p>
-          <p class="impact-label">People Reunited</p>
+    </div>
+
+    <!-- Progress -->
+
+    <div class="progress-indicator">
+
+        <span id="currentCard">01</span>
+
+        <div class="progress-line">
+            <div class="progress-fill"></div>
         </div>
 
-        <div class="impact-item">
-          <div class="icon-badge small icon-pink">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-            </svg>
-          </div>
-          <p class="impact-number" data-target="98" data-suffix="%">0</p>
-          <p class="impact-label">Success Rate</p>
+        <span>06</span>
+
+    </div>
+
+    <!-- Horizontal Cards -->
+
+    <div class="horizontal-wrapper">
+
+        <div class="cards-track">
+
+            <!-- Card 1 -->
+
+            <article class="safety-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+
+                <span class="card-number">01</span>
+
+                <h3>Live Alerts</h3>
+
+                <p>
+                    Receive verified missing person alerts instantly based on
+                    your location.
+                </p>
+
+                <ul>
+
+                    <li><i class="fa-solid fa-check"></i> GPS Based</li>
+
+                    <li><i class="fa-solid fa-check"></i> Instant Notifications</li>
+
+                    <li><i class="fa-solid fa-check"></i> Verified Cases</li>
+
+                </ul>
+
+            </article>
+
+            <!-- Card 2 -->
+
+            <article class="safety-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+
+                <span class="card-number">02</span>
+
+                <h3>Safe Navigation</h3>
+
+                <p>
+                    Navigate assigned search areas with optimized and secure
+                    routes.
+                </p>
+
+                <ul>
+
+                    <li><i class="fa-solid fa-check"></i> Smart Routes</li>
+
+                    <li><i class="fa-solid fa-check"></i> Team Guidance</li>
+
+                    <li><i class="fa-solid fa-check"></i> Offline Maps</li>
+
+                </ul>
+
+            </article>
+
+            <!-- Card 3 -->
+
+            <article class="safety-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+
+                <span class="card-number">03</span>
+
+                <h3>Emergency SOS</h3>
+
+                <p>
+                    Send an emergency signal to nearby volunteers with one tap.
+                </p>
+
+                <ul>
+
+                    <li><i class="fa-solid fa-check"></i> One Tap SOS</li>
+
+                    <li><i class="fa-solid fa-check"></i> Live Coordinates</li>
+
+                    <li><i class="fa-solid fa-check"></i> Instant Response</li>
+
+                </ul>
+
+            </article>
+
+            <!-- Card 4 -->
+
+            <article class="safety-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+
+                <span class="card-number">04</span>
+
+                <h3>Live Tracking</h3>
+
+                <p>
+                    Securely share your live location with your assigned team.
+                </p>
+
+                <ul>
+
+                    <li><i class="fa-solid fa-check"></i> Real Time</li>
+
+                    <li><i class="fa-solid fa-check"></i> Private Sharing</li>
+
+                    <li><i class="fa-solid fa-check"></i> Accurate GPS</li>
+
+                </ul>
+
+            </article>
+
+            <!-- Card 5 -->
+
+            <article class="safety-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+
+                <span class="card-number">05</span>
+
+                <h3>Team Coordination</h3>
+
+                <p>
+                    Coordinate with nearby volunteers through shared missions
+                    and updates.
+                </p>
+
+                <ul>
+
+                    <li><i class="fa-solid fa-check"></i> Shared Tasks</li>
+
+                    <li><i class="fa-solid fa-check"></i> Live Updates</li>
+
+                    <li><i class="fa-solid fa-check"></i> Voice Ready</li>
+
+                </ul>
+
+            </article>
+
+            <!-- Card 6 -->
+
+            <article class="safety-card">
+
+                <div class="card-icon">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+
+                <span class="card-number">06</span>
+
+                <h3>Volunteer Protection</h3>
+
+                <p>
+                    Built-in safety protocols ensure every search mission
+                    remains organized and secure.
+                </p>
+
+                <ul>
+
+                    <li><i class="fa-solid fa-check"></i> Safety First</li>
+
+                    <li><i class="fa-solid fa-check"></i> Verified Teams</li>
+
+                    <li><i class="fa-solid fa-check"></i> Emergency Backup</li>
+
+                </ul>
+
+            </article>
+
         </div>
-      </div>
-    </section>
 
-    <!-- CONTACT -->
-    <section class="card">
-      <h2 class="card-title">CONTACT US</h2>
+    </div>
 
-      <div class="contact-body">
-        <p class="contact-sub">We're here to help.<br>Reach out for any queries or support.</p>
+</section>
 
-        <div class="contact-list">
-          <a href="mailto:hello@resqgrid.com" class="contact-row">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16v16H4z" opacity="0"/>
-              <path d="M22 6c0-1.1-.9-2-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h16a2 2 0 0 0 2-2V6z"/>
-              <polyline points="22 6 12 13 2 6"/>
-            </svg>
-            <span>hello@resqgrid.com</span>
-          </a>
+<section class="guardian-section" id="guardian">
 
-          <a href="tel:+919876543210" class="contact-row">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
-            <span>+91 98765 43210</span>
-          </a>
+    <div class="guardian-bg"></div>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <span class="eyebrow">
+                FOR FAMILIES
+            </span>
+
+            <h2>Why Families Choose ResQGrid</h2>
+
+            <p>
+                When every second matters, ResQGrid helps families coordinate
+                trusted volunteers, receive verified updates and search together
+                with confidence.
+            </p>
+
         </div>
 
-        <div class="social-row">
-          <a href="#" class="social-icon" aria-label="Facebook">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.78-3.89 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>
-          </a>
-          <a href="#" class="social-icon" aria-label="Twitter">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 4.99c-.85.38-1.75.63-2.7.75a4.7 4.7 0 0 0 2.06-2.6 9.4 9.4 0 0 1-2.98 1.14 4.68 4.68 0 0 0-8 4.27A13.28 13.28 0 0 1 1.67 3.6a4.68 4.68 0 0 0 1.45 6.25c-.77-.02-1.5-.24-2.13-.59v.06c0 2.28 1.62 4.18 3.77 4.61-.4.11-.82.17-1.25.17-.3 0-.6-.03-.89-.08a4.68 4.68 0 0 0 4.37 3.25A9.38 9.38 0 0 1 0 19.54a13.24 13.24 0 0 0 7.17 2.1c8.6 0 13.31-7.13 13.31-13.31 0-.2 0-.4-.02-.6A9.5 9.5 0 0 0 23 4.99z"/></svg>
-          </a>
-          <a href="#" class="social-icon" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
-          </a>
-          <a href="#" class="social-icon" aria-label="LinkedIn">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
-          </a>
+        <div class="guardian-wrapper">
+
+            <!-- LEFT -->
+
+            <div class="guardian-left">
+
+                <div class="guardian-glow"></div>
+
+                <div class="guardian-circle">
+
+                    <img src="images/pin.png" alt="ResQGrid">
+
+                </div>
+
+                <div class="quote-card">
+
+                    <i class="fa-solid fa-heart"></i>
+
+                    <p>
+                        No family should ever search alone.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+
+            <div class="guardian-right">
+
+                <div class="guardian-card">
+
+                    <div class="icon">
+                        <i class="fa-solid fa-shield-check"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Verified Reports</h3>
+
+                        <p>
+                            Every report is reviewed before reaching the
+                            volunteer network.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="guardian-card">
+
+                    <div class="icon">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Privacy First</h3>
+
+                        <p>
+                            Sensitive information stays protected while only
+                            essential search details are shared.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="guardian-card">
+
+                    <div class="icon">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Live Updates</h3>
+
+                        <p>
+                            Track verified progress and volunteer activity
+                            throughout the search.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="guardian-card">
+
+                    <div class="icon">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Community Powered</h3>
+
+                        <p>
+                            Reach nearby volunteers instead of relying only on
+                            personal contacts.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="guardian-card">
+
+                    <div class="icon">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>Faster Coordination</h3>
+
+                        <p>
+                            Nearby volunteers receive alerts quickly to begin
+                            organized search efforts.
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <div class="guardian-card">
+
+                    <div class="icon">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
+
+                    <div>
+
+                        <h3>You're Not Alone</h3>
+
+                        <p>
+                            Stay connected with volunteers and receive support
+                            every step of the way.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
-    </section>
 
-  </div>
+    </div>
 
-<script src="./js/script.js"></script>
+</section>
+
+<section class="about-section" id="about">
+
+    <div class="about-bg"></div>
+
+    <div class="container">
+
+        <div class="about-header">
+
+            <span class="eyebrow">
+                WHO WE ARE
+            </span>
+
+            <h2>
+                Technology with Humanity at its Core
+            </h2>
+
+            <p>
+                ResQGrid empowers communities to work together during missing
+                person searches by connecting volunteers, technology and hope
+                into one unified rescue network.
+            </p>
+
+        </div>
+
+        <!-- Center Visual -->
+
+        <div class="about-visual">
+
+            <div class="about-glow"></div>
+
+            <div class="about-circle">
+
+                <img src="images/pin.png" alt="ResQGrid">
+
+            </div>
+
+        </div>
+
+        <!-- Mission -->
+
+        <div class="mission-grid">
+
+            <div class="mission-card">
+
+                <i class="fa-solid fa-heart"></i>
+
+                <h3>Our Mission</h3>
+
+                <p>
+                    Build the world's fastest volunteer powered response network
+                    for missing person cases.
+                </p>
+
+            </div>
+
+            <div class="mission-card">
+
+                <i class="fa-solid fa-earth-asia"></i>
+
+                <h3>Our Vision</h3>
+
+                <p>
+                    A future where every community can respond instantly when
+                    someone goes missing.
+                </p>
+
+            </div>
+
+            <div class="mission-card">
+
+                <i class="fa-solid fa-users"></i>
+
+                <h3>Community</h3>
+
+                <p>
+                    Every volunteer becomes a trusted part of one coordinated
+                    search network.
+                </p>
+
+            </div>
+
+            <div class="mission-card">
+
+                <i class="fa-solid fa-microchip"></i>
+
+                <h3>Technology</h3>
+
+                <p>
+                    Intelligent alerts, live coordination and verified
+                    information save valuable time.
+                </p>
+
+            </div>
+
+        </div>
+
+        <!-- Impact -->
+
+        <div class="impact-grid">
+
+            <div class="impact-box">
+
+                <h3 class="impact-number" data-target="10000">0</h3>
+
+                <span>Future Volunteers</span>
+
+            </div>
+
+            <div class="impact-box">
+
+                <h3 class="impact-number" data-target="500">0</h3>
+
+                <span>Target Cases</span>
+
+            </div>
+
+            <div class="impact-box">
+
+                <h3 class="impact-number" data-target="50">0</h3>
+
+                <span>Future Cities</span>
+
+            </div>
+
+            <div class="impact-box">
+
+                <h3>24/7</h3>
+
+                <span>Emergency Response</span>
+
+            </div>
+
+        </div>
+
+        <!-- CTA -->
+
+        <div class="about-cta">
+
+            <h2>
+                Every Volunteer Makes a Difference.
+            </h2>
+
+            <p>
+                Join thousands of people working together to reunite families
+                and bring hope back home.
+            </p>
+
+            <div class="buttons">
+
+                <button class="primary-btn btn">
+                    Become a Volunteer
+                </button>
+
+                <button class="secondary-btn btn">
+                    Report a Case
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script src="js/particles.js"></script>
+<script src="js/hero.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/loader.js"></script>
+<script src="js/main.js"></script>
+<script src="js/forvolunteer.js"></script>
+<script src="js/safety.js"></script>
+<script src="js/aboutus.js"></script>
+<script src="js/guardian-hero.js"></script>
 </body>
 </html>

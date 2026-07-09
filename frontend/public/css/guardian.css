@@ -837,15 +837,10 @@ header p {
 .pin {
   width: 18px;
   height: 18px;
-
   border-radius: 50%;
-
   background: #ef4444;
-
   position: absolute;
-
   box-shadow: 0 0 18px rgba(239, 68, 68, 0.8);
-
   animation: pulse 2s infinite;
 }
 

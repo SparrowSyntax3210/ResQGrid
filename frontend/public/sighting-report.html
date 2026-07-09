@@ -321,26 +321,26 @@
     </div>
   </div>
 
-  <form id="sightingForm">
+  <form id="sightingForm" method="POST" action="/volunteer/sightings">
 
     <div class="field">
       <label for="personName">Missing Person's Name</label>
       <div class="input-wrap">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
-        <input type="text" id="personName" placeholder="e.g. Harsh Kumar" required>
+        <input type="text" name="Name" id="personName" placeholder="e.g. Harsh Kumar" required>
       </div>
     </div>
 
     <div class="field">
       <label for="description">What did you see?</label>
-      <textarea id="description" placeholder="Describe clothing, behavior, direction of travel, physical condition..." required></textarea>
+      <textarea id="description" name="Description" placeholder="Describe clothing, behavior, direction of travel, physical condition..." required></textarea>
     </div>
 
     <div class="field">
       <label for="locationInput">Location Sighted</label>
       <div class="input-wrap">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-6.1 7-11a7 7 0 10-14 0c0 4.9 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-        <input type="text" id="locationInput" placeholder="e.g. GTB Nagar, Delhi" required>
+        <input type="text" name="Location" id="locationInput" placeholder="e.g. GTB Nagar, Delhi" required>
         <button type="button" class="mini-btn" id="useLocationBtn">Use current</button>
       </div>
     </div>
@@ -350,11 +350,11 @@
       <div class="row-2">
         <div class="input-wrap">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
-          <input type="date" id="dateInput" required>
+          <input type="date" name="Date" id="dateInput" required>
         </div>
         <div class="input-wrap">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
-          <input type="time" id="timeInput" required>
+          <input type="time" name="Time" id="timeInput" required>
         </div>
       </div>
     </div>
@@ -370,7 +370,7 @@
 
     <div class="field conditional" id="companionField" hidden>
       <label for="companionDetails">Describe the other person(s)</label>
-      <textarea id="companionDetails" placeholder="Appearance, approximate age, relationship if known, how they were behaving toward the missing person..."></textarea>
+      <textarea id="companionDetails" name="CompanionDetails" placeholder="Appearance, approximate age, relationship if known, how they were behaving toward the missing person..."></textarea>
     </div>
 
     <div class="field">
@@ -499,6 +499,40 @@
       companionField.hidden = true;
     }, 600);
   });
+
+  const API = "http://localhost:5000";
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const params = new URLSearchParams(window.location.search);
+    const caseId = params.get("caseId");
+
+    const formData = {
+        caseId,
+        Name: form.Name.value,
+        Description: form.Description.value,
+        Location: form.Location.value,
+        Date: form.Date.value,
+        Time: form.Time.value,
+        CompanionDetails: form.CompanionDetails.value
+    };
+
+    console.log(formData);
+
+    const res = await fetch(`${API}/volunteer/sightings`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(formData)
+    });
+
+    const data = await res.json();
+
+    console.log(data);
+});
 </script>
 
 </body>

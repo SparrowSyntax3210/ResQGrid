@@ -4,6 +4,7 @@ const authrouter = require("../routers/auth.routes")
 const path = require("path")
 const session = require("express-session");
 const guardianroutes = require("../routers/guardian.routes")
+const VolunteerRoutes = require("../routers/volunteer.routes");
 
 app.use(
     session({
@@ -11,9 +12,9 @@ app.use(
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 1000 * 60 * 60 * 24, // 1 day
+            maxAge: 1000 * 60 * 60 * 24,
             httpOnly: true,
-            secure: false, // true if using HTTPS
+            secure: false, 
         },
     })
 );
@@ -22,9 +23,9 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.static(path.join(__dirname, "../../frontend/public")))
-app.use("/auth" , authrouter)
-app.use("/guardian" , guardianroutes)
-app.use("/volunteer" , require("../routers/volunteer.routes"))
+app.use("/auth" , authrouter);
+app.use("/guardian" , guardianroutes);
+app.use("/volunteer" , VolunteerRoutes);
 app.use("/uploads",express.static(path.join(__dirname, "../uploads")));
 
 app.get("/test" , (req,res)=>{
