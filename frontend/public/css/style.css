@@ -215,22 +215,30 @@ button {
 /*==============================*/
 
 header {
-  position: absolute;
-
+  position: fixed;
   top: 0;
   left: 0;
-
   width: 100%;
-  height: 90px;
+  z-index: 1000;
 
   display: flex;
-
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 
-  padding: 0 70px;
+  padding: 10px 40px;
+  backdrop-filter: blur(12px);        /* modern glass effect */
+  -webkit-backdrop-filter: blur(12px);
+}
 
-  z-index: 100;
+nav {
+  display: flex;
+  gap: 50px;
+}
+
+nav a {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /*==============================*/
@@ -250,16 +258,6 @@ header {
 
 /*==============================*/
 
-nav {
-  display: flex;
-  gap: 50px;
-}
-
-nav a {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-}
 
 /*==============================*/
 
@@ -357,6 +355,7 @@ nav a {
 }
 
 .secondary-btn {
+  color: white;
   padding: 18px 34px;
 
   border-radius: 14px;

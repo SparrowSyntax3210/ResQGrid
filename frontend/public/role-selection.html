@@ -178,7 +178,7 @@
                     </svg>
                 </div>
             
-                <div class="role-title">Guardian</div>
+                <div class="role-title" data-role="Guardian">Guardian</div>
                 <div class="role-description">
                     Report missing loved ones and track progress.
                 </div>
@@ -193,7 +193,7 @@
                     </svg>
                 </div>
             
-                <div class="role-title">Volunteer</div>
+                <div class="role-title" data-role="Volunteer">Volunteer</div>
                 <div class="role-description">
                     Search, help and bring hope to families.
                 </div>
@@ -205,24 +205,25 @@
         </div>
     </div>
     <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const guardianBtn = document.getElementById("BtnGuardian");
-        const volunteerBtn = document.getElementById("BtnVolunteer");
-    
-        guardianBtn.addEventListener("click", () => {
-            localStorage.setItem("role" , guardianBtn.dataset.role);
-            console.log("Guardian selected");
-            window.location.href="register.html"
-        });
-    
-        volunteerBtn.addEventListener("click", () => {
-            localStorage.setItem("role" , volunteerBtn.dataset.role);
-            console.log("Volunteer selected");
-            window.location.href="register.html"
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const guardianBtn = document.getElementById("BtnGuardian");
+    const volunteerBtn = document.getElementById("BtnVolunteer");
 
-        
-    });
-    </script>
+    function redirectWithRole(button) {
+        const role = button.dataset.role;
+
+        // Optional: Keep localStorage if you still need it
+        localStorage.setItem("role", role);
+
+        console.log(`${role} selected`);
+
+        // Redirect with query parameter
+        window.location.href = `http://localhost:5000/register.html?role=${encodeURIComponent(role)}`;
+    }
+
+    guardianBtn.addEventListener("click", () => redirectWithRole(guardianBtn));
+    volunteerBtn.addEventListener("click", () => redirectWithRole(volunteerBtn));
+});
+</script>
 </body>
 </html>
