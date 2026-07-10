@@ -425,15 +425,20 @@ router.get("/application", async (req, res) => {
     }
 
     const applications = await Application.find({
+      guardianId: req.session.user.id,
       status: "active",
     }).sort({ priorityScore: -1 });
 
-    console.log("Sending Active Cases:", applications.length);
+    console.log(
+      `Guardian ${req.session.user.id} has ${applications.length} active cases`
+    );
 
     res.json(applications);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server Error" });
+    console.error(error);
+    res.status(500).json({
+      message: "Server Error",
+    });
   }
 });
 

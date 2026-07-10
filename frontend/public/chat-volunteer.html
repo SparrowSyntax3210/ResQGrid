@@ -8,295 +8,250 @@
     <script src="http://localhost:5000/socket.io/socket.io.js"></script>
 
     <style>
-      *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:"Inter",sans-serif;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
 
-:root{
+      :root {
+        --bg: #090d16;
+        --card: #131d2f;
+        --card2: #101828;
 
-    --bg:#090d16;
-    --card:#131d2f;
-    --card2:#101828;
+        --border: #293246;
 
-    --border:#293246;
+        --purple: #7c3aed;
+        --purple2: #5b21b6;
 
-    --purple:#7C3AED;
-    --purple2:#5B21B6;
+        --text: #ffffff;
+        --muted: #98a4b7;
+      }
 
-    --text:#ffffff;
-    --muted:#98a4b7;
+      body {
+        background: transparent;
 
-}
+        height: 100vh;
 
-body{
+        display: flex;
 
-    background:transparent;
+        justify-content: center;
 
-    height:100vh;
+        align-items: center;
+      }
 
-    display:flex;
+      .chat-container {
+        width: 100%;
+        height: 100%;
 
-    justify-content:center;
+        background: var(--card);
 
-    align-items:center;
+        border: 1px solid var(--border);
 
-}
+        display: flex;
 
-.chat-container{
+        flex-direction: column;
 
-    width:100%;
-    height:100%;
+        overflow: hidden;
+      }
 
-    background:var(--card);
+      .header-left h2 {
+        font-size: 20px;
 
-    border:1px solid var(--border);
+        margin-bottom: 4px;
+      }
 
-    display:flex;
+      .header-left p {
+        color: rgba(255, 255, 255, 0.8);
 
-    flex-direction:column;
+        font-size: 13px;
+      }
 
-    overflow:hidden;
+      #onlineCount {
+        font-weight: 600;
 
-}
+        background: rgba(255, 255, 255, 0.15);
 
-.header-left h2{
+        padding: 8px 14px;
 
-    font-size:20px;
+        border-radius: 30px;
+      }
 
-    margin-bottom:4px;
+      .messages {
+        flex: 1;
 
-}
+        overflow-y: auto;
 
-.header-left p{
+        padding: 20px;
 
-    color:rgba(255,255,255,.8);
+        display: flex;
 
-    font-size:13px;
+        flex-direction: column;
 
-}
+        gap: 12px;
 
-#onlineCount{
+        background: var(--card2);
+      }
 
-    font-weight:600;
+      .message {
+        max-width: 75%;
 
-    background:rgba(255,255,255,.15);
+        padding: 14px 16px;
 
-    padding:8px 14px;
+        border-radius: 16px;
 
-    border-radius:30px;
+        word-break: break-word;
+      }
 
-}
+      .self {
+        align-self: flex-end;
 
-.messages{
+        background: linear-gradient(90deg, var(--purple), var(--purple2));
 
-    flex:1;
+        color: white;
 
-    overflow-y:auto;
+        border-bottom-right-radius: 4px;
+      }
 
-    padding:20px;
+      .other {
+        align-self: flex-start;
 
-    display:flex;
+        background: #1a2538;
 
-    flex-direction:column;
+        color: white;
 
-    gap:12px;
+        border: 1px solid var(--border);
 
-    background:var(--card2);
+        border-bottom-left-radius: 4px;
+      }
 
-}
+      .sender {
+        font-size: 13px;
 
-.message{
+        font-weight: 600;
 
-    max-width:75%;
+        margin-bottom: 8px;
 
-    padding:14px 16px;
+        color: #c4b5fd;
+      }
 
-    border-radius:16px;
+      .time {
+        font-size: 11px;
 
-    word-break:break-word;
+        opacity: 0.75;
 
-}
+        margin-top: 8px;
 
-.self{
+        text-align: right;
+      }
 
-    align-self:flex-end;
+      .typing {
+        height: 28px;
 
-    background:linear-gradient(90deg,var(--purple),var(--purple2));
+        padding: 6px 18px;
 
-    color:white;
+        color: var(--muted);
 
-    border-bottom-right-radius:4px;
+        font-size: 13px;
 
-}
+        background: var(--card);
+      }
 
-.other{
+      .footer {
+        display: flex;
 
-    align-self:flex-start;
+        gap: 12px;
 
-    background:#1a2538;
+        padding: 16px;
 
-    color:white;
+        background: var(--card);
 
-    border:1px solid var(--border);
+        border-top: 1px solid var(--border);
+      }
 
-    border-bottom-left-radius:4px;
+      .footer input {
+        flex: 1;
 
-}
+        background: #1a2538;
 
-.sender{
+        border: 1px solid var(--border);
 
-    font-size:13px;
+        color: white;
 
-    font-weight:600;
+        padding: 14px 18px;
 
-    margin-bottom:8px;
+        border-radius: 14px;
 
-    color:#c4b5fd;
+        outline: none;
 
-}
+        font-size: 15px;
+      }
 
-.time{
+      .footer input::placeholder {
+        color: var(--muted);
+      }
 
-    font-size:11px;
+      .footer button {
+        width: 120px;
 
-    opacity:.75;
+        border: none;
 
-    margin-top:8px;
+        border-radius: 14px;
 
-    text-align:right;
+        background: linear-gradient(90deg, var(--purple), var(--purple2));
 
-}
+        color: white;
 
-.typing{
+        font-size: 15px;
 
-    height:28px;
+        font-weight: 600;
 
-    padding:6px 18px;
+        cursor: pointer;
 
-    color:var(--muted);
+        transition: 0.3s;
+      }
 
-    font-size:13px;
+      .footer button:hover {
+        transform: translateY(-2px);
+      }
 
-    background:var(--card);
+      .system {
+        align-self: center;
 
-}
+        background: rgba(124, 58, 237, 0.15);
 
-.footer{
+        border: 1px solid rgba(124, 58, 237, 0.35);
 
-    display:flex;
+        color: #d8b4fe;
 
-    gap:12px;
+        padding: 10px 16px;
 
-    padding:16px;
+        border-radius: 30px;
 
-    background:var(--card);
+        font-size: 13px;
+      }
 
-    border-top:1px solid var(--border);
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
 
-}
+      ::-webkit-scrollbar-thumb {
+        background: #39445d;
 
-.footer input{
+        border-radius: 20px;
+      }
 
-    flex:1;
-
-    background:#1a2538;
-
-    border:1px solid var(--border);
-
-    color:white;
-
-    padding:14px 18px;
-
-    border-radius:14px;
-
-    outline:none;
-
-    font-size:15px;
-
-}
-
-.footer input::placeholder{
-
-    color:var(--muted);
-
-}
-
-.footer button{
-
-    width:120px;
-
-    border:none;
-
-    border-radius:14px;
-
-    background:linear-gradient(90deg,var(--purple),var(--purple2));
-
-    color:white;
-
-    font-size:15px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.3s;
-
-}
-
-.footer button:hover{
-
-    transform:translateY(-2px);
-
-}
-
-.system{
-
-    align-self:center;
-
-    background:rgba(124,58,237,.15);
-
-    border:1px solid rgba(124,58,237,.35);
-
-    color:#d8b4fe;
-
-    padding:10px 16px;
-
-    border-radius:30px;
-
-    font-size:13px;
-
-}
-
-::-webkit-scrollbar{
-
-    width:8px;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-    background:#39445d;
-
-    border-radius:20px;
-
-}
-
-::-webkit-scrollbar-track{
-
-    background:transparent;
-
-}
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
     </style>
   </head>
 
   <body>
     <div class="chat-container">
       <div class="header">
-        <div class="header-left">
-        </div>
+        <div class="header-left"></div>
       </div>
 
       <div id="messages" class="messages"></div>
@@ -414,7 +369,7 @@ Case : <b>${app.Name}</b>
           return;
         }
 
-        const mine = currentUser && msg.sender === currentUser.name;
+        const mine = currentUser && msg.senderId === currentUser.id;
 
         div.className = `message ${mine ? "self" : "other"}`;
 
@@ -465,8 +420,18 @@ ${new Date(msg.time).toLocaleTimeString([], {
       });
 
       socket.on("receive_message", (msg) => {
-        addMessage(msg);
-      });
+
+    addMessage(msg);
+
+    if (currentUser && msg.senderId === currentUser.id) return;
+
+    console.log("Sending notification to parent");
+
+    window.parent.postMessage({
+        type: "NEW_CHAT_MESSAGE"
+    }, "*");
+
+});
 
       socket.on("online_users", (count) => {
         online.textContent = count;
@@ -492,14 +457,12 @@ ${new Date(msg.time).toLocaleTimeString([], {
         if (text === "") return;
 
         socket.emit("send_message", {
-          caseId,
-
-          sender: currentUser.name,
-
-          role: currentUser.role,
-
-          text,
-        });
+    caseId,
+    senderId: currentUser.id, 
+    sender: currentUser.name,
+    role: currentUser.role,
+    text
+});
 
         input.value = "";
 

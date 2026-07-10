@@ -378,7 +378,7 @@
       <h1 class="welcome-title">Create account!</h1>
       <p class="welcome-sub">Register to join the mission.</p>
 
-      <form action="/auth/register" method="POST">
+      <form id="registerForm" action="/auth/register" method="POST">
         <div class="field-group">
           <div class="field-label">
             <span>Name</span>
@@ -453,27 +453,56 @@
   </div>
 
 <script>
-  const togglePassword = document.getElementById('togglePassword');
-  const passwordInput = document.getElementById('password');
-  const eyeIcon = document.getElementById('eyeIcon');
+document.addEventListener("DOMContentLoaded", () => {
 
-  togglePassword.addEventListener('click', function () {
-    const isHidden = passwordInput.type === 'password';
-    passwordInput.type = isHidden ? 'text' : 'password';
+    // ==========================
+    // Password Toggle
+    // ==========================
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
 
-    eyeIcon.innerHTML = isHidden
-      ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A9.13 9.13 0 0 1 12 4c7 0 11 7 11 7a21.7 21.7 0 0 1-3.16 4.53M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-      : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
+    togglePassword.addEventListener("click", () => {
+        const hidden = passwordInput.type === "password";
 
-    togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
-  });
-  const role = localStorage.getItem("role");
+        passwordInput.type = hidden ? "text" : "password";
 
-document.getElementById("inputrole").value = role;
+        eyeIcon.innerHTML = hidden
+            ? `<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A9.13 9.13 0 0 1 12 4c7 0 11 7 11 7a21.7 21.7 0 0 1-3.16 4.53M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+            : `<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>`;
 
+        togglePassword.setAttribute(
+            "aria-label",
+            hidden ? "Hide password" : "Show password"
+        );
+    });
 
-const form = document.getElementById("registerForm");
+    // ==========================
+    // Role Handling
+    // ==========================
+    const params = new URLSearchParams(window.location.search);
+    let role = params.get("role");
 
+    if (role) {
+        role = role.toLowerCase();
+        localStorage.setItem("role", role);
+    } else {
+        role = localStorage.getItem("role");
+    }
+
+    if (!role) {
+        role = "guardian";
+        localStorage.setItem("role", role);
+    }
+
+    // Set hidden input value
+    document.getElementById("inputrole").value = role;
+
+    console.log("Selected Role:", role);
+    console.log("Hidden Input:", document.getElementById("inputrole").value);
+    console.log("LocalStorage:", localStorage.getItem("role"));
+
+});
 </script>
 
 </body>

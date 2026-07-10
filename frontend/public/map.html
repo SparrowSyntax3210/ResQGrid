@@ -24,124 +24,134 @@
         font-size: 16px;
         color: black;
       }
-      #chatToggle{
+      #chatToggle {
+        position: absolute;
 
-    position:absolute;
+        bottom: 30px;
 
-    bottom:30px;
+        right: 30px;
 
-    right:30px;
+        z-index: 1000;
 
-    z-index:1000;
+        padding: 14px 24px;
 
-    padding:14px 24px;
+        border: none;
 
-    border:none;
+        border-radius: 14px;
 
-    border-radius:14px;
+        background: #7c3aed;
 
-    background:#7C3AED;
+        color: white;
 
-    color:white;
+        font-size: 16px;
 
-    font-size:16px;
+        cursor: pointer;
 
-    cursor:pointer;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+      }
 
-    box-shadow:0 8px 30px rgba(0,0,0,.3);
+      #chatOverlay {
+        position: absolute;
 
-}
+        top: 50%;
 
-#chatOverlay{
+        left: 50%;
 
-    position:absolute;
+        transform: translate(-50%, -50%);
 
-    top:50%;
+        width: 600px;
 
-    left:50%;
+        height: 600px;
 
-    transform:translate(-50%,-50%);
+        background: white;
 
-    width:600px;
+        border-radius: 18px;
 
-    height:600px;
+        overflow: hidden;
 
-    background:white;
+        display: none;
 
-    border-radius:18px;
+        z-index: 9999;
 
-    overflow:hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      }
 
-    display:none;
+      .chat-header {
+        height: 55px;
 
-    z-index:9999;
+        background: #7c3aed;
 
-    box-shadow:0 20px 60px rgba(0,0,0,.45);
+        color: white;
 
-}
+        display: flex;
 
-.chat-header{
+        justify-content: space-between;
 
-    height:55px;
+        align-items: center;
 
-    background:#7C3AED;
+        padding: 0 18px;
+      }
 
-    color:white;
+      .chat-header button {
+        border: none;
 
-    display:flex;
+        background: none;
 
-    justify-content:space-between;
+        color: white;
 
-    align-items:center;
+        font-size: 22px;
 
-    padding:0 18px;
+        cursor: pointer;
+      }
 
-}
+      #chatFrame {
+        width: 100%;
 
-.chat-header button{
+        height: 545px;
+      }
 
-    border:none;
+      #chatToggle {
+        position: relative;
+      }
 
-    background:none;
+      .chat-badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
 
-    color:white;
+        width: 22px;
+        height: 22px;
 
-    font-size:22px;
+        border-radius: 50%;
 
-    cursor:pointer;
+        background: #ff3b30;
+        color: white;
 
-}
+        display: none;
 
-#chatFrame{
+        justify-content: center;
+        align-items: center;
 
-    width:100%;
-
-    height:545px;
-
-}
+        font-size: 12px;
+        font-weight: 700;
+      }
     </style>
   </head>
 
   <body>
     <div id="map"></div>
     <button id="chatToggle">
-    💬 Chat
-</button>
+      💬 Chat
+      <span id="chatBadge" class="chat-badge">0</span>
+    </button>
 
-<div id="chatOverlay">
-
-    <div class="chat-header">
-
+    <div id="chatOverlay">
+      <div class="chat-header">
         <button id="closeChat">✕</button>
+      </div>
+
+      <iframe id="chatFrame" src="" frameborder="0"> </iframe>
     </div>
-
-    <iframe
-        id="chatFrame"
-        src=""
-        frameborder="0">
-    </iframe>
-
-</div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/socket.io/socket.io.js"></script>
@@ -177,55 +187,42 @@
         socket.emit("join_case", caseId);
       });
       setInterval(() => {
-
-    socket.emit("heartbeat", {
-
-        caseId
-
-    });
-
-}, 20000);
+        socket.emit("heartbeat", {
+          caseId,
+        });
+      }, 20000);
 
       // ======================================
       // RECEIVE LIVE GRID DATA
       // ======================================
-socket.on("case_state",(state)=>{
+      socket.on("case_state", (state) => {
+        if (!state.grids) return;
 
-    if(!state.grids) return;
+        for (const grid in state.grids) {
+          const data = state.grids[grid];
 
-    for(const grid in state.grids){
+          const rectangle = gridRectangles[grid];
 
-        const data=state.grids[grid];
+          if (!rectangle) continue;
 
-        const rectangle=gridRectangles[grid];
+          let color = "#22c55e";
+          let level = "Low";
 
-        if(!rectangle) continue;
+          if (data.priority >= 80) {
+            color = "#ef4444";
+            level = "Critical";
+          } else if (data.priority >= 50) {
+            color = "#f59e0b";
+            level = "Medium";
+          }
 
-        let color="#22c55e";
-        let level="Low";
-
-        if(data.priority>=80){
-
-            color="#ef4444";
-            level="Critical";
-
-        }
-        else if(data.priority>=50){
-
-            color="#f59e0b";
-            level="Medium";
-
-        }
-
-        rectangle.setStyle({
-
+          rectangle.setStyle({
             color,
-            fillColor:color,
-            fillOpacity:.25
+            fillColor: color,
+            fillOpacity: 0.25,
+          });
 
-        });
-
-        rectangle.setTooltipContent(
+          rectangle.setTooltipContent(
             `
             <div>
                 <b>${grid}</b><br>
@@ -234,12 +231,10 @@ socket.on("case_state",(state)=>{
                 Searched: ${data.searched}%<br>
                 Volunteers: ${data.count}
             </div>
-            `
-        );
-
-    }
-
-});
+            `,
+          );
+        }
+      });
 
       // ======================================
       // LOAD LOCATION
@@ -280,43 +275,34 @@ socket.on("case_state",(state)=>{
       // ======================================
       // CREATE GRID
       // ======================================
-function createGrid(lat, lon) {
+      function createGrid(lat, lon) {
+        const latStep = 0.003;
+        const lonStep = 0.003;
 
-    const latStep = 0.003;
-    const lonStep = 0.003;
+        const rows = ["A", "B", "C"];
 
-    const rows = ["A","B","C"];
-
-    for(let i=0;i<3;i++){
-
-        for(let j=0;j<3;j++){
-
-            const southWest=[
-                lat+(i-1)*latStep,
-                lon+(j-1)*lonStep
+        for (let i = 0; i < 3; i++) {
+          for (let j = 0; j < 3; j++) {
+            const southWest = [
+              lat + (i - 1) * latStep,
+              lon + (j - 1) * lonStep,
             ];
 
-            const northEast=[
-                lat+i*latStep,
-                lon+j*lonStep
-            ];
+            const northEast = [lat + i * latStep, lon + j * lonStep];
 
-            const gridName=`${rows[i]}${j+1}`;
+            const gridName = `${rows[i]}${j + 1}`;
 
-            const rectangle=L.rectangle(
-                [southWest,northEast],
-                {
-                    color:"#22c55e",
-                    fillColor:"#22c55e",
-                    fillOpacity:.25,
-                    weight:2
-                }
-            ).addTo(map);
+            const rectangle = L.rectangle([southWest, northEast], {
+              color: "#22c55e",
+              fillColor: "#22c55e",
+              fillOpacity: 0.25,
+              weight: 2,
+            }).addTo(map);
 
-            gridRectangles[gridName]=rectangle;
+            gridRectangles[gridName] = rectangle;
 
             rectangle.bindTooltip(
-                `
+              `
                 <div>
                     <b>${gridName}</b><br>
                     Priority: 0/100<br>
@@ -324,61 +310,102 @@ function createGrid(lat, lon) {
                     Volunteers: 0
                 </div>
                 `,
-                {
-                    permanent:true,
-                    direction:"center",
-                    className:"grid-label"
-                }
+              {
+                permanent: true,
+                direction: "center",
+                className: "grid-label",
+              },
             );
 
-            rectangle.on("click",()=>{
-
-                socket.emit("claim_grid",{
-                    caseId,
-                    gridId:gridName
-                });
-
+            rectangle.on("click", () => {
+              socket.emit("claim_grid", {
+                caseId,
+                gridId: gridName,
+              });
             });
 
-            rectangle.on("contextmenu",()=>{
-
-                socket.emit("search_grid",{
-                    caseId,
-                    gridId:gridName
-                });
-
+            rectangle.on("contextmenu", () => {
+              socket.emit("search_grid", {
+                caseId,
+                gridId: gridName,
+              });
             });
-
+          }
         }
+      }
+
+      showLocation();
+
+// ===============================
+// CHAT OVERLAY
+// ===============================
+
+const chatToggle = document.getElementById("chatToggle");
+const closeChat = document.getElementById("closeChat");
+const chatOverlay = document.getElementById("chatOverlay");
+const chatFrame = document.getElementById("chatFrame");
+const badge = document.getElementById("chatBadge");
+
+let unread = 0;
+let chatOpen = false;
+
+// -------------------------------
+// OPEN CHAT
+// -------------------------------
+
+let chatLoaded = false;
+
+chatToggle.onclick = () => {
+
+    if (!chatLoaded) {
+
+        chatFrame.src = `/chat-volunteer.html?id=${caseId}`;
+
+        chatLoaded = true;
 
     }
 
-}
+    chatOverlay.style.display = "block";
 
-      showLocation();
-      const overlay = document.getElementById("chatOverlay");
+    chatOpen = true;
 
-const frame = document.getElementById("chatFrame");
+    unread = 0;
 
-document
-.getElementById("chatToggle")
-.onclick = ()=>{
-
-    frame.src = `/chat-volunteer.html?id=${caseId}`;
-
-    overlay.style.display = "block";
+    badge.style.display = "none";
 
 };
 
-document
-.getElementById("closeChat")
-.onclick = ()=>{
 
-    overlay.style.display = "none";
 
-    frame.src="";
+// -------------------------------
+// CLOSE CHAT
+// -------------------------------
 
+closeChat.onclick = () => {
+
+    chatOverlay.style.display = "none";
+
+    chatOpen = false;
 };
+
+// -------------------------------
+// RECEIVE BADGE UPDATE
+// -------------------------------
+
+window.addEventListener("message", (event) => {
+
+    console.log("Parent received:", event.data);
+
+    if (event.data.type !== "NEW_CHAT_MESSAGE") return;
+
+    if (chatOpen) return;
+
+    unread++;
+
+    badge.style.display = "flex";
+    badge.textContent = unread;
+
+});
     </script>
   </body>
 </html>

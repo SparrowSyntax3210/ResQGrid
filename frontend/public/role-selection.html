@@ -206,23 +206,51 @@
     </div>
     <script>
 document.addEventListener("DOMContentLoaded", () => {
+    // Get role from URL
+    const params = new URLSearchParams(window.location.search);
+    let role = params.get("role");
+
+    // If URL has a role, use it and update localStorage
+    if (role) {
+        role = role.toLowerCase();
+
+        if (role === "guardian" || role === "volunteer") {
+            localStorage.setItem("role", role);
+        }
+    } else {
+        // Otherwise, use the stored role (or default to guardian)
+        role = localStorage.getItem("role") || "guardian";
+    }
+
+    console.log("Current Role:", role);
+
+    // Highlight the selected role
     const guardianBtn = document.getElementById("BtnGuardian");
     const volunteerBtn = document.getElementById("BtnVolunteer");
 
-    function redirectWithRole(button) {
-        const role = button.dataset.role;
+    guardianBtn.classList.remove("selected");
+    volunteerBtn.classList.remove("selected");
 
-        // Optional: Keep localStorage if you still need it
-        localStorage.setItem("role", role);
-
-        console.log(`${role} selected`);
-
-        // Redirect with query parameter
-        window.location.href = `http://localhost:5000/register.html?role=${encodeURIComponent(role)}`;
+    if (role === "guardian") {
+        guardianBtn.classList.add("selected");
+    } else {
+        volunteerBtn.classList.add("selected");
     }
 
-    guardianBtn.addEventListener("click", () => redirectWithRole(guardianBtn));
-    volunteerBtn.addEventListener("click", () => redirectWithRole(volunteerBtn));
+    // Allow user to change role by clicking
+    guardianBtn.addEventListener("click", () => {
+        localStorage.setItem("role", "guardian");
+        guardianBtn.classList.add("selected");
+        volunteerBtn.classList.remove("selected");
+        console.log("Guardian selected");
+    });
+
+    volunteerBtn.addEventListener("click", () => {
+        localStorage.setItem("role", "volunteer");
+        volunteerBtn.classList.add("selected");
+        guardianBtn.classList.remove("selected");
+        console.log("Volunteer selected");
+    });
 });
 </script>
 </body>
