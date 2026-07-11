@@ -86,7 +86,16 @@ router.get("/application/:id", async (req, res) => {
 router.post("/sightings", async (req, res) => {
   console.log("Received Sighting Data:", req.body);
   try {
-    const { caseId ,Name, Description, Location, Date, Time, Photo, CompanionDetails } = req.body;  
+    const {
+      caseId,
+      Name,
+      Description,
+      Location,
+      Date,
+      Time,
+      Photo,
+      CompanionDetails,
+    } = req.body;
     const sighting = new Sighting({
       caseId,
       Name,
@@ -95,62 +104,78 @@ router.post("/sightings", async (req, res) => {
       Date,
       Time,
       Photo,
-      CompanionDetails
+      CompanionDetails,
     });
 
     await sighting.save();
-    req.io.to(req.body.caseId).emit("new_sighting",sighting);
+    req.io.to(req.body.caseId).emit("new_sighting", sighting);
 
     res.status(201).json({
       success: true,
-      sighting
+      sighting,
     });
-    res.redirect("/volunteer.html")
+    res.redirect("/volunteer.html");
   } catch (error) {
     console.log(error);
     res.status(500).json({
       success: false,
-      message: "Internal Server Error"
+      message: "Internal Server Error",
     });
   }
 });
 
-router.get("/sightings/:caseId",async(req,res)=>{
+router.get("/sightings/:caseId", async (req, res) => {
+  try {
+    const sightings = await Sighting.find({
+      caseId: req.params.caseId,
+    }).sort({
+      createdAt: -1,
+    });
 
-    try{
+    res.json({
+      success: true,
 
-        const sightings = await Sighting.find({
+      sightings,
+    });
+  } catch (err) {
+    console.log(err);
 
-            caseId:req.params.caseId
+    res.status(500).json({
+      success: false,
+    });
+  }
+});
 
-        }).sort({
+// ----------------------------------------------------
+// GET SINGLE SIGHTING
+// ----------------------------------------------------
+router.get("/sighting/:id", async (req, res) => {
+    try {
 
-            createdAt:-1
+        const sighting = await Sighting.findById(req.params.id);
 
-        });
+        if (!sighting) {
+            return res.status(404).json({
+                success: false,
+                message: "Sighting not found"
+            });
+        }
 
         res.json({
-
-            success:true,
-
-            sightings
-
+            success: true,
+            sighting
         });
 
-    }
-
-    catch(err){
+    } catch (err) {
 
         console.log(err);
 
         res.status(500).json({
-
-            success:false
-
+            success: false,
+            message: "Internal Server Error"
         });
 
     }
-
 });
 
 module.exports = router;

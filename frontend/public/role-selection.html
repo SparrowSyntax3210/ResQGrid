@@ -237,20 +237,23 @@ document.addEventListener("DOMContentLoaded", () => {
         volunteerBtn.classList.add("selected");
     }
 
-    // Allow user to change role by clicking
     guardianBtn.addEventListener("click", () => {
-        localStorage.setItem("role", "guardian");
-        guardianBtn.classList.add("selected");
-        volunteerBtn.classList.remove("selected");
-        console.log("Guardian selected");
-    });
+    localStorage.setItem("role", "guardian");
+    guardianBtn.classList.add("selected");
+    volunteerBtn.classList.remove("selected");
+    console.log("Guardian selected");
 
-    volunteerBtn.addEventListener("click", () => {
-        localStorage.setItem("role", "volunteer");
-        volunteerBtn.classList.add("selected");
-        guardianBtn.classList.remove("selected");
-        console.log("Volunteer selected");
-    });
+    window.location.href = "/register.html?role=guardian";
+});
+
+volunteerBtn.addEventListener("click", () => {
+    localStorage.setItem("role", "volunteer");
+    volunteerBtn.classList.add("selected");
+    guardianBtn.classList.remove("selected");
+    console.log("Volunteer selected");
+
+    window.location.href = "/register.html?role=volunteer";
+});
 });
 </script>
 </body>
