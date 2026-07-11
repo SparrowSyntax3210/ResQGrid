@@ -128,92 +128,85 @@ button {
    CREATE CASE CARD
 ========================================== */
 
-.create-case-card{
+.create-case-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+  background: linear-gradient(135deg, #131d2f, #101828);
 
-    background:linear-gradient(135deg,#131d2f,#101828);
+  border: 1px solid var(--border);
 
-    border:1px solid var(--border);
+  border-radius: 20px;
 
-    border-radius:20px;
+  padding: 24px;
 
-    padding:24px;
-
-    margin-bottom:22px;
+  margin-bottom: 22px;
 }
 
-.create-left h2{
+.create-left h2 {
+  font-size: 24px;
 
-    font-size:24px;
-
-    margin-bottom:8px;
+  margin-bottom: 8px;
 }
 
-.create-left p{
+.create-left p {
+  color: var(--muted);
 
-    color:var(--muted);
+  max-width: 550px;
 
-    max-width:550px;
-
-    line-height:1.6;
+  line-height: 1.6;
 }
 
-#createCaseBtn{
+#createCaseBtn {
+  position: relative;
+  z-index: 99999;
 
-    display:flex;
-    align-items:center;
-    gap:12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 
-    background:linear-gradient(90deg,#7c3aed,#5b21b6);
+  background: linear-gradient(90deg, #7c3aed, #5b21b6);
 
-    color:white;
+  color: white;
 
-    border:none;
+  border: none;
 
-    padding:16px 26px;
+  padding: 16px 26px;
 
-    border-radius:14px;
+  border-radius: 14px;
 
-    font-size:16px;
+  font-size: 16px;
 
-    font-weight:600;
+  font-weight: 600;
 
-    transition:.3s;
+  transition: 0.3s;
 }
 
-#createCaseBtn:hover{
+#createCaseBtn:hover {
+  transform: translateY(-3px);
 
-    transform:translateY(-3px);
-
-    box-shadow:0 10px 30px rgba(124,58,237,.35);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.35);
 }
 
-#createCaseBtn i{
-
-    font-size:18px;
+#createCaseBtn i {
+  font-size: 18px;
 }
 
-@media(max-width:900px){
+@media (max-width: 900px) {
+  .create-case-card {
+    flex-direction: column;
 
-.create-case-card{
+    align-items: flex-start;
 
-    flex-direction:column;
+    gap: 20px;
+  }
 
-    align-items:flex-start;
+  #createCaseBtn {
+    width: 100%;
 
-    gap:20px;
-}
-
-#createCaseBtn{
-
-    width:100%;
-
-    justify-content:center;
-}
-
+    justify-content: center;
+  }
 }
 
 /* ==========================================

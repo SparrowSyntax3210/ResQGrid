@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Guardian Chat</title>
+
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Inter", sans-serif;
+      }
+
+      :root {
+        --bg: #090d16;
+        --card: #131d2f;
+        --card2: #101828;
+
+        --border: #293246;
+
+        --purple: #7c3aed;
+        --purple2: #5b21b6;
+
+        --text: #ffffff;
+        --muted: #98a4b7;
+      }
+
+      body {
+        background: transparent;
+
+        height: 100vh;
+
+        display: flex;
+
+        justify-content: center;
+
+        align-items: center;
+      }
+
+      .chat-container {
+        width: 100%;
+        height: 100%;
+
+        background: var(--card);
+
+        border: 1px solid var(--border);
+
+        display: flex;
+
+        flex-direction: column;
+
+        overflow: hidden;
+      }
+
+      .header-left h2 {
+        font-size: 20px;
+
+        margin-bottom: 4px;
+      }
+
+      .header-left p {
+        color: rgba(255, 255, 255, 0.8);
+
+        font-size: 13px;
+      }
+
+      #onlineCount {
+        font-weight: 600;
+
+        background: rgba(255, 255, 255, 0.15);
+
+        padding: 8px 14px;
+
+        border-radius: 30px;
+      }
+
+      .messages {
+        flex: 1;
+
+        overflow-y: auto;
+
+        padding: 20px;
+
+        display: flex;
+
+        flex-direction: column;
+
+        gap: 12px;
+
+        background: var(--card2);
+      }
+
+      .message {
+        max-width: 75%;
+
+        padding: 14px 16px;
+
+        border-radius: 16px;
+
+        word-break: break-word;
+      }
+
+      .self {
+        align-self: flex-end;
+
+        background: linear-gradient(90deg, var(--purple), var(--purple2));
+
+        color: white;
+
+        border-bottom-right-radius: 4px;
+      }
+
+      .other {
+        align-self: flex-start;
+
+        background: #1a2538;
+
+        color: white;
+
+        border: 1px solid var(--border);
+
+        border-bottom-left-radius: 4px;
+      }
+
+      .sender {
+        font-size: 13px;
+
+        font-weight: 600;
+
+        margin-bottom: 8px;
+
+        color: #c4b5fd;
+      }
+
+      .time {
+        font-size: 11px;
+
+        opacity: 0.75;
+
+        margin-top: 8px;
+
+        text-align: right;
+      }
+
+      .typing {
+        height: 28px;
+
+        padding: 6px 18px;
+
+        color: var(--muted);
+
+        font-size: 13px;
+
+        background: var(--card);
+      }
+
+      .footer {
+        display: flex;
+
+        gap: 12px;
+
+        padding: 16px;
+
+        background: var(--card);
+
+        border-top: 1px solid var(--border);
+      }
+
+      .footer input {
+        flex: 1;
+
+        background: #1a2538;
+
+        border: 1px solid var(--border);
+
+        color: white;
+
+        padding: 14px 18px;
+
+        border-radius: 14px;
+
+        outline: none;
+
+        font-size: 15px;
+      }
+
+      .footer input::placeholder {
+        color: var(--muted);
+      }
+
+      .footer button {
+        width: 120px;
+
+        border: none;
+
+        border-radius: 14px;
+
+        background: linear-gradient(90deg, var(--purple), var(--purple2));
+
+        color: white;
+
+        font-size: 15px;
+
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition: 0.3s;
+      }
+
+      .footer button:hover {
+        transform: translateY(-2px);
+      }
+
+      .system {
+        align-self: center;
+
+        background: rgba(124, 58, 237, 0.15);
+
+        border: 1px solid rgba(124, 58, 237, 0.35);
+
+        color: #d8b4fe;
+
+        padding: 10px 16px;
+
+        border-radius: 30px;
+
+        font-size: 13px;
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #39445d;
+
+        border-radius: 20px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="chat-container">
+      <div class="header-left">
+</div>
+
+      <div id="messages" class="messages"></div>
+
+      <div class="typing" id="typing"></div>
+
+      <div class="footer">
+        <input type="text" id="messageInput" placeholder="Type a message..." />
+
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+
+    <script>
+      const API = "http://localhost:5000";
+
+      const socket = io(API, {
+        withCredentials: true,
+      });
+
+      const params = new URLSearchParams(window.location.search);
+
+      const caseId = params.get("id");
+
+      const messages = document.getElementById("messages");
+
+      const input = document.getElementById("messageInput");
+
+      const sendBtn = document.getElementById("sendBtn");
+
+      const typing = document.getElementById("typing");
+
+      const online = document.getElementById("onlineCount");
+
+      const caseTitle = document.getElementById("caseTitle");
+
+      let currentUser = null;
+
+      let typingTimeout = null;
+
+      // ----------------------------
+      // LOAD USER
+      // ----------------------------
+
+      async function loadUser() {
+        try {
+          const res = await fetch(`${API}/auth/me`, {
+            credentials: "include",
+          });
+
+          if (!res.ok) {
+            alert("Login Required");
+
+            window.location = "/login.html";
+
+            return;
+          }
+
+          currentUser = await res.json();
+
+          console.log(currentUser);
+
+          socket.emit("join_chat", {
+            caseId,
+
+            user: {
+              id: currentUser._id,
+
+              name: currentUser.name,
+
+              role: currentUser.role,
+            },
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      // ----------------------------
+      // LOAD CASE INFO
+      // ----------------------------
+
+      async function loadCase() {
+        try {
+          const res = await fetch(`${API}/application/${caseId}`);
+
+          if (!res.ok) return;
+
+          const app = await res.json();
+
+          caseTitle.innerHTML = `
+Case : <b>${app.Name}</b>
+`;
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
+      // ----------------------------
+      // ADD MESSAGE
+      // ----------------------------
+
+      function addMessage(msg) {
+        const div = document.createElement("div");
+
+        if (msg.system) {
+          div.className = "system";
+
+          div.innerHTML = msg.text;
+
+          messages.appendChild(div);
+
+          messages.scrollTop = messages.scrollHeight;
+
+          return;
+        }
+
+        const mine = currentUser && msg.senderId === currentUser.id;
+
+        div.className = `message ${mine ? "self" : "other"}`;
+
+        div.innerHTML = `
+
+<div class="sender">
+
+${msg.sender}
+
+</div>
+
+<div>
+
+${msg.text}
+
+</div>
+
+<div class="time">
+
+${new Date(msg.time).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit",
+})}
+
+</div>
+
+`;
+
+        messages.appendChild(div);
+
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      // ----------------------------
+      // SOCKET EVENTS
+      // ----------------------------
+
+      socket.on("connect", () => {
+        console.log(socket.id);
+      });
+
+      socket.on("system_message", (msg) => {
+        addMessage({
+          system: true,
+
+          text: msg.text,
+        });
+      });
+
+      socket.on("receive_message", (msg) => {
+
+    addMessage(msg);
+
+    if (currentUser && msg.senderId === currentUser.id) return;
+
+    console.log("Sending notification to parent");
+
+    window.parent.postMessage({
+        type: "NEW_CHAT_MESSAGE"
+    }, "*");
+
+});
+
+      socket.on("online_users", (count) => {
+        online.textContent = count;
+      });
+
+      socket.on("user_typing", (name) => {
+        typing.innerHTML = `${name} is typing...`;
+
+        clearTimeout(typingTimeout);
+
+        typingTimeout = setTimeout(() => {
+          typing.innerHTML = "";
+        }, 1500);
+      });
+
+      // ----------------------------
+      // SEND MESSAGE
+      // ----------------------------
+
+      function sendMessage() {
+        const text = input.value.trim();
+
+        if (text === "") return;
+
+        socket.emit("send_message", {
+    caseId,
+    senderId: currentUser.id, 
+    sender: currentUser.name,
+    role: currentUser.role,
+    text
+});
+
+        input.value = "";
+
+        typing.innerHTML = "";
+      }
+
+      // ----------------------------
+      // BUTTON
+      // ----------------------------
+
+      sendBtn.addEventListener("click", sendMessage);
+
+      // ----------------------------
+      // ENTER KEY
+      // ----------------------------
+
+      input.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          sendMessage();
+        }
+      });
+
+      // ----------------------------
+      // TYPING INDICATOR
+      // ----------------------------
+
+      input.addEventListener("input", () => {
+        if (!currentUser) return;
+
+        socket.emit("typing", {
+    caseId,
+    name: currentUser.name,
+    role: currentUser.role
+});
+      });
+
+      // ----------------------------
+      // AUTO FOCUS
+      // ----------------------------
+
+      window.onload = () => {
+        input.focus();
+      };
+
+      // ----------------------------
+      // CLEANUP
+      // ----------------------------
+
+      window.addEventListener("beforeunload", () => {
+        socket.emit("leave_chat", {
+          caseId,
+
+          user: currentUser,
+        });
+      });
+
+      // ----------------------------
+      // START
+      // ----------------------------
+
+      loadUser();
+
+      loadCase();
+    </script>
+  </body>
+</html>

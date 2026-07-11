@@ -3,279 +3,313 @@
 //======================================================
 
 function initGuardian() {
+  const section = document.querySelector(".guardian-section");
 
-    const section = document.querySelector(".guardian-section");
+  if (!section) return;
 
-    if (!section) return;
+  const cards = gsap.utils.toArray(".guardian-card");
+  const circle = document.querySelector(".guardian-circle");
+  const glow = document.querySelector(".guardian-glow");
+  const quote = document.querySelector(".quote-card");
 
-    const cards = gsap.utils.toArray(".guardian-card");
-    const circle = document.querySelector(".guardian-circle");
-    const glow = document.querySelector(".guardian-glow");
-    const quote = document.querySelector(".quote-card");
+  //------------------------------------
+  // Initial States
+  //------------------------------------
 
-    //------------------------------------
-    // Initial States
-    //------------------------------------
+  //------------------------------------
+// Dashboard Animation
+//------------------------------------
 
-    gsap.set(".guardian-left", {
-        x: -80,
-        opacity: 0
-    });
+gsap.to(".ring1",{
+rotation:360,
+duration:22,
+repeat:-1,
+ease:"none"
+});
 
-    gsap.set(cards, {
-        x: 80,
-        opacity: 0
-    });
+gsap.to(".ring2",{
+rotation:-360,
+duration:30,
+repeat:-1,
+ease:"none"
+});
 
-    gsap.set(".section-title", {
-        y: 50,
-        opacity: 0
-    });
+gsap.to(".center-node",{
 
-    //------------------------------------
-    // Scroll Reveal
-    //------------------------------------
+scale:1.06,
 
-    const tl = gsap.timeline({
+repeat:-1,
 
-        scrollTrigger: {
-            trigger: section,
-            start: "top 70%",
-            once: true
-        }
+yoyo:true,
 
-    });
+duration:1.8,
 
-    tl
+ease:"sine.inOut"
 
-    .to(".section-title", {
-        y: 0,
-        opacity: 1,
-        duration: .8,
-        ease: "power3.out"
-    })
+});
 
-    .to(".guardian-left", {
+gsap.to(".node",{
+
+scale:1.12,
+
+repeat:-1,
+
+yoyo:true,
+
+duration:1.6,
+
+stagger:.2,
+
+ease:"sine.inOut"
+
+});
+
+gsap.fromTo(".guardian-lines line",{
+
+opacity:.25
+
+},
+
+{
+
+opacity:1,
+
+repeat:-1,
+
+yoyo:true,
+
+duration:1.4,
+
+stagger:.2
+
+});
+
+  gsap.set(".guardian-left", {
+    x: -80,
+    opacity: 0,
+  });
+
+  gsap.set(cards, {
+    x: 80,
+    opacity: 0,
+  });
+
+  gsap.set(".section-title", {
+    y: 50,
+    opacity: 0,
+  });
+
+  //------------------------------------
+  // Scroll Reveal
+  //------------------------------------
+
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: section,
+      start: "top 70%",
+      once: true,
+    },
+  });
+
+  tl.to(".section-title", {
+    y: 0,
+    opacity: 1,
+    duration: 0.8,
+    ease: "power3.out",
+  })
+
+    .to(
+      ".guardian-left",
+      {
         x: 0,
         opacity: 1,
         duration: 1,
-        ease: "power3.out"
-    }, "-=.4")
+        ease: "power3.out",
+      },
+      "-=.4",
+    )
 
-    .to(cards, {
+    .to(
+      cards,
+      {
         x: 0,
         opacity: 1,
-        duration: .7,
-        stagger: .15,
-        ease: "power3.out"
-    }, "-=.7");
+        duration: 0.7,
+        stagger: 0.15,
+        ease: "power3.out",
+      },
+      "-=.7",
+    );
 
-    //------------------------------------
-    // Floating Circle
-    //------------------------------------
+  //------------------------------------
+  // Floating Circle
+  //------------------------------------
 
-    gsap.to(circle, {
+  gsap.to(circle, {
+    y: -12,
 
-        y: -12,
+    duration: 3,
 
-        duration: 3,
+    repeat: -1,
 
-        repeat: -1,
+    yoyo: true,
 
-        yoyo: true,
+    ease: "sine.inOut",
+  });
 
-        ease: "sine.inOut"
+  //------------------------------------
+  // Glow Breathing
+  //------------------------------------
 
-    });
+  gsap.to(glow, {
+    scale: 1.15,
 
-    //------------------------------------
-    // Glow Breathing
-    //------------------------------------
+    opacity: 0.65,
 
-    gsap.to(glow, {
+    duration: 2.5,
+
+    repeat: -1,
+
+    yoyo: true,
+
+    ease: "sine.inOut",
+  });
+
+  //------------------------------------
+  // Quote Float
+  //------------------------------------
+
+  gsap.to(quote, {
+    y: -8,
+
+    duration: 2.5,
+
+    repeat: -1,
+
+    yoyo: true,
+
+    ease: "sine.inOut",
+  });
+
+  //------------------------------------
+  // Icon Pulse
+  //------------------------------------
+
+  gsap.to(".guardian-card .icon", {
+    scale: 1.06,
+
+    duration: 1.4,
+
+    repeat: -1,
+
+    yoyo: true,
+
+    stagger: 0.12,
+
+    ease: "sine.inOut",
+  });
+
+  //------------------------------------
+  // Hover Animation
+  //------------------------------------
+
+  cards.forEach((card) => {
+    card.addEventListener("mouseenter", () => {
+      gsap.to(card, {
+        x: 12,
+
+        scale: 1.02,
+
+        duration: 0.35,
+
+        ease: "power2.out",
+      });
+
+      gsap.to(card.querySelector(".icon"), {
+        rotation: 10,
 
         scale: 1.15,
 
-        opacity: .65,
+        duration: 0.35,
 
-        duration: 2.5,
-
-        repeat: -1,
-
-        yoyo: true,
-
-        ease: "sine.inOut"
-
+        ease: "back.out(2)",
+      });
     });
 
-    //------------------------------------
-    // Quote Float
-    //------------------------------------
+    card.addEventListener("mouseleave", () => {
+      gsap.to(card, {
+        x: 0,
 
-    gsap.to(quote, {
+        scale: 1,
 
-        y: -8,
+        duration: 0.35,
 
-        duration: 2.5,
+        ease: "power2.out",
+      });
 
-        repeat: -1,
+      gsap.to(card.querySelector(".icon"), {
+        rotation: 0,
 
-        yoyo: true,
+        scale: 1,
 
-        ease: "sine.inOut"
-
+        duration: 0.35,
+      });
     });
+  });
 
-    //------------------------------------
-    // Icon Pulse
-    //------------------------------------
+  //------------------------------------
+  // Mouse Parallax
+  //------------------------------------
 
-    gsap.to(".guardian-card .icon", {
+  const moveX = gsap.quickTo(circle, "x", {
+    duration: 0.8,
 
-        scale: 1.06,
+    ease: "power3.out",
+  });
 
-        duration: 1.4,
+  const moveY = gsap.quickTo(circle, "y", {
+    duration: 0.8,
 
-        repeat: -1,
+    ease: "power3.out",
+  });
 
-        yoyo: true,
+  section.addEventListener("mousemove", (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 30;
+    const y = (e.clientY / window.innerHeight - 0.5) * 20;
 
-        stagger: .12,
+    moveX(x);
+    moveY(y);
+  });
 
-        ease: "sine.inOut"
+  section.addEventListener("mouseleave", () => {
+    moveX(0);
+    moveY(0);
+  });
 
+  //------------------------------------
+  // Card Glow on Scroll
+  //------------------------------------
+
+  cards.forEach((card) => {
+    ScrollTrigger.create({
+      trigger: card,
+
+      start: "top 80%",
+
+      onEnter: () => {
+        gsap.fromTo(
+          card,
+
+          {
+            boxShadow: "0 0 0 rgba(124,58,237,0)",
+          },
+
+          {
+            boxShadow: "0 20px 60px rgba(124,58,237,.18)",
+            duration: 0.8,
+          },
+        );
+      },
     });
-
-    //------------------------------------
-    // Hover Animation
-    //------------------------------------
-
-    cards.forEach(card => {
-
-        card.addEventListener("mouseenter", () => {
-
-            gsap.to(card, {
-
-                x: 12,
-
-                scale: 1.02,
-
-                duration: .35,
-
-                ease: "power2.out"
-
-            });
-
-            gsap.to(card.querySelector(".icon"), {
-
-                rotation: 10,
-
-                scale: 1.15,
-
-                duration: .35,
-
-                ease: "back.out(2)"
-
-            });
-
-        });
-
-        card.addEventListener("mouseleave", () => {
-
-            gsap.to(card, {
-
-                x: 0,
-
-                scale: 1,
-
-                duration: .35,
-
-                ease: "power2.out"
-
-            });
-
-            gsap.to(card.querySelector(".icon"), {
-
-                rotation: 0,
-
-                scale: 1,
-
-                duration: .35
-
-            });
-
-        });
-
-    });
-
-    //------------------------------------
-    // Mouse Parallax
-    //------------------------------------
-
-    const moveX = gsap.quickTo(circle, "x", {
-
-        duration: .8,
-
-        ease: "power3.out"
-
-    });
-
-    const moveY = gsap.quickTo(circle, "y", {
-
-        duration: .8,
-
-        ease: "power3.out"
-
-    });
-
-    section.addEventListener("mousemove", (e) => {
-
-        const x = (e.clientX / window.innerWidth - .5) * 30;
-        const y = (e.clientY / window.innerHeight - .5) * 20;
-
-        moveX(x);
-        moveY(y);
-
-    });
-
-    section.addEventListener("mouseleave", () => {
-
-        moveX(0);
-        moveY(0);
-
-    });
-
-    //------------------------------------
-    // Card Glow on Scroll
-    //------------------------------------
-
-    cards.forEach(card => {
-
-        ScrollTrigger.create({
-
-            trigger: card,
-
-            start: "top 80%",
-
-            onEnter: () => {
-
-                gsap.fromTo(card,
-
-                    {
-                        boxShadow: "0 0 0 rgba(124,58,237,0)"
-                    },
-
-                    {
-                        boxShadow: "0 20px 60px rgba(124,58,237,.18)",
-                        duration: .8
-                    }
-
-                );
-
-            }
-
-        });
-
-    });
-
+  });
 }

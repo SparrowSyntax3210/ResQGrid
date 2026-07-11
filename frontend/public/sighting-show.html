@@ -1,58 +1,704 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    <h1>Sighting Details</h1>
-    <p><strong>Name:</strong> <span id="sighting-name"></span></p>
-    <p><strong>Description:</strong> <span id="sighting-description"></span></p>
-    <p><strong>Location:</strong> <span id="sighting-location"></span></p>
-    <p><strong>Date:</strong> <span id="sighting-date"></span></p>
-    <p><strong>Time:</strong> <span id="sighting-time"></span></p>
-    <p><strong>Photo:</strong> <img id="sighting-photo" src="" alt="Sighting Photo" /></p>
-    <p><strong>Companion Details:</strong> <span id="sighting-companion"></span></p>
+    <style>
+        /*========================================
+        SIGHTING SHOW PAGE
+========================================*/
+
+body{
+    font-family: Inter, sans-serif;
+    color: var(--text);
+
+    background:
+        radial-gradient(circle at top,
+        rgba(59,130,246,.22),
+        transparent 35%),
+
+        radial-gradient(circle at bottom right,
+        rgba(124,92,246,.15),
+        transparent 40%),
+
+        linear-gradient(
+        180deg,
+        #081426 0%,
+        #09111d 45%,
+        #050813 100%);
+
+    background-attachment: fixed;
+
+    overflow-x: hidden;
+}
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+    inset:0;
+
+    background-size:70px 70px;
+
+    background-image:
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+
+    mask-image:linear-gradient(to bottom, black, transparent);
+
+    pointer-events:none;
+
+    z-index:-1;
+
+}
+
+.background-glow{
+
+    position:fixed;
+    inset:0;
+
+    pointer-events:none;
+    z-index:-1;
+
+    overflow:hidden;
+
+}
+
+.background-glow::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:700px;
+    height:700px;
+
+    left:-180px;
+    top:-180px;
+
+    border-radius:50%;
+
+    background:rgba(59,130,246,.18);
+
+    filter:blur(180px);
+
+}
+
+.background-glow::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:650px;
+    height:650px;
+
+    right:-180px;
+    bottom:-180px;
+
+    border-radius:50%;
+
+    background:rgba(124,92,246,.18);
+
+    filter:blur(180px);
+
+}
+
+/*========================================*/
+
+.report-container{
+
+    width:min(1250px,92%);
+    margin:70px auto;
+
+}
+
+/*========================================*/
+
+.page-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:45px;
+
+}
+
+.page-header h1{
+
+    font-size:46px;
+    font-weight:700;
+    margin-bottom:8px;
+
+}
+
+.page-header p{
+
+    color:var(--text-muted);
+
+}
+
+/*========================================*/
+
+.back-btn{
+
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    padding:14px 22px;
+
+    background:var(--card-bg);
+
+    border:1px solid var(--card-border);
+
+    border-radius:16px;
+
+    color:var(--text);
+
+    transition:.35s;
+
+}
+
+.back-btn:hover{
+
+    transform:translateY(-4px);
+
+    border-color:var(--purple);
+
+    box-shadow:
+    0 0 25px rgba(124,92,246,.25);
+
+}
+
+/*========================================*/
+
+.top-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:28px;
+
+    margin-bottom:28px;
+
+}
+
+/*========================================*/
+
+.photo-card,
+.status-card,
+.info-card{
+
+    background:linear-gradient(
+    180deg,
+    #121932,
+    #0d1226);
+
+    border:1px solid var(--card-border);
+
+    border-radius:26px;
+
+    padding:28px;
+
+    box-shadow:
+    0 18px 50px rgba(0,0,0,.45);
+
+    transition:.35s;
+
+}
+
+.photo-card:hover,
+.status-card:hover,
+.info-card:hover{
+
+    transform:translateY(-6px);
+
+    border-color:var(--purple);
+
+    box-shadow:
+    0 25px 60px rgba(124,92,246,.18);
+
+}
+
+/*========================================*/
+
+.card-title{
+
+    font-size:18px;
+    font-weight:600;
+
+    margin-bottom:20px;
+
+}
+
+/*========================================*/
+
+.photo-card img{
+
+    width:100%;
+    height:430px;
+
+    object-fit:cover;
+
+    border-radius:20px;
+
+    border:1px solid rgba(124,92,246,.15);
+
+    transition:.45s;
+
+}
+
+.photo-card:hover img{
+
+    transform:scale(1.03);
+
+}
+
+/*========================================*/
+
+.status{
+
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+
+    padding:10px 18px;
+
+    background:rgba(124,92,246,.12);
+
+    border:1px solid rgba(124,92,246,.35);
+
+    border-radius:999px;
+
+    color:#d8cbff;
+
+    font-weight:600;
+
+    margin-bottom:30px;
+
+}
+
+/*========================================*/
+
+.status-item{
+
+    display:flex;
+    justify-content:space-between;
+
+    padding:18px 0;
+
+    border-bottom:1px solid rgba(255,255,255,.06);
+
+}
+
+.status-item:last-child{
+
+    border:none;
+
+}
+
+.status-item span{
+
+    color:var(--text-muted);
+
+}
+
+.status-item strong{
+
+    color:var(--text);
+
+}
+
+/*========================================*/
+
+.info-card{
+
+    margin-bottom:28px;
+
+}
+
+.info-card h2{
+
+    font-size:24px;
+
+    margin-bottom:24px;
+
+}
+
+/*========================================*/
+
+.info-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:20px;
+
+}
+
+/*========================================*/
+
+.field{
+
+    background:#11182d;
+
+    border:1px solid rgba(124,92,246,.15);
+
+    border-radius:18px;
+
+    padding:22px;
+
+}
+
+.field label{
+
+    display:block;
+
+    color:var(--text-muted);
+
+    font-size:12px;
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    margin-bottom:12px;
+
+}
+
+.field p{
+
+    color:var(--text);
+
+    font-size:18px;
+
+    font-weight:600;
+
+    line-height:1.6;
+
+}
+
+/*========================================*/
+
+.description-box{
+
+    background:#11182d;
+
+    border:1px solid rgba(124,92,246,.15);
+
+    border-radius:18px;
+
+    padding:22px;
+
+    color:var(--text);
+
+    line-height:1.9;
+
+}
+
+/*========================================*/
+
+.description-box p{
+
+    color:var(--text);
+
+}
+
+/*========================================*/
+
+@media(max-width:950px){
+
+.top-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.info-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.page-header{
+
+flex-direction:column;
+align-items:flex-start;
+gap:25px;
+
+}
+
+.photo-card img{
+
+height:300px;
+
+}
+
+}
+    </style>
+  </head>
+  <body>
+    <body>
+      <div class="background-glow"></div>
+
+      <div class="report-container">
+        <div class="page-header">
+          <a href="javascript:history.back()" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            Back
+          </a>
+
+          <div>
+            <h1>Sighting Report</h1>
+            <p>Verified Volunteer Submission</p>
+          </div>
+        </div>
+
+        <div class="top-grid">
+          <!-- LEFT -->
+
+          <div class="photo-card">
+            <div class="card-title">Evidence Photo</div>
+
+            <img id="sighting-photo" src="" alt="Sighting" />
+          </div>
+
+          <!-- RIGHT -->
+
+          <div class="status-card">
+            <div class="status verified">
+              <i class="fa-solid fa-circle-check"></i>
+              Pending Verification
+            </div>
+
+            <div class="status-item">
+              <span>Case ID</span>
+
+              <strong id="case-id"></strong>
+            </div>
+
+            <div class="status-item">
+              <span>Report Type</span>
+
+              <strong>Sighting</strong>
+            </div>
+
+            <div class="status-item">
+              <span>Evidence</span>
+
+              <strong>1 Photo</strong>
+            </div>
+
+            <div class="status-item">
+              <span>Confidence</span>
+
+              <strong>Medium</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- INFORMATION -->
+
+        <div class="info-card">
+          <h2>Basic Information</h2>
+
+          <div class="info-grid">
+            <div class="field">
+              <label>Missing Person</label>
+
+              <p id="sighting-name"></p>
+            </div>
+
+            <div class="field">
+              <label>Date</label>
+
+              <p id="sighting-date"></p>
+            </div>
+
+            <div class="field">
+              <label>Time</label>
+
+              <p id="sighting-time"></p>
+            </div>
+
+            <div class="field">
+              <label>Location</label>
+
+              <p id="sighting-location"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESCRIPTION -->
+
+        <div class="info-card">
+          <h2>Description</h2>
+
+          <div class="description-box">
+            <p id="sighting-description"></p>
+          </div>
+        </div>
+
+        <!-- COMPANION -->
+
+        <div class="info-card">
+          <h2>Companion Details</h2>
+
+          <div class="description-box">
+            <p id="sighting-companion"></p>
+          </div>
+        </div>
+
+        <!-- REPORT INFO -->
+
+        <div class="info-card">
+          <h2>Report Information</h2>
+
+          <div class="info-grid">
+            <div class="field">
+              <label>Submitted By</label>
+
+              <p>Verified Volunteer</p>
+            </div>
+
+            <div class="field">
+              <label>Report Status</label>
+
+              <p>Pending Review</p>
+            </div>
+
+            <div class="field">
+              <label>Evidence</label>
+
+              <p>Image Attached</p>
+            </div>
+
+            <div class="field">
+              <label>Network</label>
+
+              <p>ResQGrid</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://kit.fontawesome.com/your-kit.js"></script>
+      <script src="/socket.io/socket.io.js"></script>
+      <script src="sighting-show.js"></script>
+    </body>
 
     <script src="/socket.io/socket.io.js"></script>
 
-  <script>
+    <script>
+      //======================================================
+// SIGHTING SHOW PAGE
+//======================================================
+
+gsap.registerPlugin(ScrollTrigger);
+
 const API = "http://localhost:5000";
 
 const params = new URLSearchParams(window.location.search);
-
 const caseId = params.get("caseId");
 
 if (!caseId) {
-    alert("No case ID found.");
+    alert("Invalid Case ID");
 }
 
-loadSighting();
+document.getElementById("case-id").textContent = caseId;
 
-async function loadSighting() {
+//======================================================
+// INITIAL ANIMATION
+//======================================================
 
-    try {
+gsap.set(".page-header", {
+    y: -40,
+    opacity: 0
+});
 
-        const res = await fetch(`${API}/volunteer/sightings/${caseId}`, {
-            credentials: "include",
+gsap.set(".top-grid", {
+    y: 60,
+    opacity: 0
+});
+
+gsap.set(".info-card", {
+    y: 60,
+    opacity: 0
+});
+
+//======================================================
+// PAGE INTRO
+//======================================================
+
+window.addEventListener("load", () => {
+
+    loadSighting();
+
+    const tl = gsap.timeline();
+
+    tl.to(".page-header", {
+        y: 0,
+        opacity: 1,
+        duration: .7,
+        ease: "power3.out"
+    })
+
+    .to(".top-grid", {
+        y: 0,
+        opacity: 1,
+        duration: .8,
+        ease: "power3.out"
+    }, "-=.3")
+
+    .to(".info-card", {
+        y: 0,
+        opacity: 1,
+        stagger: .15,
+        duration: .7,
+        ease: "power3.out"
+    }, "-=.4");
+
+});
+
+//======================================================
+// LOAD DATA
+//======================================================
+
+async function loadSighting(){
+
+    try{
+
+        const res = await fetch(`${API}/volunteer/sightings/${caseId}`,{
+            credentials:"include"
         });
 
         const data = await res.json();
 
-        if (!data.success) {
+        if(!data.success){
+
             alert(data.message);
             return;
+
         }
 
-        if (!data.sightings || data.sightings.length === 0) {
-    alert("No sightings found.");
-    return;
-}
+        if(!data.sightings.length){
 
-displaySighting(data.sightings[0]);
+            alert("No Sighting Found");
+            return;
 
-    } catch (err) {
+        }
+
+        displaySighting(data.sightings[0]);
+
+    }
+
+    catch(err){
 
         console.log(err);
 
@@ -60,47 +706,157 @@ displaySighting(data.sightings[0]);
 
 }
 
-function displaySighting(sighting) {
+//======================================================
+// DISPLAY DATA
+//======================================================
 
-    document.getElementById("sighting-name").innerText =
-        sighting.Name;
+function displaySighting(sighting){
 
-    document.getElementById("sighting-description").innerText =
-        sighting.Description || "N/A";
+    document.getElementById("sighting-name").textContent =
+        sighting.Name || "Unknown";
 
-    document.getElementById("sighting-location").innerText =
-        sighting.Location;
+    document.getElementById("sighting-location").textContent =
+        sighting.Location || "Unknown";
 
-    document.getElementById("sighting-date").innerText =
+    document.getElementById("sighting-description").textContent =
+        sighting.Description || "No description provided.";
+
+    document.getElementById("sighting-time").textContent =
+        sighting.Time || "-";
+
+    document.getElementById("sighting-date").textContent =
         new Date(sighting.Date).toLocaleDateString();
 
-    document.getElementById("sighting-time").innerText =
-        sighting.Time;
-
-    document.getElementById("sighting-companion").innerText =
+    document.getElementById("sighting-companion").textContent =
         sighting.CompanionDetails || "None";
 
     document.getElementById("sighting-photo").src =
         sighting.Photo
-            ? `${API}/uploads/${sighting.Photo}`
-            : "./images/no-image.png";
+        ? `${API}/uploads/${sighting.Photo}`
+        : "./images/no-image.png";
 
 }
 
+//======================================================
+// PHOTO EFFECT
+//======================================================
 
-const socket=io(API,{
+const image = document.getElementById("sighting-photo");
+
+image.addEventListener("mouseenter",()=>{
+
+    gsap.to(image,{
+        scale:1.05,
+        duration:.45,
+        ease:"power2.out"
+    });
+
+});
+
+image.addEventListener("mouseleave",()=>{
+
+    gsap.to(image,{
+        scale:1,
+        duration:.45
+    });
+
+});
+
+//======================================================
+// CARD HOVER
+//======================================================
+
+document.querySelectorAll(".info-card,.photo-card,.status-card").forEach(card=>{
+
+    card.addEventListener("mouseenter",()=>{
+
+        gsap.to(card,{
+            y:-8,
+            duration:.35,
+            ease:"power2.out"
+        });
+
+    });
+
+    card.addEventListener("mouseleave",()=>{
+
+        gsap.to(card,{
+            y:0,
+            duration:.35
+        });
+
+    });
+
+});
+
+//======================================================
+// FLOATING GLOW
+//======================================================
+
+gsap.to(".background-glow",{
+
+    y:-30,
+
+    repeat:-1,
+
+    yoyo:true,
+
+    duration:5,
+
+    ease:"sine.inOut"
+
+});
+
+//======================================================
+// SCROLL REVEAL
+//======================================================
+
+gsap.utils.toArray(".info-card").forEach(card=>{
+
+    gsap.from(card,{
+
+        scrollTrigger:{
+            trigger:card,
+            start:"top 85%"
+        },
+
+        y:50,
+
+        opacity:0,
+
+        duration:.8,
+
+        ease:"power3.out"
+
+    });
+
+});
+
+//======================================================
+// SOCKET.IO
+//======================================================
+
+const socket = io(API,{
     withCredentials:true
 });
 
 socket.on("connect",()=>{
 
-    console.log("Connected",socket.id);
+    console.log("Connected:",socket.id);
 
     socket.emit("join_case",caseId);
 
 });
 
-loadSighting();
-</script>
-</body>
+//======================================================
+// OPTIONAL LIVE UPDATE
+//======================================================
+
+socket.on("sighting_updated",()=>{
+
+    loadSighting();
+
+});
+    </script>
+  </body>
 </html>

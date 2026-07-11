@@ -1308,10 +1308,8 @@ document
 .getElementById("chatBtn")
 .onclick = () => {
 
-    window.open(
-        `chat.html?id=${caseId}`,
-        "_blank"
-    );
+    window.location.href =
+`/chat-guardian.html?id=${caseId}`;
 
 };
 
@@ -1373,6 +1371,7 @@ window.addEventListener("beforeunload", () => {
     socket.emit("leave_case", caseId);
 
 });
+
 </script>
 </body>
 </html>

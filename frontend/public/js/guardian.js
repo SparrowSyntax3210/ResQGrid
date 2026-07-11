@@ -62,11 +62,8 @@ async function loadApplications() {
 
     console.log("Applications:", applications);
 
-    // Clear container
-    caseContainer.innerHTML = "";
-
-    // Permanent Create Case Card
-    caseContainer.innerHTML += `
+    // Build HTML first
+    let html = `
       <div class="create-case-card">
         <div class="create-left">
           <h2>Create a New Missing Person Case</h2>
@@ -83,14 +80,8 @@ async function loadApplications() {
       </div>
     `;
 
-    // Create button click
-    document.getElementById("createCaseBtn").onclick = () => {
-      window.location.href = "/application.html";
-    };
-
-    // No active cases
     if (applications.length === 0) {
-      caseContainer.innerHTML += `
+      html += `
         <div class="case-card">
           <h3>No Active Cases</h3>
           <p style="margin-top:10px;color:var(--muted);">
@@ -98,104 +89,108 @@ async function loadApplications() {
           </p>
         </div>
       `;
+    } else {
+      applications.forEach((app) => {
+        html += `
+          <div class="case-card">
 
-      attachHandlers();
-      return;
-    }
+            <div class="case-top">
+              <div class="case-user">
+                <img
+                  src="${
+                    app.Photo
+                      ? `http://localhost:5000/uploads/${app.Photo}`
+                      : "./images/default-user.png"
+                  }"
+                  alt="${app.Name}"
+                >
 
-    // Render all cases
-    applications.forEach((app) => {
-      caseContainer.innerHTML += `
-        <div class="case-card">
-
-          <div class="case-top">
-            <div class="case-user">
-              <img
-  src="${
-    app.Photo
-      ? `http://localhost:5000/uploads/${app.Photo}`
-      : "./images/default-user.png"
-  }"
-  alt="${app.Name}"
->
-
-              <div>
-                <h3>${app.Name}</h3>
-
-                <p>
-                  Age ${app.Age} • ${app.status}
-                </p>
+                <div>
+                  <h3>${app.Name}</h3>
+                  <p>Age ${app.Age} • ${app.status}</p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="case-info">
+            <div class="case-info">
 
-            <div class="info-box">
-              <h4>Last Seen</h4>
-              <p>${app.LastSeen}</p>
+              <div class="info-box">
+                <h4>Last Seen</h4>
+                <p>${app.LastSeen}</p>
+              </div>
+
+              <div class="info-box">
+                <h4>Missing Since</h4>
+                <p>${new Date(app.dateTime).toLocaleString()}</p>
+              </div>
+
+              <div class="info-box">
+                <h4>Priority</h4>
+                <p>
+                  ${app.priorityLevel || "Pending"}
+                  <br>
+                  Score: ${app.priorityScore || 0}/100
+                </p>
+              </div>
+
             </div>
 
-            <div class="info-box">
-              <h4>Missing Since</h4>
-              <p>${new Date(app.dateTime).toLocaleString()}</p>
+            <div class="priority-reason">
+              <h4>AI Analysis</h4>
+              <p>${app.priorityReason || "Analysing priority..."}</p>
             </div>
 
-            <div class="info-box">
-              <h4>Priority</h4>
-              <p>
-                ${app.priorityLevel || "Pending"}
-                <br>
-                Score: ${app.priorityScore || 0}/100
-              </p>
-            </div>
+            <div class="case-buttons">
 
-          </div>
+              <button
+                class="track-btn"
+                data-id="${app._id}"
+                data-location="${encodeURIComponent(app.LastSeen)}">
+                Track Case
+              </button>
 
-          <div class="priority-reason">
-            <h4>AI Analysis</h4>
-            <p>${app.priorityReason || "Analysing priority..."}</p>
-          </div>
+              <button
+                class="chat-btn"
+                data-id="${app._id}">
+                💬 Chat
+              </button>
 
-          <div class="case-buttons">
+              <button
+                class="report-btn"
+                data-id="${app._id}">
+                Reports
+              </button>
 
-            <button
-              class="track-btn"
-              data-id="${app._id}"
-              data-location="${encodeURIComponent(app.LastSeen)}">
-              Track Case
-            </button>
+              <button
+                class="close-btn"
+                data-id="${app._id}">
+                Close
+              </button>
 
-            <button
-              class="chat-btn"
-              data-id="${app._id}">
-              💬 Chat
-            </button>
+              <div
+                id="status-${app._id}"
+                class="status-box">
+              </div>
 
-            <button
-class="report-btn"
-data-id="${app._id}">
-Reports
-</button>
-
-            <button
-              class="close-btn"
-              data-id="${app._id}">
-              Close
-            </button>
-
-            <div
-              id="status-${app._id}"
-              class="status-box">
             </div>
 
           </div>
+        `;
+      });
+    }
 
-        </div>
-      `;
-    });
+    // Render once
+    caseContainer.innerHTML = html;
 
+    // Attach Create button AFTER rendering
+    document.getElementById("createCaseBtn").onclick = () => {
+      console.log("Create button clicked");
+      window.location.href = "./application.html";
+    };
+
+    // Attach other handlers
     attachHandlers();
+
   } catch (error) {
     console.error("Application Error:", error);
   }
@@ -282,16 +277,6 @@ window.location.href=
 };
 
 });
-
-  // CREATE BUTTON
-
-  const create = document.getElementById("createCaseBtn");
-
-  if (create) {
-    create.onclick = () => {
-      window.location.href = "/application.html";
-    };
-  }
 }
 
 // ===============================
