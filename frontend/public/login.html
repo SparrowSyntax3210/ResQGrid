@@ -337,6 +337,98 @@
       padding:32px 28px;
     }
   }
+
+  /* ===========================
+   Glass Background Glow
+=========================== */
+
+body::before,
+body::after{
+    content:"";
+    position:fixed;
+    width:420px;
+    height:420px;
+    border-radius:50%;
+    filter:blur(120px);
+    pointer-events:none;
+    z-index:-1;
+    opacity:.24;
+}
+
+body::before{
+    background:#3b82f6;
+    top:-150px;
+    left:-120px;
+}
+
+body::after{
+    background:#6e56ef;
+    bottom:-170px;
+    right:-120px;
+}
+
+/* Glass Card */
+
+.auth-card{
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+}
+
+/* Inputs */
+
+.input-wrap input{
+    transition:
+        border-color .25s,
+        box-shadow .25s,
+        transform .25s,
+        background .25s;
+}
+
+.input-wrap:hover input{
+    background:#202233;
+}
+
+.input-wrap input:focus{
+    transform:translateY(-2px);
+}
+
+/* Login Button */
+
+.btn-login{
+    transition:
+        transform .3s,
+        box-shadow .3s,
+        filter .3s;
+}
+
+.btn-login:hover{
+    transform:translateY(-3px);
+
+    box-shadow:
+        0 14px 32px rgba(110,86,239,.35),
+        0 0 18px rgba(110,86,239,.25);
+}
+
+/* Safety Card */
+
+.safety-card{
+    transition:.35s;
+}
+
+.safety-card:hover{
+    transform:translateY(-4px);
+    border-color:#3b82f6;
+}
+
+/* Right Image */
+
+.visual-inner img{
+    transition:transform 1s ease;
+}
+
+.visual-panel:hover img{
+    transform:scale(1.04);
+}
 </style>
 </head>
 <body>
@@ -407,6 +499,8 @@
 
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+
 <script>
   const togglePassword = document.getElementById('togglePassword');
   const passwordInput = document.getElementById('password');
@@ -422,6 +516,157 @@
 
     togglePassword.setAttribute('aria-label', isHidden ? 'Hide password' : 'Show password');
   });
+
+  // ============================
+// GSAP Intro Animation
+// ============================
+
+window.addEventListener("load",()=>{
+
+    const tl=gsap.timeline({
+        defaults:{
+            ease:"power3.out"
+        }
+    });
+
+    tl.from(".auth-card",{
+        opacity:0,
+        y:35,
+        duration:.8
+    });
+
+    tl.from([
+        ".logo-wrap",
+        ".tagline",
+        ".welcome-title",
+        ".welcome-sub"
+    ],{
+        opacity:0,
+        y:18,
+        stagger:.08,
+        duration:.45
+    },"-=0.45");
+
+    tl.from(".field-group",{
+        opacity:0,
+        y:18,
+        stagger:.08,
+        duration:.4
+    },"-=0.3");
+
+    tl.from(".remember-row",{
+        opacity:0,
+        y:15,
+        duration:.35
+    },"-=0.1");
+
+    tl.from(".btn-login",{
+        opacity:0,
+        scale:.94,
+        duration:.45
+    },"-=0.15");
+
+    tl.from(".register-text",{
+        opacity:0,
+        y:12,
+        duration:.35
+    });
+
+    tl.from(".visual-panel",{
+        opacity:0,
+        x:40,
+        duration:.8
+    },"-=1");
+
+    tl.from(".safety-card",{
+        opacity:0,
+        y:30,
+        duration:.5
+    },"-=0.3");
+
+});
+
+
+// ============================
+// Floating Illustration
+// ============================
+
+gsap.to(".visual-inner img",{
+    y:-10,
+    duration:4,
+    repeat:-1,
+    yoyo:true,
+    ease:"sine.inOut"
+});
+
+
+// ============================
+// Floating Safety Card
+// ============================
+
+gsap.to(".safety-card",{
+    y:-5,
+    duration:2.8,
+    repeat:-1,
+    yoyo:true,
+    ease:"sine.inOut"
+});
+
+
+// ============================
+// Inputs Hover
+// ============================
+
+document.querySelectorAll(".input-wrap input").forEach(input=>{
+
+    input.addEventListener("mouseenter",()=>{
+
+        gsap.to(input,{
+            y:-2,
+            duration:.2
+        });
+
+    });
+
+    input.addEventListener("mouseleave",()=>{
+
+        if(document.activeElement!==input){
+
+            gsap.to(input,{
+                y:0,
+                duration:.2
+            });
+
+        }
+
+    });
+
+});
+
+
+// ============================
+// Button Hover
+// ============================
+
+const loginBtn=document.querySelector(".btn-login");
+
+loginBtn.addEventListener("mouseenter",()=>{
+
+    gsap.to(loginBtn,{
+        scale:1.02,
+        duration:.2
+    });
+
+});
+
+loginBtn.addEventListener("mouseleave",()=>{
+
+    gsap.to(loginBtn,{
+        scale:1,
+        duration:.2
+    });
+
+});
 </script>
 
 </body>

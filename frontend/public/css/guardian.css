@@ -1140,3 +1140,106 @@ header p {
     justify-content: space-between;
   }
 }
+
+/* ==========================================
+   Dashboard Animation Helpers
+========================================== */
+
+.dashboard{
+    perspective:1500px;
+}
+
+.sidebar,
+header,
+.stat-card,
+.panel,
+.profile,
+.search,
+.notify,
+.menu li,
+.support-card{
+    will-change:transform,opacity;
+}
+
+/* Premium card transitions */
+
+.stat-card,
+.panel{
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease,
+        border-color .35s ease;
+}
+
+.stat-card:hover{
+    transform:translateY(-8px);
+    box-shadow:
+        0 20px 45px rgba(0,0,0,.18);
+}
+
+.panel:hover{
+    transform:translateY(-6px);
+}
+
+/* Sidebar items */
+
+.menu li{
+    transition:
+        transform .25s,
+        background .25s,
+        color .25s;
+}
+
+.menu li:hover{
+    transform:translateX(8px);
+}
+
+/* Search */
+
+.search{
+    transition:
+        box-shadow .3s,
+        transform .3s;
+}
+
+.search:focus-within{
+    transform:translateY(-2px);
+}
+
+/* Notification */
+
+.notify{
+    transition:
+        transform .25s;
+}
+
+.notify:hover{
+    transform:scale(1.08);
+}
+
+/* Profile */
+
+.profile{
+    transition:
+        transform .25s;
+}
+
+.profile:hover{
+    transform:translateY(-2px);
+}
+
+/* Map Pins */
+
+.pin{
+    transform-origin:center;
+}
+
+/* Support Card */
+
+.support-card{
+    transition:.35s;
+}
+
+.support-card:hover{
+    transform:translateY(-6px);
+}

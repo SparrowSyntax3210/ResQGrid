@@ -1,7 +1,10 @@
+const profileName = document.getElementById("profileName");
+const profileRole = document.getElementById("profileRole");
+
 
 async function loadUser() {
   try {
-    const res = await fetch(`${API}/auth/me`, {
+    const res = await fetch(`http://localhost:5000/auth/me`, {
       credentials: "include",
     });
 
@@ -174,3 +177,5 @@ async function checkAuth() {
 }
 
 checkAuth();
+
+loadUser();
