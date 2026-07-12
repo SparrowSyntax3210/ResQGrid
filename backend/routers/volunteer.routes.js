@@ -108,7 +108,9 @@ router.post("/sightings", async (req, res) => {
     });
 
     await sighting.save();
-    req.io.to(req.body.caseId).emit("new_sighting", sighting);
+    const io = req.app.get("io");
+
+    io.to(req.body.caseId).emit("new_sighting", sighting);
 
     res.status(201).json({
       success: true,
@@ -124,58 +126,27 @@ router.post("/sightings", async (req, res) => {
   }
 });
 
-router.get("/sightings/:caseId", async (req, res) => {
-  try {
-    const sightings = await Sighting.find({
-      caseId: req.params.caseId,
-    }).sort({
-      createdAt: -1,
-    });
-
-    res.json({
-      success: true,
-
-      sightings,
-    });
-  } catch (err) {
-    console.log(err);
-
-    res.status(500).json({
-      success: false,
-    });
-  }
-});
-
-// ----------------------------------------------------
-// GET SINGLE SIGHTING
-// ----------------------------------------------------
-router.get("/sighting/:id", async (req, res) => {
+router.get("/sightings/:id", async (req, res) => {
     try {
-
-        const sighting = await Sighting.findById(req.params.id);
-
-        if (!sighting) {
-            return res.status(404).json({
-                success: false,
-                message: "Sighting not found"
-            });
-        }
+        const sightings = await Sighting.find({
+            caseId: req.params.id,
+        }).sort({
+            createdAt: -1,
+        });
 
         res.json({
             success: true,
-            sighting
+            sightings,
         });
 
     } catch (err) {
-
         console.log(err);
 
         res.status(500).json({
             success: false,
-            message: "Internal Server Error"
         });
-
     }
 });
+
 
 module.exports = router;

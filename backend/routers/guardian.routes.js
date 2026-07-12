@@ -350,11 +350,6 @@ router.post("/application", upload.single("Photo"), async (req, res) => {
 
 router.patch("/application/close/:id", async (req, res) => {
   try {
-    console.log("Close request received");
-
-    console.log("Application ID:", req.params.id);
-
-    console.log("Guardian ID:", req.session.user.id);
 
     const check = await Application.findById(req.params.id);
 
@@ -411,6 +406,7 @@ router.patch("/application/close/:id", async (req, res) => {
     });
   }
 });
+
 
 // ----------------------------------------------------
 // GET ACTIVE APPLICATIONS
