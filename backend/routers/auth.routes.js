@@ -133,10 +133,13 @@ router.get("/status", (req, res) => {
 
 router.get("/me", (req, res) => {
     if (!req.session.user) {
-        return res.status(401).json({ message: "Not logged in" });
+        return res.status(401).json({
+            success: false,
+            message: "Not logged in",
+        });
     }
 
-    res.json(req.session.user);
+    return res.json(req.session.user);
 });
 
 module.exports = router

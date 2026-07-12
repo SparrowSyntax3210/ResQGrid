@@ -347,6 +347,30 @@ ${data.priority || 0}
   },
 );
 
+async function checkAuth() {
+    try {
+        const res = await fetch("/auth/status", {
+            credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (!data.loggedIn) {
+            return window.location.replace("/login.html");
+        }
+
+        if (data.user.role.toLowerCase() !== "guardian") {
+            return window.location.replace(
+                `/${data.user.role.toLowerCase()}.html`
+            );
+        }
+
+    } catch (err) {
+        window.location.replace("/login.html");
+    }
+}
+
+
 // ===============================
 // START
 // ===============================
@@ -354,3 +378,6 @@ ${data.priority || 0}
 loadUser();
 
 loadApplications();
+
+
+checkAuth();

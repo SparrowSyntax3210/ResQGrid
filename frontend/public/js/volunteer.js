@@ -149,3 +149,28 @@ document.addEventListener("click",(e)=>{
   }
 
 });
+
+async function checkAuth() {
+    try {
+        const res = await fetch("/auth/status", {
+            credentials: "include",
+        });
+
+        const data = await res.json();
+
+        if (!data.loggedIn) {
+            return window.location.replace("/login.html");
+        }
+
+        if (data.user.role.toLowerCase() !== "volunteer") {
+            return window.location.replace(
+                `/${data.user.role.toLowerCase()}.html`
+            );
+        }
+
+    } catch (err) {
+        window.location.replace("/login.html");
+    }
+}
+
+checkAuth();
