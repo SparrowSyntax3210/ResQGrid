@@ -168,13 +168,19 @@
       });
 
       const gridRectangles = {};
+      let activeMission = false;
+      let activeGrid = null;
 
       const map = L.map("map").setView([20.5937, 78.9629], 5);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
-
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+        {
+          subdomains: "abcd",
+          maxZoom: 20,
+          attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+        },
+      ).addTo(map);
       // ======================================
       // SOCKET CONNECTION
       // ======================================
@@ -194,16 +200,19 @@
 
       // ======================================
       // RECEIVE LIVE GRID DATA
-      // ======================================
+      // =====================================
+
       socket.on("case_state", (state) => {
         if (!state.grids) return;
 
         for (const grid in state.grids) {
           const data = state.grids[grid];
-
           const rectangle = gridRectangles[grid];
 
           if (!rectangle) continue;
+
+          // Don't overwrite the claimed grid
+          if (grid === activeGrid) continue;
 
           let color = "#22c55e";
           let level = "Low";
@@ -219,11 +228,11 @@
           rectangle.setStyle({
             color,
             fillColor: color,
-            fillOpacity: 0.25,
+            fillOpacity: 0.3,
+            weight: 2,
           });
 
-          rectangle.setTooltipContent(
-            `
+          rectangle.setTooltipContent(`
             <div>
                 <b>${grid}</b><br>
                 Priority: ${data.priority}/100<br>
@@ -231,8 +240,7 @@
                 Searched: ${data.searched}%<br>
                 Volunteers: ${data.count}
             </div>
-            `,
-          );
+        `);
         }
       });
 
@@ -275,6 +283,7 @@
       // ======================================
       // CREATE GRID
       // ======================================
+
       function createGrid(lat, lon) {
         const latStep = 0.003;
         const lonStep = 0.003;
@@ -317,12 +326,77 @@
               },
             );
 
+            // ==========================
+            // CLAIM GRID
+            // ==========================
+
             rectangle.on("click", () => {
+              if (activeMission) return;
+
+              activeMission = true;
+              activeGrid = gridName;
+
+              console.log("Claimed Grid:", gridName);
+
               socket.emit("claim_grid", {
                 caseId,
                 gridId: gridName,
               });
+
+              // Hide other grids
+
+              Object.entries(gridRectangles).forEach(([name, rect]) => {
+                if (name !== gridName) {
+                  rect.setStyle({
+                    opacity: 0,
+                    fillOpacity: 0,
+                  });
+
+                  rect.unbindTooltip();
+                }
+              });
+
+              // Make selected grid RED
+              rectangle.setStyle({
+                color: "#ff4d4f", // border red
+                fillColor: "#ff4d4f", // light red overlay
+                fillOpacity: 0.18, // allows map visibility
+                weight: 3,
+              });
+
+              rectangle.bringToFront();
+
+              rectangle.unbindTooltip();
+
+              rectangle.bindTooltip(
+                `
+                    <div style="text-align:center">
+
+                    <b>MISSION ACTIVE</b><br>
+
+                    Grid: ${gridName}<br>
+
+                    Coverage: 0%
+
+                    </div>
+                    `,
+                {
+                  permanent: true,
+                  direction: "center",
+                  className: "grid-label",
+                },
+              );
+
+              // Zoom
+
+              map.flyToBounds(rectangle.getBounds(), {
+                padding: [20, 20],
+                maxZoom: 20,
+                duration: 2,
+              });
             });
+
+            // Right click search event
 
             rectangle.on("contextmenu", () => {
               socket.emit("search_grid", {
@@ -333,79 +407,69 @@
           }
         }
       }
-
       showLocation();
 
-// ===============================
-// CHAT OVERLAY
-// ===============================
+      // ===============================
+      // CHAT OVERLAY
+      // ===============================
 
-const chatToggle = document.getElementById("chatToggle");
-const closeChat = document.getElementById("closeChat");
-const chatOverlay = document.getElementById("chatOverlay");
-const chatFrame = document.getElementById("chatFrame");
-const badge = document.getElementById("chatBadge");
+      const chatToggle = document.getElementById("chatToggle");
+      const closeChat = document.getElementById("closeChat");
+      const chatOverlay = document.getElementById("chatOverlay");
+      const chatFrame = document.getElementById("chatFrame");
+      const badge = document.getElementById("chatBadge");
 
-let unread = 0;
-let chatOpen = false;
+      let unread = 0;
+      let chatOpen = false;
 
-// -------------------------------
-// OPEN CHAT
-// -------------------------------
+      // -------------------------------
+      // OPEN CHAT
+      // -------------------------------
 
-let chatLoaded = false;
+      let chatLoaded = false;
 
-chatToggle.onclick = () => {
+      chatToggle.onclick = () => {
+        if (!chatLoaded) {
+          chatFrame.src = `/chat-volunteer.html?id=${caseId}`;
 
-    if (!chatLoaded) {
+          chatLoaded = true;
+        }
 
-        chatFrame.src = `/chat-volunteer.html?id=${caseId}`;
+        chatOverlay.style.display = "block";
 
-        chatLoaded = true;
+        chatOpen = true;
 
-    }
+        unread = 0;
 
-    chatOverlay.style.display = "block";
+        badge.style.display = "none";
+      };
 
-    chatOpen = true;
+      // -------------------------------
+      // CLOSE CHAT
+      // -------------------------------
 
-    unread = 0;
+      closeChat.onclick = () => {
+        chatOverlay.style.display = "none";
 
-    badge.style.display = "none";
+        chatOpen = false;
+      };
 
-};
+      // -------------------------------
+      // RECEIVE BADGE UPDATE
+      // -------------------------------
 
+      window.addEventListener("message", (event) => {
+        console.log("Parent received:", event.data);
 
+        if (event.data.type !== "NEW_CHAT_MESSAGE") return;
 
-// -------------------------------
-// CLOSE CHAT
-// -------------------------------
+        if (chatOpen) return;
 
-closeChat.onclick = () => {
+        unread++;
 
-    chatOverlay.style.display = "none";
-
-    chatOpen = false;
-};
-
-// -------------------------------
-// RECEIVE BADGE UPDATE
-// -------------------------------
-
-window.addEventListener("message", (event) => {
-
-    console.log("Parent received:", event.data);
-
-    if (event.data.type !== "NEW_CHAT_MESSAGE") return;
-
-    if (chatOpen) return;
-
-    unread++;
-
-    badge.style.display = "flex";
-    badge.textContent = unread;
-
-});
+        badge.style.display = "flex";
+        badge.textContent = unread;
+      });
     </script>
   </body>
 </html>
