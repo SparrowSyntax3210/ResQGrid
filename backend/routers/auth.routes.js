@@ -85,6 +85,7 @@ router.post("/login", async (req, res) => {
             name: existingUser.Name,
             email: existingUser.Email,
             role: existingUser.Role,
+            coins: existingUser.Coins
         };
 
         return res.redirect(`/${existingUser.Role.toLowerCase()}.html`);

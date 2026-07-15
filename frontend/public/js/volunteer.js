@@ -1,5 +1,15 @@
 const profileName = document.getElementById("profileName");
 const profileRole = document.getElementById("profileRole");
+const Rewards = document.getElementById("Rewards");
+
+Rewards.addEventListener("click" , ()=> {
+  console.log("clicked");
+  window.location.href="/rewards.html"
+})
+
+const CoinBalance = document.getElementById("coinBalance");
+
+
 
 
 async function loadUser() {
@@ -15,7 +25,7 @@ async function loadUser() {
     console.log("User:", user);
 
     profileName.textContent = user.name;
-
+    CoinBalance.textContent = `Coins = ${user.coins}`;
     profileRole.textContent = "Volunteer";
   } catch (error) {
     console.error("User Error:", error);

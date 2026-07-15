@@ -20,6 +20,10 @@ const UserSchema = new mongoose.Schema({
     },
     Role:{
         type:String
+    },
+    Coins: {
+        type: Number,
+        default:100
     }
 });
 
