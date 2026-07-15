@@ -1044,9 +1044,12 @@ async function loadUser() {
     profileName.textContent = user.name;
     welcomeName.textContent = user.name;
     navbarName.textContent = user.name;
-    CoinBalance.textContent = user.coins;
+    CoinBalance.forEach((element) => {
+  element.textContent = user.coins;
+});
 
     profileRole.textContent = "Volunteer";
+    console.log(CoinBalance)
   } catch (error) {
     console.error("User Error:", error);
   }
