@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Orange Q -->
+  <circle cx="230" cy="230" r="150" fill="none" stroke="#F7941D" stroke-width="42" stroke-linecap="round"></circle>
+
+  <line x1="325" y1="325" x2="385" y2="385" stroke="#F7941D" stroke-width="42" stroke-linecap="round"></line>
+
+  <!-- Black center -->
+  <circle cx="230" cy="230" r="110" fill="#111111"></circle>
+
+  <!-- Middle person -->
+  <circle cx="230" cy="175" r="25" fill="#ffffff"></circle>
+  <path d="M185 255
+           a45 45 0 0 1 90 0
+           v35
+           h-90z" fill="#ffffff"></path>
+
+  <!-- Left person -->
+  <circle cx="170" cy="185" r="20" fill="#ffffff"></circle>
+  <path d="M145 245
+           a30 30 0 0 1 50 0
+           v25
+           h-50z" fill="#ffffff"></path>
+
+  <!-- Right person -->
+  <circle cx="290" cy="185" r="20" fill="#ffffff"></circle>
+  <path d="M265 245
+           a30 30 0 0 1 50 0
+           v25
+           h-50z" fill="#ffffff"></path>
+</svg>

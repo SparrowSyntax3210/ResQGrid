@@ -10,11 +10,9 @@ gsap.registerPlugin(ScrollTrigger);
 //--------------------------------------
 
 const lenis = new Lenis({
+  duration: 1.1,
 
-    duration: 1.1,
-
-    smoothWheel: true
-
+  smoothWheel: true,
 });
 
 window.lenis = lenis;
@@ -22,9 +20,7 @@ window.lenis = lenis;
 lenis.on("scroll", ScrollTrigger.update);
 
 gsap.ticker.add((time) => {
-
-    lenis.raf(time * 1000);
-
+  lenis.raf(time * 1000);
 });
 
 gsap.ticker.lagSmoothing(0);
@@ -34,42 +30,36 @@ gsap.ticker.lagSmoothing(0);
 //--------------------------------------
 
 window.addEventListener("load", () => {
-
-    loaderInit();
-
+  loaderInit();
 });
 
 const JoinBtn = document.querySelector(".join-btn");
 
 JoinBtn.addEventListener("click", () => {
-
-    window.location.href = "http://localhost:5000/role-selection.html";
+  window.location.href = "http://localhost:5000/role-selection.html";
 });
 
 const GuardianHomeBtn = document.querySelector(".primary-btn");
 
 GuardianHomeBtn.addEventListener("click", () => {
-
-    window.location.href = "http://localhost:5000/register.html?role=Guardian";
-
+  window.location.href = "http://localhost:5000/register.html?role=Guardian";
 });
 
 const VolunteerHomeBtn = document.querySelector(".secondary-btn");
 
 VolunteerHomeBtn.addEventListener("click", () => {
-
-    window.location.href = "http://localhost:5000/register.html?role=Volunteer";
+  window.location.href = "http://localhost:5000/register.html?role=Volunteer";
 });
 
 const GuardianBtn = document.querySelector("#GuardianBtn");
 GuardianBtn.addEventListener("click", () => {
-    window.location.href = "http://localhost:5000/register.html?role=Guardian";
+  window.location.href = "http://localhost:5000/register.html?role=Guardian";
 });
 
 const VolunteerBtn = document.querySelectorAll("#VolunteerBtn");
 
 VolunteerBtn.forEach((btn) => {
-    btn.addEventListener("click", () => {
-        window.location.href = "http://localhost:5000/register.html?role=Volunteer";
-    });
-}); 
+  btn.addEventListener("click", () => {
+    window.location.href = "http://localhost:5000/register.html?role=Volunteer";
+  });
+});
