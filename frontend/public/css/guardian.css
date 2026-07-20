@@ -1145,8 +1145,8 @@ header p {
    Dashboard Animation Helpers
 ========================================== */
 
-.dashboard{
-    perspective:1500px;
+.dashboard {
+  perspective: 1500px;
 }
 
 .sidebar,
@@ -1157,89 +1157,86 @@ header,
 .search,
 .notify,
 .menu li,
-.support-card{
-    will-change:transform,opacity;
+.support-card {
+  will-change: transform, opacity;
 }
 
 /* Premium card transitions */
 
 .stat-card,
-.panel{
-    transition:
-        transform .35s ease,
-        box-shadow .35s ease,
-        border-color .35s ease;
+.panel {
+  transition:
+    transform 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
 }
 
-.stat-card:hover{
-    transform:translateY(-8px);
-    box-shadow:
-        0 20px 45px rgba(0,0,0,.18);
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.18);
 }
 
-.panel:hover{
-    transform:translateY(-6px);
+.panel:hover {
+  transform: translateY(-6px);
 }
 
 /* Sidebar items */
 
-.menu li{
-    transition:
-        transform .25s,
-        background .25s,
-        color .25s;
+.menu li {
+  transition:
+    transform 0.25s,
+    background 0.25s,
+    color 0.25s;
 }
 
-.menu li:hover{
-    transform:translateX(8px);
+.menu li:hover {
+  transform: translateX(8px);
 }
 
 /* Search */
 
-.search{
-    transition:
-        box-shadow .3s,
-        transform .3s;
+.search {
+  transition:
+    box-shadow 0.3s,
+    transform 0.3s;
 }
 
-.search:focus-within{
-    transform:translateY(-2px);
+.search:focus-within {
+  transform: translateY(-2px);
 }
 
 /* Notification */
 
-.notify{
-    transition:
-        transform .25s;
+.notify {
+  transition: transform 0.25s;
 }
 
-.notify:hover{
-    transform:scale(1.08);
+.notify:hover {
+  transform: scale(1.08);
 }
 
 /* Profile */
 
-.profile{
-    transition:
-        transform .25s;
+.profile {
+  transition: transform 0.25s;
 }
 
-.profile:hover{
-    transform:translateY(-2px);
+.profile:hover {
+  transform: translateY(-2px);
 }
 
 /* Map Pins */
 
-.pin{
-    transform-origin:center;
+.pin {
+  transform-origin: center;
 }
 
 /* Support Card */
 
-.support-card{
-    transition:.35s;
+.support-card {
+  transition: 0.35s;
 }
 
-.support-card:hover{
-    transform:translateY(-6px);
+.support-card:hover {
+  transform: translateY(-6px);
 }

@@ -284,7 +284,7 @@ animateCaseCards();
     // Attach Create button AFTER rendering
     document.getElementById("createCaseBtn").onclick = () => {
       console.log("Create button clicked");
-      window.location.href = "./application.html";
+      window.location.href = "./case-selection.html";
     };
 
     // Attach other handlers

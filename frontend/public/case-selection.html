@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .box-container{
+        margin-left: 400px;
+        margin-top: 100px;
+        display: flex;
+        flex-wrap: wrap;
+        gap:100px;
+        flex-direction: row;
+        justify-content: column;
+        max-width: 60%;
+    }
+
+    .box{
+        width: 200px;
+        height: 200px;
+        border-radius: 30%;
+        border: 2px solid black;
+    }
+</style>
+<body>
+    <section class="main">
+        <h1>Case Selection</h1>
+        <div class="box-container">
+            <div class="box" id="Missing-Person">Missing Person</div>
+            <div class="box" id="Blood-Report">Blood Report</div>
+            <div class="box" id="Elderly-Assistance">Elderly Assistance</div>
+            <div class="box" id="Commumity-SOS">Community SOS</div>
+            <div class="box" id="Civic-Hazard">Civic Hazard</div>
+            <div class="box" id="Women-Safety">Women Safety</div>
+        </div>
+    </section>
+    <script>
+    const boxes = document.querySelectorAll(".box");
+
+    boxes.forEach(box => {
+        box.addEventListener("click", () => {
+            const caseId = box.id;
+
+            window.location.href = `/application.html?case=${caseId}`;
+        });
+    });
+    </script>
+</body>
+</html>
