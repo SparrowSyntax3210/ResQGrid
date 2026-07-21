@@ -1,60 +1,710 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<style>
-    *{
-        padding: 0;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Select Case | ResQGrid</title>
+
+    <!-- Inter Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <style>
+      /* =========================================
+           BASE RESET
+        ========================================= */
+
+      * {
         margin: 0;
+        padding: 0;
         box-sizing: border-box;
-    }
-    html {
-        scroll-behavior: smooth;
-    }
+        font-family: "Inter", sans-serif;
+      }
 
-    .box-container{
-        margin-left: 400px;
-        margin-top: 100px;
+      body {
+        background: #06080c;
+
+        min-height: 100vh;
+
         display: flex;
-        flex-wrap: wrap;
-        gap:100px;
-        flex-direction: row;
-        justify-content: column;
-        max-width: 60%;
-    }
+        justify-content: center;
+        align-items: center;
 
-    .box{
-        width: 200px;
-        height: 200px;
-        border-radius: 30%;
-        border: 2px solid black;
-    }
-</style>
-<body>
-    <section class="main">
-        <h1>Case Selection</h1>
-        <div class="box-container">
-            <div class="box" id="Missing-Person">Missing Person</div>
-            <div class="box" id="Blood-Report">Blood Report</div>
-            <div class="box" id="Elderly-Assistance">Elderly Assistance</div>
-            <div class="box" id="Commumity-SOS">Community SOS</div>
-            <div class="box" id="Civic-Hazard">Civic Hazard</div>
-            <div class="box" id="Women-Safety">Women Safety</div>
+        color: #ffffff;
+
+        padding: 30px;
+
+        overflow-x: hidden;
+      }
+
+      /* =========================================
+           BACKGROUND GLOW
+        ========================================= */
+
+      body::before,
+      body::after {
+        content: "";
+
+        position: fixed;
+
+        width: 420px;
+        height: 420px;
+
+        border-radius: 50%;
+
+        filter: blur(120px);
+
+        pointer-events: none;
+
+        z-index: -1;
+
+        opacity: 0.22;
+      }
+
+      body::before {
+        background: #3b82f6;
+
+        top: -170px;
+        left: -140px;
+      }
+
+      body::after {
+        background: #764bee;
+
+        right: -150px;
+        bottom: -180px;
+      }
+
+      /* =========================================
+           MAIN CONTAINER
+        ========================================= */
+
+      .case-container {
+        width: 100%;
+
+        max-width: 850px;
+
+        padding: 45px 40px;
+
+        text-align: center;
+
+        background-color: #0d111a;
+
+        border: 1px solid #161f30;
+
+        border-radius: 24px;
+
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+
+        backdrop-filter: blur(18px);
+
+        -webkit-backdrop-filter: blur(18px);
+
+        transform-style: preserve-3d;
+      }
+
+      /* =========================================
+           HEADER
+        ========================================= */
+
+      h1 {
+        font-size: 28px;
+
+        font-weight: 700;
+
+        letter-spacing: -0.5px;
+
+        margin-bottom: 12px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+
+        color: #6e7f94;
+
+        line-height: 1.6;
+
+        margin-bottom: 38px;
+      }
+
+      /* =========================================
+           CASE GRID
+        ========================================= */
+
+      .box-container {
+        display: grid;
+
+        grid-template-columns: repeat(3, 1fr);
+
+        gap: 18px;
+
+        margin-bottom: 30px;
+      }
+
+      /* =========================================
+           CASE CARD
+        ========================================= */
+
+      .box {
+        min-height: 190px;
+
+        padding: 28px 18px;
+
+        border-radius: 20px;
+
+        cursor: pointer;
+
+        display: flex;
+
+        flex-direction: column;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-align: center;
+
+        user-select: none;
+
+        transition:
+          transform 0.28s ease,
+          border-color 0.28s ease,
+          box-shadow 0.28s ease,
+          background 0.28s ease;
+
+        outline: none;
+      }
+
+      /* =========================================
+           CARD COLORS
+        ========================================= */
+
+      .box:nth-child(1) {
+        border: 1px solid rgba(118, 75, 238, 0.18);
+
+        background: linear-gradient(
+          180deg,
+          rgba(118, 75, 238, 0.03),
+          rgba(118, 75, 238, 0.07)
+        );
+      }
+
+      .box:nth-child(2) {
+        border: 1px solid rgba(253, 114, 15, 0.18);
+
+        background: linear-gradient(
+          180deg,
+          rgba(253, 114, 15, 0.03),
+          rgba(253, 114, 15, 0.07)
+        );
+      }
+
+      .box:nth-child(3) {
+        border: 1px solid rgba(59, 130, 246, 0.18);
+
+        background: linear-gradient(
+          180deg,
+          rgba(59, 130, 246, 0.03),
+          rgba(59, 130, 246, 0.07)
+        );
+      }
+
+      .box:nth-child(4) {
+        border: 1px solid rgba(34, 197, 94, 0.18);
+
+        background: linear-gradient(
+          180deg,
+          rgba(34, 197, 94, 0.03),
+          rgba(34, 197, 94, 0.07)
+        );
+      }
+
+      .box:nth-child(5) {
+        border: 1px solid rgba(234, 179, 8, 0.18);
+
+        background: linear-gradient(
+          180deg,
+          rgba(234, 179, 8, 0.03),
+          rgba(234, 179, 8, 0.07)
+        );
+      }
+
+      .box:nth-child(6) {
+        border: 1px solid rgba(236, 72, 153, 0.18);
+
+        background: linear-gradient(
+          180deg,
+          rgba(236, 72, 153, 0.03),
+          rgba(236, 72, 153, 0.07)
+        );
+      }
+
+      /* =========================================
+           HOVER EFFECTS
+        ========================================= */
+
+      .box:nth-child(1):hover {
+        border-color: #764bee;
+
+        background: rgba(118, 75, 238, 0.09);
+
+        box-shadow: 0 12px 30px rgba(118, 75, 238, 0.18);
+      }
+
+      .box:nth-child(2):hover {
+        border-color: #fd720f;
+
+        background: rgba(253, 114, 15, 0.09);
+
+        box-shadow: 0 12px 30px rgba(253, 114, 15, 0.18);
+      }
+
+      .box:nth-child(3):hover {
+        border-color: #3b82f6;
+
+        background: rgba(59, 130, 246, 0.09);
+
+        box-shadow: 0 12px 30px rgba(59, 130, 246, 0.18);
+      }
+
+      .box:nth-child(4):hover {
+        border-color: #22c55e;
+
+        background: rgba(34, 197, 94, 0.09);
+
+        box-shadow: 0 12px 30px rgba(34, 197, 94, 0.18);
+      }
+
+      .box:nth-child(5):hover {
+        border-color: #eab308;
+
+        background: rgba(234, 179, 8, 0.09);
+
+        box-shadow: 0 12px 30px rgba(234, 179, 8, 0.18);
+      }
+
+      .box:nth-child(6):hover {
+        border-color: #ec4899;
+
+        background: rgba(236, 72, 153, 0.09);
+
+        box-shadow: 0 12px 30px rgba(236, 72, 153, 0.18);
+      }
+
+      /* =========================================
+           ICON
+        ========================================= */
+
+      .case-icon {
+        width: 58px;
+
+        height: 58px;
+
+        border-radius: 18px;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        font-size: 27px;
+
+        margin-bottom: 18px;
+
+        transition: transform 0.4s ease;
+      }
+
+      .box:hover .case-icon {
+        transform: scale(1.1) rotate(-4deg);
+      }
+
+      .box:nth-child(1) .case-icon {
+        background: rgba(118, 75, 238, 0.12);
+
+        color: #764bee;
+      }
+
+      .box:nth-child(2) .case-icon {
+        background: rgba(253, 114, 15, 0.12);
+
+        color: #fd720f;
+      }
+
+      .box:nth-child(3) .case-icon {
+        background: rgba(59, 130, 246, 0.12);
+
+        color: #3b82f6;
+      }
+
+      .box:nth-child(4) .case-icon {
+        background: rgba(34, 197, 94, 0.12);
+
+        color: #22c55e;
+      }
+
+      .box:nth-child(5) .case-icon {
+        background: rgba(234, 179, 8, 0.12);
+
+        color: #eab308;
+      }
+
+      .box:nth-child(6) .case-icon {
+        background: rgba(236, 72, 153, 0.12);
+
+        color: #ec4899;
+      }
+
+      /* =========================================
+           CARD TEXT
+        ========================================= */
+
+      .case-title {
+        font-size: 16px;
+
+        font-weight: 600;
+
+        color: #ffffff;
+
+        margin-bottom: 9px;
+      }
+
+      .case-description {
+        font-size: 11px;
+
+        color: #5d6d82;
+
+        line-height: 1.5;
+      }
+
+      /* =========================================
+           FOOTER
+        ========================================= */
+
+      .footer-text {
+        font-size: 13px;
+
+        color: #5d6d82;
+      }
+
+      .back-link {
+        color: #764bee;
+
+        text-decoration: none;
+
+        font-weight: 500;
+
+        margin-left: 5px;
+
+        transition: 0.25s;
+      }
+
+      .back-link:hover {
+        color: #926eff;
+
+        text-shadow: 0 0 12px rgba(118, 75, 238, 0.5);
+
+        text-decoration: underline;
+      }
+
+      /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+      @media (max-width: 700px) {
+        .case-container {
+          padding: 35px 20px;
+        }
+
+        .box-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 15px;
+        }
+
+        .case-container {
+          padding: 30px 16px;
+        }
+
+        h1 {
+          font-size: 23px;
+        }
+
+        .box-container {
+          grid-template-columns: 1fr;
+
+          gap: 14px;
+        }
+
+        .box {
+          min-height: 155px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="case-container">
+      <h1>Select a Case Type</h1>
+
+      <p class="subtitle">
+        Choose the type of situation you want to report. Our response system
+        will guide you through the next steps.
+      </p>
+
+      <div class="box-container">
+        <div class="box" id="Missing-Person">
+          <div class="case-icon">👤</div>
+
+          <div class="case-title">Missing Person</div>
+
+          <div class="case-description">
+            Report a missing person or lost child
+          </div>
         </div>
-    </section>
+
+        <div class="box" id="Blood-Report">
+          <div class="case-icon">🩸</div>
+
+          <div class="case-title">Blood Report</div>
+
+          <div class="case-description">
+            Request urgent blood donation assistance
+          </div>
+        </div>
+
+        <div class="box" id="Elderly-Assistance">
+          <div class="case-icon">👴</div>
+
+          <div class="case-title">Elderly Assistance</div>
+
+          <div class="case-description">Request help for elderly citizens</div>
+        </div>
+
+        <div class="box" id="Commumity-SOS">
+          <div class="case-icon">🚨</div>
+
+          <div class="case-title">Community SOS</div>
+
+          <div class="case-description">
+            Get immediate help during emergencies
+          </div>
+        </div>
+
+        <div class="box" id="Civic-Hazard">
+          <div class="case-icon">⚠️</div>
+
+          <div class="case-title">Civic Hazard</div>
+
+          <div class="case-description">
+            Report dangerous public infrastructure
+          </div>
+        </div>
+
+        <div class="box" id="Women-Safety">
+          <div class="case-icon">🛡️</div>
+
+          <div class="case-title">Women Safety</div>
+
+          <div class="case-description">
+            Report or request assistance for safety concerns
+          </div>
+        </div>
+      </div>
+
+      <p class="footer-text">
+        Need help choosing a case?
+
+        <a href="#" class="back-link"> Learn more </a>
+      </p>
+    </main>
+
     <script>
-    const boxes = document.querySelectorAll(".box");
+      /* ====================================
+           CASE REDIRECTION
+        ==================================== */
 
-    boxes.forEach(box => {
+      const boxes = document.querySelectorAll(".box");
+
+      boxes.forEach((box) => {
         box.addEventListener("click", () => {
-            const caseId = box.id;
+          const caseId = box.id;
 
-            window.location.href = `/application.html?case=${caseId}`;
+          // Store selected case
+          localStorage.setItem("selectedCase", caseId);
+
+          // Redirect to application form
+          window.location.href = `/application.html?case=${caseId}`;
         });
-    });
+      });
+
+      /* ====================================
+           GSAP INTRO ANIMATION
+        ==================================== */
+
+      window.addEventListener("load", () => {
+        const tl = gsap.timeline({
+          defaults: {
+            ease: "power3.out",
+          },
+        });
+
+        tl.from(".case-container", {
+          opacity: 0,
+
+          y: 40,
+
+          scale: 0.96,
+
+          duration: 0.8,
+        });
+
+        tl.from(
+          "h1",
+          {
+            opacity: 0,
+
+            y: 18,
+
+            duration: 0.45,
+          },
+          "-=.45",
+        );
+
+        tl.from(
+          ".subtitle",
+          {
+            opacity: 0,
+
+            y: 18,
+
+            duration: 0.45,
+          },
+          "-=.3",
+        );
+
+        tl.from(
+          ".box",
+          {
+            opacity: 0,
+
+            y: 30,
+
+            stagger: 0.12,
+
+            duration: 0.5,
+          },
+          "-=.2",
+        );
+
+        tl.from(
+          ".footer-text",
+          {
+            opacity: 0,
+
+            y: 15,
+
+            duration: 0.35,
+          },
+          "-=.2",
+        );
+      });
+
+      /* ====================================
+           HOVER ANIMATION
+        ==================================== */
+
+      document.querySelectorAll(".box").forEach((box) => {
+        box.addEventListener("mouseenter", () => {
+          gsap.to(box, {
+            y: -6,
+
+            scale: 1.02,
+
+            duration: 0.25,
+
+            ease: "power2.out",
+          });
+        });
+
+        box.addEventListener("mouseleave", () => {
+          gsap.to(box, {
+            y: 0,
+
+            scale: 1,
+
+            duration: 0.25,
+
+            ease: "power2.out",
+          });
+        });
+      });
+
+      /* ====================================
+           FLOATING ICON ANIMATION
+        ==================================== */
+
+      gsap.to(".case-icon", {
+        y: -5,
+
+        duration: 2.5,
+
+        repeat: -1,
+
+        yoyo: true,
+
+        stagger: 0.25,
+
+        ease: "sine.inOut",
+      });
+
+      /* ====================================
+           MOUSE PARALLAX
+        ==================================== */
+
+      const container = document.querySelector(".case-container");
+
+      document.addEventListener("mousemove", (e) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 8;
+
+        const y = (e.clientY / window.innerHeight - 0.5) * 8;
+
+        gsap.to(container, {
+          rotationY: x,
+
+          rotationX: -y,
+
+          transformPerspective: 1000,
+
+          transformOrigin: "center",
+
+          duration: 0.6,
+
+          ease: "power2.out",
+        });
+      });
+
+      document.addEventListener("mouseleave", () => {
+        gsap.to(container, {
+          rotationX: 0,
+
+          rotationY: 0,
+
+          duration: 0.6,
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
