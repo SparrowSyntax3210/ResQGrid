@@ -345,9 +345,7 @@
       </form>
     </div>
 
-    <section class="dynamic-feilds">
-      
-    </section>
+    <section class="dynamic-feilds"></section>
 
     <script>
       function previewImage(event) {
@@ -401,6 +399,287 @@
             alert(err.message);
           }
         });
+
+      const params = new URLSearchParams(window.location.search);
+const caseType = params.get("case");
+
+console.log("Case Type:", caseType);
+
+const dynamicFields = document.querySelector(".dynamic-feilds");
+
+const forms = {
+  "missing-person": `
+    <div class="form-group">
+      <label>Eye Color</label>
+      <input type="text" name="EyeColor" placeholder="Brown">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Hair Color</label>
+        <input type="text" name="HairColor">
+      </div>
+
+      <div class="form-group">
+        <label>Weight</label>
+        <input type="number" name="Weight">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Nationality</label>
+      <input type="text" name="Nationality">
+    </div>
+
+    <div class="form-group">
+      <label>Languages Spoken</label>
+      <input type="text" name="Languages">
+    </div>
+
+    <div class="form-group">
+      <label>Distinguishing Marks</label>
+      <textarea name="Marks"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Reward Offered (Optional)</label>
+      <input type="text" name="Reward">
+    </div>
+  `,
+
+  "blood-report": `
+    <div class="form-group">
+      <label>Emergency Type</label>
+
+      <select id="emergencyType" name="EmergencyType">
+        <option value="blood">Blood Required</option>
+        <option value="medicine">Medicine Required</option>
+      </select>
+    </div>
+
+    <div id="bloodFields">
+
+      <div class="form-group">
+        <label>Patient Name</label>
+        <input type="text" name="PatientName">
+      </div>
+
+      <div class="form-row">
+
+        <div class="form-group">
+          <label>Blood Group</label>
+          <select name="BloodGroup">
+            <option>A+</option>
+            <option>A-</option>
+            <option>B+</option>
+            <option>B-</option>
+            <option>AB+</option>
+            <option>AB-</option>
+            <option>O+</option>
+            <option>O-</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Units Required</label>
+          <input type="number" name="Units">
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label>Hospital Name</label>
+        <input type="text" name="Hospital">
+      </div>
+
+    </div>
+
+    <div id="medicineFields" style="display:none;">
+
+      <div class="form-group">
+        <label>Medicine Name</label>
+        <input type="text" name="MedicineName">
+      </div>
+
+      <div class="form-group">
+        <label>Prescription</label>
+        <input type="file" name="Prescription">
+      </div>
+
+    </div>
+  `,
+
+  "elderly-assistance": `
+    <div class="form-group">
+      <label>Elderly Person Name</label>
+      <input type="text" name="PersonName">
+    </div>
+
+    <div class="form-group">
+      <label>Request Type</label>
+
+      <select name="RequestType">
+        <option>Wellness Check</option>
+        <option>Medicine Pickup</option>
+        <option>Grocery Assistance</option>
+        <option>Hospital Escort</option>
+        <option>Home Assistance</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Medical Conditions</label>
+      <textarea name="MedicalConditions"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Emergency Contact</label>
+      <input type="text" name="EmergencyContact">
+    </div>
+  `,
+
+  "commumity-sos": `
+    <div class="form-group">
+      <label>SOS Category</label>
+
+      <select name="SOSCategory">
+        <option>Vehicle Breakdown</option>
+        <option>Phone Battery Dead</option>
+        <option>Feeling Unsafe</option>
+        <option>Lost While Travelling</option>
+        <option>Child Separated</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Destination</label>
+      <input type="text" name="Destination">
+    </div>
+
+    <div class="form-group">
+      <label>Vehicle Number (Optional)</label>
+      <input type="text" name="VehicleNumber">
+    </div>
+
+    <div class="form-group">
+      <label>Emergency Contact</label>
+      <input type="text" name="EmergencyContact">
+    </div>
+  `,
+
+  "civic-hazard": `
+    <div class="form-group">
+      <label>Hazard Type</label>
+
+      <select name="HazardType">
+        <option>Open Manhole</option>
+        <option>Broken Streetlight</option>
+        <option>Waterlogging</option>
+        <option>Road Damage</option>
+        <option>Electrical Hazard</option>
+        <option>Fallen Tree</option>
+        <option>Garbage Overflow</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Severity</label>
+
+      <select name="Severity">
+        <option>Low</option>
+        <option>Medium</option>
+        <option>High</option>
+        <option>Critical</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Nearest Landmark</label>
+      <input type="text" name="Landmark">
+    </div>
+
+    <div class="form-group">
+      <label>Has anyone been injured?</label>
+
+      <select name="Injury">
+        <option>No</option>
+        <option>Yes</option>
+      </select>
+    </div>
+  `,
+
+  "women-safety": `
+    <div class="form-group">
+      <label>Request Type</label>
+
+      <select name="RequestType">
+        <option>Safe Walk</option>
+        <option>Escort</option>
+        <option>Feeling Unsafe</option>
+        <option>Suspicious Activity</option>
+        <option>Emergency Help</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Destination</label>
+      <input type="text" name="Destination">
+    </div>
+
+    <div class="form-group">
+      <label>Emergency Contact</label>
+      <input type="text" name="EmergencyContact">
+    </div>
+
+    <div class="form-group">
+      <label>Share Live Location</label>
+
+      <select name="LiveLocation">
+        <option>Yes</option>
+        <option>No</option>
+      </select>
+    </div>
+  `
+};
+
+function showDynamicFields(type) {
+
+  if (!dynamicFields) {
+    console.error("'.dynamic-feilds' section not found.");
+    return;
+  }
+
+  if (!forms[type]) {
+    console.warn("No form found for:", type);
+    dynamicFields.innerHTML = "";
+    return;
+  }
+
+  dynamicFields.innerHTML = forms[type];
+
+  if (type === "Blood-Report") {
+
+    const emergencyType = document.getElementById("emergencyType");
+    const bloodFields = document.getElementById("bloodFields");
+    const medicineFields = document.getElementById("medicineFields");
+
+    if (emergencyType) {
+      emergencyType.addEventListener("change", () => {
+
+        if (emergencyType.value === "blood") {
+          bloodFields.style.display = "block";
+          medicineFields.style.display = "none";
+        } else {
+          bloodFields.style.display = "none";
+          medicineFields.style.display = "block";
+        }
+
+      });
+    }
+  }
+}
+
+showDynamicFields(caseType);
     </script>
   </body>
 </html>
