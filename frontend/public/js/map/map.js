@@ -1,10 +1,10 @@
+const API = "http://localhost:5000";
+
 const params = new URLSearchParams(window.location.search);
 
 const caseId = params.get("id");
 
-const caseType = params.get("caseType");
-
-const API = "http://localhost:5000";
+let caseType = params.get("caseType");
 
 const socket = io(API, {
   withCredentials: true,
@@ -12,267 +12,227 @@ const socket = io(API, {
 
 let application = null;
 
-let destination = "";
+let watchId = null;
 
-// ================= LOAD APPLICATION =================
+// =====================================
+// SOCKET CONNECT
+// =====================================
+
+socket.on("connect", () => {
+  console.log("Volunteer Socket Connected:", socket.id);
+});
+
+// =====================================
+// LOAD CASE
+// =====================================
 
 async function loadApplication() {
   try {
     if (!caseId) {
-      console.error("No case id found");
+      console.log("Missing Case ID");
 
       return;
     }
 
-    const response = await fetch(`${API}/volunteer/application/${caseId}`, {
+    const res = await fetch(`${API}/volunteer/application/${caseId}`, {
       credentials: "include",
     });
 
-    const data = await response.json();
-
-    console.log("Application:", data);
-
-    // if backend returns {success:true, application:{}}
+    const data = await res.json();
 
     application = data.application || data;
 
-    console.log("Case Type From URL:", caseType);
+    console.log("Application:", application);
 
-    console.log("Case Type From DB:", application.caseType);
+    // fallback from database
+
+    if (!caseType) {
+      caseType = application.caseType;
+    }
+
+    console.log("Case Type:", caseType);
+
+    joinCaseRoom();
+
+    startLocationTracking();
 
     initializeMap();
 
-    initializeChat(socket, caseId);
+    if (typeof initializeChat === "function") {
+      initializeChat(socket, caseId);
+    }
   } catch (err) {
-    console.error("Load Application Error:", err);
+    console.log("Load Error:", err);
   }
 }
 
-// ================= INITIALIZE MAP =================
+// =====================================
+// JOIN CASE ROOM
+// =====================================
+
+function joinCaseRoom() {
+  if (!caseId) {
+    return;
+  }
+
+ socket.emit(
+"join_case",
+{
+    caseId: caseId,
+    role:"Volunteer"
+}
+);
+
+
+
+  console.log("Joined Case Room:", caseId);
+
+  socket.emit("volunteer_joined", {
+    caseId,
+
+    name: localStorage.getItem("name") || "Volunteer",
+  });
+}
+
+// =====================================
+// MAP LOADING
+// =====================================
 
 function initializeMap() {
   switch (caseType) {
     case "missing-person":
-      loadMissingPersonMap({
-        application,
+      if (typeof loadMissingPersonMap === "function") {
+        loadMissingPersonMap({
+          application,
 
-        socket,
+          socket,
 
-        caseId,
-      });
+          caseId,
+        });
+      }
 
       break;
 
     case "blood-report":
-      destination = application.Hospital;
-
-      loadRouteMap({
-        application,
-
-        socket,
-
-        caseId,
-      });
-
-      break;
 
     case "elderly-assistance":
-      destination = application.Address;
-
-      loadRouteMap({
-        application,
-
-        socket,
-
-        caseId,
-      });
-
-      break;
 
     case "community-sos":
-      destination = application.CurrentLocation;
+      if (typeof loadRouteMap === "function") {
+        loadRouteMap({
+          application,
 
-      loadRouteMap({
-        application,
+          socket,
 
-        socket,
-
-        caseId,
-      });
+          caseId,
+        });
+      }
 
       break;
 
     case "women-safety":
-      loadEscortMap({
-        application,
+      if (typeof loadEscortMap === "function") {
+        loadEscortMap({
+          application,
 
-        socket,
+          socket,
 
-        caseId,
-      });
+          caseId,
+        });
+      }
 
       break;
 
     case "civic-hazard":
-      loadHazardMap({
-        application,
+      if (typeof loadHazardMap === "function") {
+        loadHazardMap({
+          application,
 
-        socket,
+          socket,
 
-        caseId,
-      });
+          caseId,
+        });
+      }
 
       break;
 
     default:
-      console.log("Unknown Case Type:", caseType);
+      console.log("Unknown case type:", caseType);
   }
 }
 
-loadApplication();
+// =====================================
+// LIVE LOCATION
+// =====================================
 
-// ================= CHAT TOGGLE =================
-
-document.addEventListener("DOMContentLoaded",()=>{
-
-const chatToggle = document.getElementById("chatToggle");
-
-const chatOverlay = document.getElementById("chatOverlay");
-
-const closeChat = document.getElementById("closeChat");
-
-const chatFrame = document.getElementById("chatFrame");
-
-const chatBadge = document.getElementById("chatBadge");
-
-
-let unreadMessages = 0;
-
-chatToggle.addEventListener("click" , ()=> {
-    window.location.href="/chat-volunteer.html?id=${caseId}"
-})
-
-
-
-if(!chatToggle || !chatOverlay){
-
-    console.error("Chat elements missing");
+function startLocationTracking() {
+  if (!navigator.geolocation) {
+    console.log("Location not supported");
 
     return;
+  }
 
+  watchId = navigator.geolocation.watchPosition(
+    (position) => {
+      const location = {
+        caseId,
+
+        lat: position.coords.latitude,
+
+        lng: position.coords.longitude,
+
+        name: localStorage.getItem("name") || "Volunteer",
+
+        time: new Date(),
+      };
+
+      console.log("Sending Location:", location);
+
+      socket.emit("volunteer_location", location);
+    },
+
+    (error) => {
+      console.log("Location Error:", error);
+    },
+
+    {
+      enableHighAccuracy: true,
+
+      maximumAge: 5000,
+
+      timeout: 10000,
+    },
+  );
 }
 
+// =====================================
+// CHAT BUTTON
+// =====================================
 
+document.addEventListener("DOMContentLoaded", () => {
+  const chatBtn = document.getElementById("chatToggle");
 
-
-// OPEN / CLOSE CHAT
-
-chatToggle.addEventListener("click",()=>{
-
-
-    if(chatOverlay.classList.contains("active")){
-
-
-        chatOverlay.classList.remove("active");
-
-
-    }
-
-    else{
-
-
-        if(!chatFrame.src){
-
-            chatFrame.src =
-            `/chat-volunteer.html?id=${caseId}`;
-
-        }
-
-
-        chatOverlay.classList.add("active");
-
-
-        unreadMessages = 0;
-
-        updateBadge();
-
-
-    }
-
-
+  if (chatBtn) {
+    chatBtn.onclick = () => {
+      window.location.href = `/chat-volunteer.html?id=${caseId}`;
+    };
+  }
 });
 
+// =====================================
+// CLEANUP
+// =====================================
 
+window.addEventListener("beforeunload", () => {
+  if (watchId) {
+    navigator.geolocation.clearWatch(watchId);
+  }
 
+  socket.emit("volunteer_left", {
+    caseId,
 
-
-// CLOSE BUTTON
-
-if(closeChat){
-
-closeChat.addEventListener("click",()=>{
-
-
-    chatOverlay.classList.remove("active");
-
-
+    name: localStorage.getItem("name") || "Volunteer",
+  });
 });
 
-}
-
-
-
-
-
-function updateBadge(){
-
-
-    chatBadge.innerText =
-    unreadMessages;
-
-
-
-    if(unreadMessages === 0){
-
-        chatBadge.style.display="none";
-
-    }
-    else{
-
-        chatBadge.style.display="flex";
-
-    }
-
-
-}
-
-
-
-updateBadge();
-
-
-window.addEventListener("message",(event)=>{
-
-
-    if(event.data?.type==="new_message"){
-
-
-        if(!chatOverlay.classList.contains("active")){
-
-
-            unreadMessages++;
-
-
-            updateBadge();
-
-
-        }
-
-
-    }
-
-
-});
-
-
-});
+loadApplication();

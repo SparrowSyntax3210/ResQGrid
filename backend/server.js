@@ -223,84 +223,74 @@ io.on("connection", (socket) => {
   // JOIN CASE
   // ==========================================
 
-  socket.on("join_case", async (caseId) => {
+  socket.on("join_case",(data)=>{
 
-    try {
+    try{
 
-      socket.join(`case_${caseId}`);
+        let caseId;
+        let role;
 
-      console.log(socket.id, "joined", caseId);
 
-      // --------------------------------------
-      // CREATE LIVE CASE (FIRST TIME ONLY)
-      // --------------------------------------
+        if(typeof data === "string"){
 
-      if (!activeCases[caseId]) {
+            caseId = data;
+            role = "Unknown";
 
-        const application = await Application.findById(caseId);
+        }
+        else{
 
-        if (!application) {
-
-          console.log("Application not found");
-
-          return;
+            caseId = data.caseId;
+            role = data.role;
 
         }
 
-        const liveCase = createLiveCase(application);
 
-        generateBasePriorities(liveCase);
+        if(!caseId){
 
-        updatePriorities(liveCase);
+            console.log("NO CASE ID");
+            return;
 
-        activeCases[caseId] = liveCase;
+        }
 
-        console.log("Live case initialized");
 
-      }
+        const room = `case_${caseId}`;
 
-      const currentCase = activeCases[caseId];
 
-      // --------------------------------------
-      // REGISTER VOLUNTEER
-      // --------------------------------------
+        socket.join(room);
 
-      if (!currentCase.volunteers[socket.id]) {
 
-        currentCase.volunteers[socket.id] = {
+        socket.caseId = caseId;
+        socket.role = role;
 
-          socketId: socket.id,
 
-          joinedAt: Date.now(),
+        console.log(
+            socket.id,
+            "joined",
+            room,
+            role
+        );
 
-          lastHeartbeat: Date.now(),
 
-          grid: null,
+        socket.to(room).emit(
+            "case_state",
+            {
+                caseId,
+                message:`${role} joined`
+            }
+        );
 
-          searching: false,
 
-        };
+    }
+    catch(err){
 
-      }
-
-      currentCase.totalVolunteers =
-        Object.keys(currentCase.volunteers).length;
-
-      updatePriorities(currentCase);
-
-      broadcastCase(io, caseId);
+        console.log(
+            "JOIN CASE ERROR",
+            err
+        );
 
     }
 
-    catch (err) {
-
-      console.log("JOIN CASE ERROR");
-
-      console.log(err);
-
-    }
-
-  });
+});
 
   // ==========================================
   // HEARTBEAT

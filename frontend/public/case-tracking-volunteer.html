@@ -404,179 +404,668 @@
       </div>
     </div>
     <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script src="./js/map/route-map.js"></script>
+<script src="/js/maps/hazard-map.js"></script>
+<script src="/js/map.js"></script>
     <script>
-      const API = "http://localhost:5000";
 
-      const socket = io(API, {
-        withCredentials: true,
-      });
+const API = "http://localhost:5000";
 
-      const params = new URLSearchParams(window.location.search);
 
-      const caseId = params.get("id");
+// ================= SOCKET =================
 
-      // ================= SOCKET =================
+const socket = io(API,{
+    withCredentials:true
+});
 
-      socket.on("connect", () => {
-        console.log("Connected:", socket.id);
 
-        socket.emit("join_volunteers");
-      });
+// ================= URL PARAMS =================
 
-      // ================= LOAD AFTER HTML READY =================
+const params = new URLSearchParams(
+    window.location.search
+);
 
-      document.addEventListener("DOMContentLoaded", () => {
-        loadCase();
-      });
 
-      // ================= CASE UPDATE =================
+const caseId = params.get("id");
 
-      socket.on("case_updated", (updatedCase) => {
-        if (updatedCase._id === caseId) {
-          displayCase(updatedCase);
-        }
-      });
 
-      // ================= FETCH CASE =================
 
-      async function loadCase() {
-        try {
-          if (!caseId) {
-            console.error("No Case ID found in URL");
+// ================= CONNECT =================
 
-            return;
-          }
+socket.on(
+"connect",
+()=>{
 
-          const res = await fetch(`${API}/volunteer/application/${caseId}`, {
-            credentials: "include",
-          });
 
-          const data = await res.json();
+    console.log(
+        "Volunteer Connected:",
+        socket.id
+    );
 
-          if (!data.success) {
-            alert(data.message || "Case not found");
 
-            return;
-          }
+    socket.emit(
+        "join_volunteers"
+    );
 
-          console.log("CASE DATA:", data.application);
 
-          displayCase(data.application);
-        } catch (err) {
-          console.error("Load Case Error:", err);
-        }
-      }
+    joinCaseRoom();
 
-      // ================= DISPLAY CASE =================
 
-      function displayCase(app) {
-        console.log("Displaying:", app);
+});
 
-        const photo = document.getElementById("photo");
 
-        if (photo) {
-          photo.src = app.Photo
-            ? `${API}/uploads/${app.Photo}`
-            : "./images/default-user.png";
-        }
 
-        setText("name", app.Name);
 
-        setText("status", app.status);
+// ================= JOIN CASE ROOM =================
 
-        setText("age", app.Age);
+function joinCaseRoom(){
 
-        setText("gender", app.Gender);
 
-        setText("height", app.Height);
+    if(!caseId){
 
-        setText("clothing", app.Clothing);
-
-        setText("medical", app.MedicalConditions || "None");
-
-        setText("lastSeen", app.LastSeen || "Not Available");
-
-        setText("dateTime", app.dateTime || "Not Available");
-
-        setText("priority", app.priorityLevel || "Pending");
-
-        setText(
-          "priorityReason",
-          app.priorityReason || "No AI analysis available.",
+        console.log(
+            "No Case ID"
         );
 
-        setText("guardian", app.GuardianContact || "Not Available");
+        return;
 
-        setText("description", app.Description || "No description");
+    }
 
-        // ================= BUTTON DATA =================
 
-        const mapBtn = document.getElementById("mapBtn");
 
-        if (mapBtn) {
-          mapBtn.dataset.id = app._id;
+    socket.emit(
+        "join_case",
+        caseId
+    );
 
-          mapBtn.dataset.location = app.LastSeen || "";
 
-          mapBtn.dataset.caseType = app.caseType || "";
-        }
+    console.log(
+        "Joined Case Room:",
+        caseId
+    );
 
-        const sightBtn = document.getElementById("SightingBtn");
 
-        if (sightBtn) {
-          sightBtn.dataset.id = app._id;
-        }
-      }
+}
 
-      // ================= SET TEXT HELPER =================
 
-      function setText(id, value) {
-        const element = document.getElementById(id);
 
-        if (element) {
-          element.innerText = value ?? "";
-        }
-      }
 
-      // ================= MAP BUTTON =================
 
-      document.addEventListener("click", (e) => {
-        const mapBtn = e.target.closest("#mapBtn");
+// ================= LOAD AFTER DOM =================
 
-        if (mapBtn) {
-          const id = mapBtn.dataset.id;
 
-          const location = mapBtn.dataset.location || "";
+document.addEventListener(
+"DOMContentLoaded",
+()=>{
 
-          const caseType = mapBtn.dataset.caseType;
 
-          if (!id) {
-            console.error("Missing case id");
+    loadCase();
 
-            return;
-          }
 
-          if (!caseType) {
-            console.error("Missing caseType", mapBtn.dataset);
+});
 
-            return;
-          }
 
-          window.location.href = `/map.html?id=${id}&location=${encodeURIComponent(location)}&caseType=${caseType}`;
-        }
-      });
 
-      // ================= SIGHTING BUTTON =================
 
-      document.addEventListener("click", (e) => {
-        const sightBtn = e.target.closest("#SightingBtn");
 
-        if (sightBtn) {
-          const applicationId = sightBtn.dataset.id;
+// ================= LIVE CASE UPDATE =================
 
-          window.location.href = `/sighting-report.html?id=${applicationId}&caseId=${caseId}`;
-        }
-      });
-    </script>
+
+socket.on(
+"case_updated",
+
+(updatedCase)=>{
+
+
+    console.log(
+        "Case Updated:",
+        updatedCase
+    );
+
+
+
+    if(
+        updatedCase._id === caseId
+    ){
+
+        displayCase(updatedCase);
+
+    }
+
+
+});
+
+
+
+
+
+
+// ================= LIVE LOCATION =================
+
+
+socket.on(
+"volunteer_location",
+
+(data)=>{
+
+
+    console.log(
+        "Volunteer Location:",
+        data
+    );
+
+
+});
+
+
+
+
+
+
+// ================= FETCH CASE =================
+
+
+async function loadCase(){
+
+
+try{
+
+
+if(!caseId){
+
+console.error(
+"No Case ID"
+);
+
+return;
+
+}
+
+
+
+
+const res = await fetch(
+
+`${API}/volunteer/application/${caseId}`,
+
+{
+credentials:"include"
+}
+
+);
+
+
+
+
+const data =
+await res.json();
+
+
+
+
+if(!data.success){
+
+
+alert(
+data.message || "Case not found"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+console.log(
+"CASE DATA:",
+data.application
+);
+
+
+
+
+displayCase(
+data.application
+);
+
+
+
+
+}
+
+
+catch(err){
+
+
+console.error(
+"Load Case Error:",
+err
+);
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+// ================= DISPLAY CASE =================
+
+
+function displayCase(app){
+
+
+console.log(
+"Displaying Case:",
+app
+);
+
+
+
+
+// IMAGE
+
+const photo =
+document.getElementById("photo");
+
+
+if(photo){
+
+
+photo.src =
+
+app.Photo
+
+?
+
+`${API}/uploads/${app.Photo}`
+
+:
+
+"./images/default-user.png";
+
+
+}
+
+
+
+
+
+
+// TEXT DATA
+
+
+setText(
+"name",
+app.Name
+);
+
+
+setText(
+"status",
+app.status
+);
+
+
+
+setText(
+"age",
+app.Age
+);
+
+
+
+setText(
+"gender",
+app.Gender
+);
+
+
+
+setText(
+"height",
+app.Height
+);
+
+
+
+setText(
+"clothing",
+app.Clothing
+);
+
+
+
+setText(
+"medical",
+app.MedicalConditions || "None"
+);
+
+
+
+setText(
+"lastSeen",
+app.LastSeen || "Not Available"
+);
+
+
+
+setText(
+"dateTime",
+app.dateTime || "Not Available"
+);
+
+
+
+setText(
+"priority",
+app.priorityLevel || "Pending"
+);
+
+
+
+setText(
+
+"priorityReason",
+
+app.priorityReason ||
+
+"No AI analysis available"
+
+);
+
+
+
+setText(
+
+"guardian",
+
+app.GuardianContact ||
+
+"Not Available"
+
+);
+
+
+
+setText(
+
+"description",
+
+app.Description ||
+
+"No Description"
+
+);
+
+
+
+
+
+
+// ================= BUTTON DATA =================
+
+
+
+const mapBtn =
+document.getElementById("mapBtn");
+
+
+
+if(mapBtn){
+
+
+mapBtn.dataset.id =
+app._id;
+
+
+mapBtn.dataset.location =
+app.LastSeen || "";
+
+
+
+mapBtn.dataset.caseType =
+app.caseType || "";
+
+
+
+}
+
+
+
+
+
+
+const sightBtn =
+document.getElementById("SightingBtn");
+
+
+
+if(sightBtn){
+
+
+sightBtn.dataset.id =
+app._id;
+
+
+}
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ================= HELPER =================
+
+
+function setText(
+id,
+value
+){
+
+
+const el =
+document.getElementById(id);
+
+
+
+if(el){
+
+el.innerText =
+value ?? "";
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+// ================= MAP BUTTON =================
+
+
+document.addEventListener(
+
+"click",
+
+(e)=>{
+
+
+const btn =
+e.target.closest("#mapBtn");
+
+
+
+if(!btn){
+
+return;
+
+}
+
+
+
+
+
+const id =
+btn.dataset.id;
+
+
+
+const location =
+btn.dataset.location || "";
+
+
+
+const caseType =
+btn.dataset.caseType;
+
+
+
+
+
+if(!id){
+
+console.log(
+"Missing ID"
+);
+
+return;
+
+}
+
+
+
+
+if(!caseType){
+
+
+console.log(
+"Missing Case Type"
+);
+
+
+return;
+
+
+}
+
+
+
+
+
+
+window.location.href =
+
+`/map.html?id=${id}&location=${encodeURIComponent(location)}&caseType=${caseType}`;
+
+
+
+}
+
+
+);
+
+
+
+
+
+
+
+
+
+// ================= SIGHTING BUTTON =================
+
+
+document.addEventListener(
+
+"click",
+
+(e)=>{
+
+
+const btn =
+e.target.closest("#SightingBtn");
+
+
+
+if(!btn){
+
+return;
+
+}
+
+
+
+
+
+const id =
+btn.dataset.id;
+
+
+
+
+window.location.href =
+
+`/sighting-report.html?id=${id}&caseId=${caseId}`;
+
+
+
+}
+
+
+);
+
+
+
+
+
+
+// ================= CLEANUP =================
+
+
+window.addEventListener(
+
+"beforeunload",
+
+()=>{
+
+
+socket.emit(
+"leave_case",
+caseId
+);
+
+
+}
+
+);
+
+
+
+</script>
   </body>
 </html>

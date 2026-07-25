@@ -1,32 +1,47 @@
 function initializeChat(socket, caseId) {
   console.log("Chat initialized:", caseId);
 
-  // Join chat room
+  const user = {
+    name: localStorage.getItem("name") || "User",
+
+    role: localStorage.getItem("role") || "Volunteer",
+  };
+
+  // ==========================
+  // JOIN COMMON CHAT ROOM
+  // ==========================
 
   socket.emit("join_chat", {
     caseId,
 
-    user: {
-      name: localStorage.getItem("name") || "Volunteer",
-      role: "Volunteer",
-    },
+    user,
   });
 
-  // Receive messages
+  console.log("Joined chat room:", `chat_${caseId}`);
+
+  // ==========================
+  // RECEIVE MESSAGE
+  // ==========================
 
   socket.on("receive_message", (data) => {
-    console.log("Message:", data);
+    console.log("New Message:", data);
 
-    // later connect this to chat UI
+    // connect your UI here
+
+    // addMessage(data)
   });
 
-  // System messages
+  // ==========================
+  // SYSTEM MESSAGE
+  // ==========================
 
   socket.on("system_message", (data) => {
     console.log(data.text);
   });
 
-  // Typing event
+  // ==========================
+  // TYPING
+  // ==========================
 
   socket.on("user_typing", (name) => {
     console.log(`${name} is typing...`);
