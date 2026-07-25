@@ -86,7 +86,7 @@ if(createCaseBtn){
 
     createCaseBtn.onclick = () => {
 
-        window.location.href="/create-case.html";
+        window.location.href="/case-selection.html";
 
     };
 
