@@ -5,6 +5,15 @@ const path = require("path")
 const session = require("express-session");
 const guardianroutes = require("../routers/guardian.routes")
 const VolunteerRoutes = require("../routers/volunteer.routes");
+const cors = require("cors");
+
+app.use(cors({
+    origin:[
+        "http://localhost:5500",
+        "https://resqgrid.vercel.app"
+    ],
+    credentials:true
+}));
 
 app.use(
     session({

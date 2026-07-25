@@ -2,7 +2,7 @@
 // RESQGRID GUARDIAN DASHBOARD
 // =====================================================
 
-const API = "http://localhost:5000";
+const API = "https://resqgrid-b1zt.onrender.com";
 
 const caseContainer = document.getElementById("caseContainer");
 

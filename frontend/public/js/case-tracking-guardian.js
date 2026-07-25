@@ -4,7 +4,7 @@ let destinationMarker = null;
 let routingControl = null;
 let application = null;
 
-const API = "http://localhost:5000";
+const API = "https://resqgrid-b1zt.onrender.com";
 
 const params = new URLSearchParams(window.location.search);
 

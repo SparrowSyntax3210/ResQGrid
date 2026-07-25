@@ -3,7 +3,7 @@
 // PART 1
 // =====================================================
 
-const API = "http://localhost:5000";
+const API = "https://resqgrid-b1zt.onrender.com";
 
 // =====================================================
 // SOCKET
