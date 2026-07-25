@@ -11,10 +11,107 @@
     />
 
     <style>
-      #map {
-        height: 100vh;
-        width: 100%;
-      }
+      /* ============================= */
+/* DARK MAP THEME */
+/* WHITE TEXT */
+/* ============================= */
+
+/* ============================= */
+/* MAP DARK THEME FIX */
+/* ============================= */
+
+#map {
+
+    width:100%;
+    height:600px;
+    background:#000;
+
+}
+
+
+/* Do NOT hide leaflet tiles */
+
+.leaflet-container {
+
+    color:white !important;
+
+}
+
+
+/* Popup styling */
+
+.leaflet-popup-content-wrapper {
+
+    background:#000;
+    color:white;
+
+}
+
+
+.leaflet-popup-tip {
+
+    background:#000;
+
+}
+
+
+.leaflet-popup-content {
+
+    color:white;
+
+}
+
+
+.leaflet-popup-content h1,
+.leaflet-popup-content h2,
+.leaflet-popup-content h3,
+.leaflet-popup-content p,
+.leaflet-popup-content span {
+
+    color:white !important;
+
+}
+
+
+/* Zoom buttons */
+
+.leaflet-control-zoom a {
+
+    background:#000 !important;
+    color:white !important;
+    border-color:#555 !important;
+
+}
+
+/* Any custom labels on map */
+
+.map-label,
+.marker-label,
+.grid-label {
+
+    color: #fff !important;
+    background: #000 !important;
+
+}
+
+
+/* Dropdowns */
+
+select {
+
+    background:#000 !important;
+    color:#fff !important;
+    border:1px solid #555;
+
+}
+
+
+option {
+
+    background:#000 !important;
+    color:#fff !important;
+
+}
 
       .grid-label {
         background: transparent;
@@ -141,24 +238,50 @@
   <body>
     <div id="map"></div>
     <button id="chatToggle">
-      💬 Chat
-      <span id="chatBadge" class="chat-badge">0</span>
-    </button>
+    💬 Chat
+    <span id="chatBadge" class="chat-badge">0</span>
+</button>
 
-    <div id="chatOverlay">
-      <div class="chat-header">
-        <button id="closeChat">✕</button>
-      </div>
 
-      <iframe id="chatFrame" src="" frameborder="0"> </iframe>
+<div id="chatOverlay">
+
+    <div class="chat-header">
+
+        <h3>Case Chat</h3>
+
+        <button id="closeChat">
+            ✕
+        </button>
+
     </div>
 
-    <link rel="stylesheet"
-href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
 
-<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+    <iframe 
+        id="chatFrame"
+        src=""
+        frameborder="0">
+    </iframe>
 
-    <script src="/socket.io/socket.io.js"></script>
+
+</div>
+    </div>
+    <!-- Socket -->
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+
+
+<!-- Leaflet FIRST -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<!-- Leaflet Routing Machine AFTER Leaflet -->
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js"></script>
+<script src="./js/map/chat.js"></script>
 
 <script src="/js/map/missing-person.js"></script>
 <script src="/js/map/route-map.js"></script>

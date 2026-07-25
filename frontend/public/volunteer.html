@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResQGrid | Volunteer</title>
     <link rel="stylesheet" href="./css/volunteer.css" />
+    <link
+rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
   </head>
   <body>
         <div class="dashboard">
@@ -210,8 +214,33 @@
     </div>
 
     <div id="cases"></div>
-    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
+  
+    <!-- Socket -->
+<script src="http://localhost:5000/socket.io/socket.io.js"></script>
 
-    <script src="./js/volunteer.js"></script>
+
+<!-- Leaflet FIRST -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<!-- Leaflet Routing Machine AFTER Leaflet -->
+<script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+
+<!-- GSAP -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/gsap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.7/ScrollTrigger.min.js"></script>
+
+
+<!-- Your JS -->
+<script src="./js/volunteer.js"></script>
+
+
+<script src="./js/maps/missing-person.js"></script>
+<script src="./js/maps/route-map.js"></script>
+<script src="./js/maps/hazard-map.js"></script>
+
+<script src="./js/map.js"></script>
   </body>
 </html>

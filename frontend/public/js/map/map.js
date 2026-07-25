@@ -2,139 +2,277 @@ const params = new URLSearchParams(window.location.search);
 
 const caseId = params.get("id");
 
+const caseType = params.get("caseType");
+
 const API = "http://localhost:5000";
 
 const socket = io(API, {
-    withCredentials: true
+  withCredentials: true,
 });
 
 let application = null;
 
-
 let destination = "";
 
+// ================= LOAD APPLICATION =================
+
 async function loadApplication() {
+  try {
+    if (!caseId) {
+      console.error("No case id found");
 
-    try {
-
-        const response = await fetch(`/guardian/application/${caseId}`, {
-            credentials: "include"
-        });
-
-        application = await response.json();
-
-        console.log(application);
-
-        initializeMap();
-
-        initializeChat(socket, caseId);
-
-    } catch (err) {
-
-        console.log(err);
-
+      return;
     }
 
+    const response = await fetch(`${API}/volunteer/application/${caseId}`, {
+      credentials: "include",
+    });
+
+    const data = await response.json();
+
+    console.log("Application:", data);
+
+    // if backend returns {success:true, application:{}}
+
+    application = data.application || data;
+
+    console.log("Case Type From URL:", caseType);
+
+    console.log("Case Type From DB:", application.caseType);
+
+    initializeMap();
+
+    initializeChat(socket, caseId);
+  } catch (err) {
+    console.error("Load Application Error:", err);
+  }
 }
 
-
-switch(application.caseType){
-
-case "blood-report":
-
-destination = application.Hospital;
-    break;
-
-case "elderly-assistance":
-
-    
-
-    break;
-
-case "community-sos":
-
-    
-
-    break;
-
-}
+// ================= INITIALIZE MAP =================
 
 function initializeMap() {
+  switch (caseType) {
+    case "missing-person":
+      loadMissingPersonMap({
+        application,
 
-    switch (application.caseType) {
+        socket,
 
-        case "missing-person":
+        caseId,
+      });
 
-            loadMissingPersonMap({
-                application,
-                socket,
-                caseId
-            });
+      break;
 
-            
+    case "blood-report":
+      destination = application.Hospital;
 
-            break;
+      loadRouteMap({
+        application,
 
-        case "blood-report":
+        socket,
 
-            loadRouteMap({
-                application,
-                socket,
-                caseId
-            });
+        caseId,
+      });
 
-            break;
+      break;
 
-        case "elderly-assistance":
+    case "elderly-assistance":
+      destination = application.Address;
 
-            loadRouteMap({
-                application,
-                socket,
-                caseId
-            });
+      loadRouteMap({
+        application,
 
-            destination = application.Address;
+        socket,
 
-            break;
+        caseId,
+      });
 
-        case "community-sos":
+      break;
 
-            loadRouteMap({
-                application,
-                socket,
-                caseId
-            });
+    case "community-sos":
+      destination = application.CurrentLocation;
 
-            destination = application.CurrentLocation;
+      loadRouteMap({
+        application,
 
-            break;
+        socket,
 
-        case "women-safety":
+        caseId,
+      });
 
-            loadEscortMap({
-                application,
-                socket,
-                caseId
-            });
+      break;
 
-            break;
+    case "women-safety":
+      loadEscortMap({
+        application,
 
-        case "civic-hazard":
+        socket,
 
-            loadHazardMap({
-                application,
-                socket,
-                caseId
-            });
+        caseId,
+      });
 
-            break;
+      break;
 
-        default:
+    case "civic-hazard":
+      loadHazardMap({
+        application,
 
-            console.log("Unknown Case");
+        socket,
 
-    }
+        caseId,
+      });
 
+      break;
+
+    default:
+      console.log("Unknown Case Type:", caseType);
+  }
 }
 
 loadApplication();
+
+// ================= CHAT TOGGLE =================
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+const chatToggle = document.getElementById("chatToggle");
+
+const chatOverlay = document.getElementById("chatOverlay");
+
+const closeChat = document.getElementById("closeChat");
+
+const chatFrame = document.getElementById("chatFrame");
+
+const chatBadge = document.getElementById("chatBadge");
+
+
+let unreadMessages = 0;
+
+chatToggle.addEventListener("click" , ()=> {
+    window.location.href="/chat-volunteer.html?id=${caseId}"
+})
+
+
+
+if(!chatToggle || !chatOverlay){
+
+    console.error("Chat elements missing");
+
+    return;
+
+}
+
+
+
+
+// OPEN / CLOSE CHAT
+
+chatToggle.addEventListener("click",()=>{
+
+
+    if(chatOverlay.classList.contains("active")){
+
+
+        chatOverlay.classList.remove("active");
+
+
+    }
+
+    else{
+
+
+        if(!chatFrame.src){
+
+            chatFrame.src =
+            `/chat-volunteer.html?id=${caseId}`;
+
+        }
+
+
+        chatOverlay.classList.add("active");
+
+
+        unreadMessages = 0;
+
+        updateBadge();
+
+
+    }
+
+
+});
+
+
+
+
+
+// CLOSE BUTTON
+
+if(closeChat){
+
+closeChat.addEventListener("click",()=>{
+
+
+    chatOverlay.classList.remove("active");
+
+
+});
+
+}
+
+
+
+
+
+function updateBadge(){
+
+
+    chatBadge.innerText =
+    unreadMessages;
+
+
+
+    if(unreadMessages === 0){
+
+        chatBadge.style.display="none";
+
+    }
+    else{
+
+        chatBadge.style.display="flex";
+
+    }
+
+
+}
+
+
+
+updateBadge();
+
+
+window.addEventListener("message",(event)=>{
+
+
+    if(event.data?.type==="new_message"){
+
+
+        if(!chatOverlay.classList.contains("active")){
+
+
+            unreadMessages++;
+
+
+            updateBadge();
+
+
+        }
+
+
+    }
+
+
+});
+
+
+});

@@ -1,561 +1,582 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResQGrid | Case Tracking</title>
     <style>
-    :root{
+      :root {
+        --card: #131d2f;
+        --border: #293246;
+        --purple: #7c3aed;
+        --muted: #9ca3af;
+        --bg: #0f172a;
+      }
 
-    --card:#131d2f;
-    --border:#293246;
-    --purple:#7C3AED;
-    --muted:#9ca3af;
-    --bg:#0f172a;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-}
+      body {
+        background: var(--bg);
+        color: white;
+        font-family:
+          Segoe UI,
+          Tahoma,
+          Geneva,
+          Verdana,
+          sans-serif;
+      }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:var(--bg);
-    color:white;
-    font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
-}
-    
-    
-/* ==========================================
+      /* ==========================================
    CASE TRACKING PAGE
 ========================================== */
 
-.case-container{
-    max-width:1200px;
-    margin:40px auto;
-    padding:30px;
-}
+      .case-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 30px;
+      }
 
-.case-header{
-    display:flex;
-    align-items:center;
-    gap:25px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:28px;
-    margin-bottom:30px;
-}
+      .case-header {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 28px;
+        margin-bottom: 30px;
+      }
 
-.case-header img{
-    width:130px;
-    height:130px;
-    border-radius:18px;
-    object-fit:cover;
-    border:3px solid rgba(124,58,237,.3);
-}
+      .case-header img {
+        width: 130px;
+        height: 130px;
+        border-radius: 18px;
+        object-fit: cover;
+        border: 3px solid rgba(124, 58, 237, 0.3);
+      }
 
-.case-info h1{
-    font-size:34px;
-    margin-bottom:12px;
-}
+      .case-info h1 {
+        font-size: 34px;
+        margin-bottom: 12px;
+      }
 
-.case-info p{
-    color:var(--muted);
-    font-size:15px;
-    margin:6px 0;
-}
+      .case-info p {
+        color: var(--muted);
+        font-size: 15px;
+        margin: 6px 0;
+      }
 
-.status{
-    display:inline-block;
-    margin-top:12px;
-    padding:8px 16px;
-    border-radius:30px;
-    font-size:13px;
-    font-weight:600;
-}
+      .status {
+        display: inline-block;
+        margin-top: 12px;
+        padding: 8px 16px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+      }
 
-.status.active{
-    background:rgba(34,197,94,.15);
-    color:#22c55e;
-}
+      .status.active {
+        background: rgba(34, 197, 94, 0.15);
+        color: #22c55e;
+      }
 
-.status.closed{
-    background:rgba(239,68,68,.15);
-    color:#ef4444;
-}
+      .status.closed {
+        background: rgba(239, 68, 68, 0.15);
+        color: #ef4444;
+      }
 
-.status.searching{
-    background:rgba(251,191,36,.15);
-    color:#facc15;
-}
+      .status.searching {
+        background: rgba(251, 191, 36, 0.15);
+        color: #facc15;
+      }
 
-/* ==========================================
+      /* ==========================================
    REPORT GRID
 ========================================== */
 
-.report-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:24px;
-}
+      .report-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 24px;
+      }
 
-.report-card{
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:24px;
-    transition:.3s;
-}
+      .report-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 24px;
+        transition: 0.3s;
+      }
 
-.report-card:hover{
-    border-color:var(--purple);
-    transform:translateY(-4px);
-}
+      .report-card:hover {
+        border-color: var(--purple);
+        transform: translateY(-4px);
+      }
 
-.report-card h3{
-    margin-bottom:20px;
-    font-size:20px;
-    color:#fff;
-}
+      .report-card h3 {
+        margin-bottom: 20px;
+        font-size: 20px;
+        color: #fff;
+      }
 
-/* ==========================================
+      /* ==========================================
    DETAILS
 ========================================== */
 
-.detail{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:14px 0;
-    border-bottom:1px solid rgba(255,255,255,.05);
-}
+      .detail {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
 
-.detail:last-child{
-    border:none;
-}
+      .detail:last-child {
+        border: none;
+      }
 
-.detail label{
-    color:var(--muted);
-    font-size:14px;
-}
+      .detail label {
+        color: var(--muted);
+        font-size: 14px;
+      }
 
-.detail span{
-    color:#fff;
-    font-weight:600;
-    text-align:right;
-}
+      .detail span {
+        color: #fff;
+        font-weight: 600;
+        text-align: right;
+      }
 
-/* ==========================================
+      /* ==========================================
    DESCRIPTION
 ========================================== */
 
-.description{
-    line-height:1.8;
-    color:#d5d9e4;
-    background:#111b2e;
-    border-radius:14px;
-    padding:20px;
-    border:1px solid var(--border);
-}
+      .description {
+        line-height: 1.8;
+        color: #d5d9e4;
+        background: #111b2e;
+        border-radius: 14px;
+        padding: 20px;
+        border: 1px solid var(--border);
+      }
 
-/* ==========================================
+      /* ==========================================
    PRIORITY
 ========================================== */
 
-.priority-high{
-    color:#ef4444;
-    font-weight:700;
-}
+      .priority-high {
+        color: #ef4444;
+        font-weight: 700;
+      }
 
-.priority-medium{
-    color:#f59e0b;
-    font-weight:700;
-}
+      .priority-medium {
+        color: #f59e0b;
+        font-weight: 700;
+      }
 
-.priority-low{
-    color:#22c55e;
-    font-weight:700;
-}
+      .priority-low {
+        color: #22c55e;
+        font-weight: 700;
+      }
 
-/* ==========================================
+      /* ==========================================
    AI ANALYSIS
 ========================================== */
 
-.ai-box{
-    margin-top:18px;
-    background:rgba(124,58,237,.08);
-    border:1px solid rgba(124,58,237,.3);
-    border-left:5px solid var(--purple);
-    border-radius:14px;
-    padding:20px;
-}
+      .ai-box {
+        margin-top: 18px;
+        background: rgba(124, 58, 237, 0.08);
+        border: 1px solid rgba(124, 58, 237, 0.3);
+        border-left: 5px solid var(--purple);
+        border-radius: 14px;
+        padding: 20px;
+      }
 
-.ai-box h4{
-    margin-bottom:10px;
-    color:#b794ff;
-}
+      .ai-box h4 {
+        margin-bottom: 10px;
+        color: #b794ff;
+      }
 
-.ai-box p{
-    color:#d9d9d9;
-    line-height:1.7;
-}
+      .ai-box p {
+        color: #d9d9d9;
+        line-height: 1.7;
+      }
 
-/* ==========================================
+      /* ==========================================
    ACTION BUTTONS
 ========================================== */
 
-.action-buttons{
-    display:flex;
-    gap:18px;
-    margin-top:35px;
-}
+      .action-buttons {
+        display: flex;
+        gap: 18px;
+        margin-top: 35px;
+      }
 
-.action-buttons button{
-    flex:1;
-    padding:15px;
-    border:none;
-    border-radius:14px;
-    font-size:15px;
-    font-weight:600;
-    cursor:pointer;
-    transition:.3s;
-}
+      .action-buttons button {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        border-radius: 14px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+      }
 
-.primary-btn{
-    background:linear-gradient(90deg,#7c3aed,#5b21b6);
-    color:white;
-}
+      .primary-btn {
+        background: linear-gradient(90deg, #7c3aed, #5b21b6);
+        color: white;
+      }
 
-.secondary-btn{
-    background:#131d2f;
-    border:1px solid var(--border);
-    color:white;
-}
+      .secondary-btn {
+        background: #131d2f;
+        border: 1px solid var(--border);
+        color: white;
+      }
 
-.danger-btn{
-    background:#ef4444;
-    color:white;
-}
+      .danger-btn {
+        background: #ef4444;
+        color: white;
+      }
 
-.action-buttons button:hover{
-    transform:translateY(-3px);
-}
+      .action-buttons button:hover {
+        transform: translateY(-3px);
+      }
 
-/* ==========================================
+      /* ==========================================
    TIMELINE
 ========================================== */
 
-.timeline{
-    margin-top:35px;
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:25px;
-}
+      .timeline {
+        margin-top: 35px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        padding: 25px;
+      }
 
-.timeline h3{
-    margin-bottom:20px;
-}
+      .timeline h3 {
+        margin-bottom: 20px;
+      }
 
-.timeline-item{
-    display:flex;
-    gap:18px;
-    margin-bottom:25px;
-}
+      .timeline-item {
+        display: flex;
+        gap: 18px;
+        margin-bottom: 25px;
+      }
 
-.timeline-dot{
-    width:14px;
-    height:14px;
-    border-radius:50%;
-    background:var(--purple);
-    margin-top:8px;
-    flex-shrink:0;
-}
+      .timeline-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--purple);
+        margin-top: 8px;
+        flex-shrink: 0;
+      }
 
-.timeline-content h4{
-    margin-bottom:6px;
-}
+      .timeline-content h4 {
+        margin-bottom: 6px;
+      }
 
-.timeline-content p{
-    color:var(--muted);
-    font-size:14px;
-}
+      .timeline-content p {
+        color: var(--muted);
+        font-size: 14px;
+      }
 
-/* ==========================================
+      /* ==========================================
    RESPONSIVE
 ========================================== */
 
-@media(max-width:900px){
+      @media (max-width: 900px) {
+        .report-grid {
+          grid-template-columns: 1fr;
+        }
 
-.report-grid{
-    grid-template-columns:1fr;
-}
+        .case-header {
+          flex-direction: column;
+          text-align: center;
+        }
 
-.case-header{
-    flex-direction:column;
-    text-align:center;
-}
+        .case-header img {
+          width: 110px;
+          height: 110px;
+        }
 
-.case-header img{
-    width:110px;
-    height:110px;
-}
+        .action-buttons {
+          flex-direction: column;
+        }
 
-.action-buttons{
-    flex-direction:column;
-}
-
-.detail{
-    flex-direction:column;
-    align-items:flex-start;
-    gap:6px;
-}
-
-}</style>
-</head>
-<body>
+        .detail {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 6px;
+        }
+      }
+    </style>
+  </head>
+  <body>
     <div class="case-container">
-
-    <div class="case-header">
-
-        <img id="photo">
+      <div class="case-header">
+        <img id="photo" />
 
         <div class="case-info">
+          <h1 id="name"></h1>
 
-            <h1 id="name"></h1>
-
-            <span id="status" class="status"></span>
-
+          <span id="status" class="status"></span>
         </div>
+      </div>
 
-    </div>
-
-    <div class="report-grid">
-
+      <div class="report-grid">
         <div class="report-card">
+          <h3>Personal Details</h3>
 
-            <h3>Personal Details</h3>
+          <div class="detail">
+            <label>Age</label>
+            <span id="age"></span>
+          </div>
 
-            <div class="detail">
-                <label>Age</label>
-                <span id="age"></span>
-            </div>
+          <div class="detail">
+            <label>Gender</label>
+            <span id="gender"></span>
+          </div>
 
-            <div class="detail">
-                <label>Gender</label>
-                <span id="gender"></span>
-            </div>
+          <div class="detail">
+            <label>Height</label>
+            <span id="height"></span>
+          </div>
 
-            <div class="detail">
-                <label>Height</label>
-                <span id="height"></span>
-            </div>
+          <div class="detail">
+            <label>Clothing</label>
+            <span id="clothing"></span>
+          </div>
 
-            <div class="detail">
-                <label>Clothing</label>
-                <span id="clothing"></span>
-            </div>
-
-            <div class="detail">
-                <label>Medical Condition</label>
-                <span id="medical"></span>
-            </div>
-
+          <div class="detail">
+            <label>Medical Condition</label>
+            <span id="medical"></span>
+          </div>
         </div>
 
         <div class="report-card">
+          <h3>Case Details</h3>
 
-            <h3>Case Details</h3>
+          <div class="detail">
+            <label>Last Seen</label>
+            <span id="lastSeen"></span>
+          </div>
 
-            <div class="detail">
-                <label>Last Seen</label>
-                <span id="lastSeen"></span>
-            </div>
+          <div class="detail">
+            <label>Date & Time</label>
+            <span id="dateTime"></span>
+          </div>
 
-            <div class="detail">
-                <label>Date & Time</label>
-                <span id="dateTime"></span>
-            </div>
+          <div class="detail">
+            <label>Priority</label>
+            <span id="priority"></span>
+          </div>
 
-            <div class="detail">
-                <label>Priority</label>
-                <span id="priority"></span>
-            </div>
-
-            <div class="detail">
-                <label>Guardian Contact</label>
-                <span id="guardian"></span>
-            </div>
-           
-
+          <div class="detail">
+            <label>Guardian Contact</label>
+            <span id="guardian"></span>
+          </div>
         </div>
+      </div>
 
-    </div>
-
-    <div class="report-card" style="margin-top:25px;">
-
+      <div class="report-card" style="margin-top: 25px">
         <h3>Description</h3>
 
         <div class="description" id="description"></div>
+      </div>
+      <div class="report-card">
+        <h3>AI Priority Analysis</h3>
 
+        <div class="ai-box">
+          <p id="priorityReason"></p>
+        </div>
+      </div>
+      <div class="action-buttons">
+        <button id="mapBtn" class="primary-btn">Join Case</button>
+        <button class="primary-btn" id="SightingBtn" data-id="">
+          Report Sighting
+        </button>
+      </div>
     </div>
-    <div class="report-card">
-
-    <h3>AI Priority Analysis</h3>
-
-    <div class="ai-box">
-
-        <p id="priorityReason"></p>
-
-    </div>
-
-</div>
-<div class="action-buttons">
-
-    <button id="mapBtn" class="primary-btn">
-        Join Case
-    </button>
-     <button class="primary-btn" id="SightingBtn" data-id="">
-    Report Sighting
-</button>
-
-</div>
-
-</div>
-<script src="http://localhost:5000/socket.io/socket.io.js"></script>
+    <script src="http://localhost:5000/socket.io/socket.io.js"></script>
     <script>
-        const API = "http://localhost:5000";
+      const API = "http://localhost:5000";
 
-const socket = io(API, {
-  withCredentials: true,
-});
+      const socket = io(API, {
+        withCredentials: true,
+      });
 
-const params = new URLSearchParams(window.location.search);
-const caseId = params.get("id");
+      const params = new URLSearchParams(window.location.search);
 
-socket.on("connect", () => {
-    console.log("Connected:", socket.id);
+      const caseId = params.get("id");
 
-    socket.emit("join_volunteers");
-});
+      // ================= SOCKET =================
 
-loadCase();
+      socket.on("connect", () => {
+        console.log("Connected:", socket.id);
 
-// Reload when this case is updated
-socket.on("case_updated", (updatedCase) => {
+        socket.emit("join_volunteers");
+      });
 
-    if(updatedCase._id === caseId){
+      // ================= LOAD AFTER HTML READY =================
 
-        displayCase(updatedCase);
+      document.addEventListener("DOMContentLoaded", () => {
+        loadCase();
+      });
 
-    }
+      // ================= CASE UPDATE =================
 
-});
+      socket.on("case_updated", (updatedCase) => {
+        if (updatedCase._id === caseId) {
+          displayCase(updatedCase);
+        }
+      });
 
-async function loadCase(){
+      // ================= FETCH CASE =================
 
-    try{
-
-        const res = await fetch(`${API}/volunteer/application/${caseId}`, {
-    credentials: "include",
-});
-
-        const data = await res.json();
-
-        if(!data.success){
-
-            alert(data.message);
+      async function loadCase() {
+        try {
+          if (!caseId) {
+            console.error("No Case ID found in URL");
 
             return;
+          }
 
+          const res = await fetch(`${API}/volunteer/application/${caseId}`, {
+            credentials: "include",
+          });
+
+          const data = await res.json();
+
+          if (!data.success) {
+            alert(data.message || "Case not found");
+
+            return;
+          }
+
+          console.log("CASE DATA:", data.application);
+
+          displayCase(data.application);
+        } catch (err) {
+          console.error("Load Case Error:", err);
+        }
+      }
+
+      // ================= DISPLAY CASE =================
+
+      function displayCase(app) {
+        console.log("Displaying:", app);
+
+        const photo = document.getElementById("photo");
+
+        if (photo) {
+          photo.src = app.Photo
+            ? `${API}/uploads/${app.Photo}`
+            : "./images/default-user.png";
         }
 
-        displayCase(data.application);
+        setText("name", app.Name);
 
-    }
+        setText("status", app.status);
 
-    catch(err){
+        setText("age", app.Age);
 
-        console.log(err);
+        setText("gender", app.Gender);
 
-    }
+        setText("height", app.Height);
 
-}
+        setText("clothing", app.Clothing);
 
-function displayCase(app){
+        setText("medical", app.MedicalConditions || "None");
 
-    document.getElementById("photo").src =
-        app.Photo
-        ? `http://localhost:5000/uploads/${app.Photo}`
-        : "./images/default-user.png";
+        setText("lastSeen", app.LastSeen || "Not Available");
 
-    document.getElementById("name").innerText = app.Name;
+        setText("dateTime", app.dateTime || "Not Available");
 
-    document.getElementById("status").innerText = app.status;
+        setText("priority", app.priorityLevel || "Pending");
 
-    document.getElementById("age").innerText = app.Age;
+        setText(
+          "priorityReason",
+          app.priorityReason || "No AI analysis available.",
+        );
 
-    document.getElementById("gender").innerText = app.Gender;
+        setText("guardian", app.GuardianContact || "Not Available");
 
-    document.getElementById("height").innerText = app.Height;
+        setText("description", app.Description || "No description");
 
-    document.getElementById("clothing").innerText = app.Clothing;
+        // ================= BUTTON DATA =================
 
-    document.getElementById("medical").innerText =
-        app.MedicalConditions || "None";
+        const mapBtn = document.getElementById("mapBtn");
 
-    document.getElementById("lastSeen").innerText = app.LastSeen;
+        if (mapBtn) {
+          mapBtn.dataset.id = app._id;
 
-    document.getElementById("dateTime").innerText = app.dateTime;
+          mapBtn.dataset.location = app.LastSeen || "";
 
-    document.getElementById("priority").innerText = app.priorityLevel;
+          mapBtn.dataset.caseType = app.caseType || "";
+        }
 
-    document.getElementById("priorityReason").innerText =
-        app.priorityReason || "No AI analysis available.";
+        const sightBtn = document.getElementById("SightingBtn");
 
-    document.getElementById("guardian").innerText =
-        app.GuardianContact;
+        if (sightBtn) {
+          sightBtn.dataset.id = app._id;
+        }
+      }
 
-    document.getElementById("description").innerText =
-        app.Description;
+      // ================= SET TEXT HELPER =================
 
-    // Buttons
+      function setText(id, value) {
+        const element = document.getElementById(id);
 
-    document.getElementById("mapBtn").dataset.id = app._id;
-    document.getElementById("mapBtn").dataset.location = app.LastSeen;
-    document.getElementById("SightingBtn").dataset.id = app._id;
-    document.getElementById("chatBtn").dataset.id = app._id;
+        if (element) {
+          element.innerText = value ?? "";
+        }
+      }
 
-}
+      // ================= MAP BUTTON =================
 
-document.addEventListener("click",(e)=>{
+      document.addEventListener("click", (e) => {
+        const mapBtn = e.target.closest("#mapBtn");
 
-    if(e.target.id==="mapBtn"){
+        if (mapBtn) {
+          const id = mapBtn.dataset.id;
 
-        const id=e.target.dataset.id;
-        const location=e.target.dataset.location;
+          const location = mapBtn.dataset.location || "";
 
-        window.location.href=
-        `/map.html?id=${id}&location=${encodeURIComponent(location)}`;
+          const caseType = mapBtn.dataset.caseType;
 
-    }
-});
+          if (!id) {
+            console.error("Missing case id");
 
-document.addEventListener("click",(e)=>{
+            return;
+          }
 
-    if(e.target.id==="SightingBtn"){
+          if (!caseType) {
+            console.error("Missing caseType", mapBtn.dataset);
 
-        const applicationId = e.target.dataset.id;
+            return;
+          }
 
-        window.location.href =
-        `/sighting-report.html?id=${applicationId}&caseId=${caseId}`;
+          window.location.href = `/map.html?id=${id}&location=${encodeURIComponent(location)}&caseType=${caseType}`;
+        }
+      });
 
-    }
+      // ================= SIGHTING BUTTON =================
 
-});
+      document.addEventListener("click", (e) => {
+        const sightBtn = e.target.closest("#SightingBtn");
+
+        if (sightBtn) {
+          const applicationId = sightBtn.dataset.id;
+
+          window.location.href = `/sighting-report.html?id=${applicationId}&caseId=${caseId}`;
+        }
+      });
     </script>
-</body>
+  </body>
 </html>
