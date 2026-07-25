@@ -97,8 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-    checkAuth();
-
     loadUser();
 
     loadApplications();
@@ -456,27 +454,6 @@ socket.on("case_closed", () => {
 // AUTH CHECK
 // =====================================================
 
-async function checkAuth() {
-  try {
-    const res = await fetch(`${API}/auth/status`, {
-      credentials: "include",
-    });
-
-    const data = await res.json();
-
-    if (!data.loggedIn) {
-      location.href = "/login.html";
-
-      return;
-    }
-
-    if (data.user.role.toLowerCase() !== "guardian") {
-      location.href = `/${data.user.role.toLowerCase()}.html`;
-    }
-  } catch (err) {
-    location.href = "/login.html";
-  }
-}
 
 // =====================================================
 // START

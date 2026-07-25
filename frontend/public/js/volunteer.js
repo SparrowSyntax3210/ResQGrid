@@ -472,41 +472,7 @@ function updateDashboardStats(stats) {
 // AUTH CHECK
 // ===============================================
 
-async function checkAuth() {
-  try {
-    const res = await fetch(`${API}/auth/status`, {
-      credentials: "include",
-    });
 
-    const data = await res.json();
-
-    if (!data.loggedIn) {
-
-      window.location.replace("/login.html");
-
-      return;
-
-    }
-
-    if (data.user.role.toLowerCase() !== "volunteer") {
-
-      window.location.replace(
-        `/${data.user.role.toLowerCase()}.html`
-      );
-
-      return;
-
-    }
-
-  } catch (err) {
-
-    console.error(err);
-
-    window.location.replace("/login.html");
-
-  }
-
-}
 // ===============================================
 // SOCKET CONNECTION
 // ===============================================
@@ -700,8 +666,6 @@ window.addEventListener("load", () => {
 // ===============================================
 
 (async function init() {
-
-  await checkAuth();
 
   await loadUser();
 
