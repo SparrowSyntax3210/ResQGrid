@@ -20,7 +20,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: "https://res-q-grid.vercel.app",
     methods: ["GET", "POST", "PATCH"],
     credentials: true,
   },

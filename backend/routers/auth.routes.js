@@ -87,9 +87,12 @@ router.post("/login", async (req, res) => {
     name: existingUser.Name,
     email: existingUser.Email,
     role: existingUser.Role,
-    coins: existingUser.Coins
+    coins: existingUser.coins
 };
 
+
+
+    console.log("SESSION CREATED:", req.session.user);
 
 req.session.save((err)=>{
 

@@ -7,12 +7,21 @@ const guardianroutes = require("../routers/guardian.routes")
 const VolunteerRoutes = require("../routers/volunteer.routes");
 const cors = require("cors");
 
-app.use(cors({
-    origin:[
-        "https://res-q-grid.vercel.app/"
+const corsOptions = {
+    origin: [
+        "https://res-q-grid.vercel.app",
+        "http://localhost:3000",
+        "http://127.0.0.1:5500"
     ],
     credentials:true
-}));
+};
+
+
+app.use(cors(corsOptions));
+
+
+app.set("trust proxy", 1);
+
 
 app.use(session({
 
@@ -30,7 +39,6 @@ app.use(session({
     }
 
 }));
-
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
