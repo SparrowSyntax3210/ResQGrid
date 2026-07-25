@@ -382,16 +382,22 @@ function attachHandlers() {
 
   document.querySelectorAll(".track-btn").forEach((btn) => {
     btn.onclick = () => {
-      const id = btn.dataset.id;
 
-      const type = btn.dataset.type;
+    const id = btn.dataset.id;
+    const type = btn.dataset.type;
 
-      currentCase = id;
+    currentCase = id;
 
-      console.log("Opening tracking:", id, type);
+    if(type === "missing-person"){
+        window.location.href =
+        `/case-grid-guardian.html?id=${id}&caseType=${type}`;
+    }
+    else{
+        window.location.href =
+        `/case-tracking-guardian.html?id=${id}&caseType=${type}`;
+    }
 
-      window.location.href = `/case-tracking-guardian.html?id=${id}&caseType=${type}`;
-    };
+};
   });
 
   // CHAT

@@ -1,10 +1,17 @@
 const connectDB = require("../backend/config/db");
+
 const http = require("http");
 const { Server } = require("socket.io");
 
 const Application = require("./models/application.schema");
+
 const chatSocket = require("./socket/chat.socket");
+
 const app = require("./src/app");
+
+// ==========================================
+// SERVER
+// ==========================================
 
 const server = http.createServer(app);
 
@@ -12,36 +19,34 @@ const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST", "PATCH"],
+    credentials: true,
   },
 });
 
 app.set("io", io);
 
+
+// ==========================================
+// LIVE CASE STORAGE
+// ==========================================
+
 const activeCases = {};
 
-// ==========================================
-// GRID CONSTANTS
-// ==========================================
-
-const GRID_NAMES = [
-  "A1", "A2", "A3",
-  "B1", "B2", "B3",
-  "C1", "C2", "C3",
-];
+const GRID_NAMES = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
 
 // ==========================================
-// CREATE EMPTY GRID
+// GRID TEMPLATE
 // ==========================================
 
 function createGrid() {
   return {
     volunteers: [],
+
     count: 0,
 
     priority: 0,
 
     basePriority: 0,
-    variation: 0,
 
     searched: 0,
 
@@ -56,46 +61,57 @@ function createGrid() {
 }
 
 // ==========================================
-// CREATE LIVE CASE
+// CREATE CASE STATE
 // ==========================================
 
 function createLiveCase(application) {
-
-  const grids = {};
+  let grids = {};
 
   GRID_NAMES.forEach((grid) => {
     grids[grid] = createGrid();
   });
 
   return {
+    caseId: application._id,
 
-    createdAt: Date.now(),
+    casePriority: application.priorityScore || 50,
 
-    casePriority: application.priorityScore,
+    priorityLevel: application.priorityLevel || "Medium",
 
-    priorityLevel: application.priorityLevel,
-
-    priorityReason: application.priorityReason,
+    priorityReason: application.priorityReason || "",
 
     totalVolunteers: 0,
 
     volunteers: {},
 
     grids,
-
   };
-
 }
 
 // ==========================================
-// GENERATE GRID PRIORITIES
-// (ONLY ONCE)
+// LOAD CASE INTO MEMORY
 // ==========================================
 
-function generateBasePriorities(caseData) {
+async function loadCase(caseId) {
+  if (activeCases[caseId]) return activeCases[caseId];
 
-  const centerWeight = {
+  const application = await Application.findById(caseId);
 
+  if (!application) return null;
+
+  activeCases[caseId] = createLiveCase(application);
+
+  generatePriority(activeCases[caseId]);
+
+  return activeCases[caseId];
+}
+
+// ==========================================
+// PRIORITY GENERATOR
+// ==========================================
+
+function generatePriority(caseData) {
+  const center = {
     A1: -15,
     A2: -5,
     A3: -15,
@@ -107,412 +123,219 @@ function generateBasePriorities(caseData) {
     C1: -15,
     C2: -5,
     C3: -15,
-
   };
 
   GRID_NAMES.forEach((grid) => {
+    let score =
+      caseData.casePriority + center[grid] + Math.floor(Math.random() * 10);
 
-    const variation =
-      Math.floor(Math.random() * 11) - 5;
+    caseData.grids[grid].basePriority = Math.max(0, Math.min(100, score));
 
-    const base =
-      caseData.casePriority +
-      centerWeight[grid] +
-      variation;
-
-    caseData.grids[grid].variation = variation;
-
-    caseData.grids[grid].basePriority =
-      Math.max(0, Math.min(100, base));
-
+    caseData.grids[grid].priority = caseData.grids[grid].basePriority;
   });
-
 }
 
 // ==========================================
-// UPDATE GRID PRIORITIES
+// BROADCAST STATE
 // ==========================================
 
-function updatePriorities(caseData) {
+function broadcastCase(caseId) {
+  const data = activeCases[caseId];
 
-  GRID_NAMES.forEach((grid) => {
+  if (!data) return;
 
-    const g = caseData.grids[grid];
-
-    let score = g.basePriority;
-
-    // More volunteers = lower priority
-
-    score -= g.count * 10;
-
-    // Search completed
-
-    score -= g.searched;
-
-    if (g.completed) {
-      score = 0;
-    }
-
-    g.priority =
-      Math.max(0, Math.min(100, score));
-
-  });
-
-}
-
-// ==========================================
-// SEARCH GRID
-// ==========================================
-
-function searchGrid(caseData, gridId) {
-
-  const grid = caseData.grids[gridId];
-
-  if (!grid) return;
-
-  grid.searched += 10;
-
-  if (grid.searched > 100) {
-    grid.searched = 100;
-  }
-
-  updatePriorities(caseData);
-
-}
-
-// ==========================================
-// SEND LIVE STATE
-// ==========================================
-
-function broadcastCase(io, caseId) {
-
-  const currentCase = activeCases[caseId];
-
-  if (!currentCase) return;
-
-  io.to(`case_${caseId}`).emit("case_state", {
-
+  io.to(caseId).emit("case_state", {
     caseId,
-
-    ...currentCase,
-
+    ...data,
   });
-
 }
 
+// ==========================================
+// SOCKET CONNECTION
+// ==========================================
 
 io.on("connection", (socket) => {
-
-  console.log("Connected:", socket.id);
+  console.log("CONNECTED:", socket.id);
 
   chatSocket(io, socket);
-
-  // ==========================================
-  // VOLUNTEER ROOM
-  // ==========================================
-
-  socket.on("join_volunteers", () => {
-
-    socket.join("volunteers");
-
-    console.log(socket.id, "joined volunteer room");
-
-  });
 
   // ==========================================
   // JOIN CASE
   // ==========================================
 
-  socket.on("join_case",(data)=>{
+  socket.on("join_case", async (data) => {
+    let caseId;
 
-    try{
-
-        let caseId;
-        let role;
-
-
-        if(typeof data === "string"){
-
-            caseId = data;
-            role = "Unknown";
-
-        }
-        else{
-
-            caseId = data.caseId;
-            role = data.role;
-
-        }
-
-
-        if(!caseId){
-
-            console.log("NO CASE ID");
-            return;
-
-        }
-
-
-        const room = `case_${caseId}`;
-
-
-        socket.join(room);
-
-
-        socket.caseId = caseId;
-        socket.role = role;
-
-
-        console.log(
-            socket.id,
-            "joined",
-            room,
-            role
-        );
-
-
-        socket.to(room).emit(
-            "case_state",
-            {
-                caseId,
-                message:`${role} joined`
-            }
-        );
-
-
-    }
-    catch(err){
-
-        console.log(
-            "JOIN CASE ERROR",
-            err
-        );
-
+    if (typeof data === "string") {
+      caseId = data;
+    } else {
+      caseId = data.caseId;
     }
 
-});
+    if (!caseId) return;
 
-  // ==========================================
-  // HEARTBEAT
-  // ==========================================
+    socket.caseId = caseId;
 
-  socket.on("heartbeat", ({ caseId }) => {
+    socket.join(caseId);
 
-    const currentCase = activeCases[caseId];
+    console.log(socket.id, "joined", caseId);
 
-    if (!currentCase) return;
+    // load case
 
-    if (!currentCase.volunteers[socket.id]) return;
+    const state = await loadCase(caseId);
 
-    currentCase.volunteers[socket.id].lastHeartbeat =
-      Date.now();
-
+    if (state) {
+      socket.emit("case_state", {
+        caseId,
+        ...state,
+      });
+    }
   });
 
   // ==========================================
-  // CLAIM GRID
+  // VOLUNTEER JOIN
   // ==========================================
 
-  socket.on("claim_grid", ({ caseId, gridId }) => {
+  socket.on("volunteer_joined", async (data) => {
+    if (!data.caseId) return;
 
-    const currentCase = activeCases[caseId];
+    const state = await loadCase(data.caseId);
 
-    if (!currentCase) return;
+    if (!state) return;
 
-    // Remove volunteer from previous grid
+    state.volunteers[socket.id] = {
+      name: data.name || "Volunteer",
+    };
 
-    GRID_NAMES.forEach((grid) => {
+    state.totalVolunteers = Object.keys(state.volunteers).length;
 
-      currentCase.grids[grid].volunteers =
-        currentCase.grids[grid].volunteers.filter(
-          id => id !== socket.id
-        );
+    broadcastCase(data.caseId);
+  });
 
-      currentCase.grids[grid].count =
-        currentCase.grids[grid].volunteers.length;
+  // ==========================================
+  // VOLUNTEER LOCATION
+  // ==========================================
 
+  socket.on("volunteer_location", async (data) => {
+    console.log("LOCATION UPDATE");
+
+    console.table(data);
+
+    if (!data.caseId) return;
+
+    const state = await loadCase(data.caseId);
+
+    if (!state) return;
+
+    // store volunteer
+
+    state.volunteers[socket.id] = {
+      name: data.name,
+
+      lat: data.lat,
+
+      lng: data.lng,
+
+      gridId: data.gridId,
+    };
+
+    // GRID UPDATE
+
+    if (data.gridId && state.grids[data.gridId]) {
+      let grid = state.grids[data.gridId];
+
+      if (!grid.volunteers.includes(socket.id)) {
+        grid.volunteers.push(socket.id);
+
+        grid.count = grid.volunteers.length;
+      }
+
+      grid.startedAt = grid.startedAt || Date.now();
+    }
+
+    state.totalVolunteers = Object.keys(state.volunteers).length;
+
+    // send location
+
+    io.to(data.caseId).emit("volunteer_location", {
+      caseId: data.caseId,
+
+      name: data.name || "Volunteer",
+
+      lat: Number(data.lat),
+
+      lng: Number(data.lng),
+
+      distance: data.distance ?? null,
+
+      eta: data.eta ?? null,
+
+      accuracy: data.accuracy ?? null,
+
+      timestamp: Date.now(),
     });
 
-    // Add to selected grid
+    // send grid update
 
-    if (
-      currentCase.grids[gridId] &&
-      !currentCase.grids[gridId].volunteers.includes(socket.id)
-    ) {
+    broadcastCase(data.caseId);
+  });
 
-      currentCase.grids[gridId].volunteers.push(socket.id);
+  // ==========================================
+  // GRID COMPLETED
+  // ==========================================
 
-      currentCase.grids[gridId].count =
-        currentCase.grids[gridId].volunteers.length;
+  socket.on("complete_grid", async (data) => {
+    const state = await loadCase(data.caseId);
 
-      currentCase.grids[gridId].claimedBy = socket.id;
+    if (state && state.grids[data.gridId]) {
+      state.grids[data.gridId].completed = true;
 
-      currentCase.grids[gridId].startedAt = Date.now();
-
+      broadcastCase(data.caseId);
     }
-
-    if (currentCase.volunteers[socket.id]) {
-
-      currentCase.volunteers[socket.id].grid = gridId;
-
-      currentCase.volunteers[socket.id].searching = true;
-
-    }
-
-    updatePriorities(currentCase);
-
-    broadcastCase(io, caseId);
-
   });
 
   // ==========================================
-  // SEARCH GRID
+  // LEAVE
   // ==========================================
 
-  socket.on("search_grid", ({ caseId, gridId }) => {
+  socket.on("volunteer_left", (data) => {
+    if (!data.caseId) return;
 
-    const currentCase = activeCases[caseId];
-
-    if (!currentCase) return;
-
-    searchGrid(currentCase, gridId);
-
-    broadcastCase(io, caseId);
-
+    io.to(data.caseId).emit("volunteer_left", data);
   });
 
   // ==========================================
-  // COMPLETE GRID
-  // ==========================================
-
-  socket.on("complete_grid", ({ caseId, gridId }) => {
-
-    const currentCase = activeCases[caseId];
-
-    if (!currentCase) return;
-
-    if (!currentCase.grids[gridId]) return;
-
-    currentCase.grids[gridId].completed = true;
-
-    updatePriorities(currentCase);
-
-    broadcastCase(io, caseId);
-
-  });
-
-  // ==========================================
-  // LEAVE CASE
-  // ==========================================
-
-  socket.on("leave_case", (caseId) => {
-
-    socket.leave(`case_${caseId}`);
-
-    const currentCase = activeCases[caseId];
-
-    if (!currentCase) return;
-
-    GRID_NAMES.forEach((grid) => {
-
-      currentCase.grids[grid].volunteers =
-        currentCase.grids[grid].volunteers.filter(
-          id => id !== socket.id
-        );
-
-      currentCase.grids[grid].count =
-        currentCase.grids[grid].volunteers.length;
-
-    });
-
-    delete currentCase.volunteers[socket.id];
-
-    currentCase.totalVolunteers =
-      Object.keys(currentCase.volunteers).length;
-
-    updatePriorities(currentCase);
-
-    broadcastCase(io, caseId);
-
-  });
-
-
-  // ==========================================
-  // DISCONNECT
-  // ==========================================
-
-    // ==========================================
   // DISCONNECT
   // ==========================================
 
   socket.on("disconnect", () => {
+    console.log("DISCONNECTED:", socket.id);
 
-    console.log(socket.id, "Disconnected");
+    for (const id in activeCases) {
+      const state = activeCases[id];
 
-    // Remove volunteer from every active case
+      if (state.volunteers[socket.id]) {
+        delete state.volunteers[socket.id];
 
-    for (const caseId in activeCases) {
+        state.totalVolunteers = Object.keys(state.volunteers).length;
 
-      const currentCase = activeCases[caseId];
+        GRID_NAMES.forEach((grid) => {
+          let g = state.grids[grid];
 
-      if (!currentCase) continue;
+          g.volunteers = g.volunteers.filter((v) => v !== socket.id);
 
-      // Remove from volunteer list
+          g.count = g.volunteers.length;
+        });
 
-      delete currentCase.volunteers[socket.id];
-
-      // Remove from all claimed grids
-
-      GRID_NAMES.forEach((grid) => {
-
-        currentCase.grids[grid].volunteers =
-          currentCase.grids[grid].volunteers.filter(
-            id => id !== socket.id
-          );
-
-        currentCase.grids[grid].count =
-          currentCase.grids[grid].volunteers.length;
-
-        // Reset claim if this volunteer owned it
-
-        if (currentCase.grids[grid].claimedBy === socket.id) {
-
-          currentCase.grids[grid].claimedBy = null;
-
-          currentCase.grids[grid].startedAt = null;
-
-        }
-
-      });
-
-      currentCase.totalVolunteers =
-        Object.keys(currentCase.volunteers).length;
-
-      updatePriorities(currentCase);
-
-      broadcastCase(io, caseId);
-
-      // ---------------------------------------
-      // Remove inactive live case
-      // ---------------------------------------
-
-      if (
-        currentCase.totalVolunteers === 0
-      ) {
-
-        console.log(
-          `Removing inactive live case ${caseId}`
-        );
-
-        delete activeCases[caseId];
-
+        broadcastCase(id);
       }
-
     }
-
   });
-
 });
+
+// ==========================================
+// START
+// ==========================================
 
 server.listen(5000, "0.0.0.0", () => {
   console.log("Server running on port 5000");

@@ -254,9 +254,9 @@ router.post("/application", upload.single("Photo"), async (req, res) => {
 
     let mapFeatures = [];
 
-    if (latitude && longitude) {
-      mapFeatures = await getLocationFeatures(latitude, longitude);
-    }
+    if (latitude !== null && longitude !== null) {
+    mapFeatures = await getLocationFeatures(latitude, longitude);
+}
 
     // -------------------------
     // AI PRIORITY
@@ -281,39 +281,31 @@ router.post("/application", upload.single("Photo"), async (req, res) => {
     // -------------------------
     // SAVE DATABASE
     // -------------------------
-
     const newApplication = await Application.create({
-      guardianId: req.session.user.id,
-      caseType: req.body.caseType,
-      Photo,
-      Name,
+    guardianId: req.session.user.id,
+    caseType: req.body.caseType,
 
-      Age,
+    Photo,
+    Name,
+    Age,
+    Gender,
+    Height,
+    Clothing,
+    MedicalConditions,
+    LastSeen,
+    dateTime,
+    Description,
+    GuardianContact,
 
-      Gender,
+    latitude,
+    longitude,
 
-      Height,
+    status: "active",
 
-      Clothing,
-
-      MedicalConditions,
-
-      LastSeen,
-
-      dateTime,
-
-      Description,
-
-      GuardianContact,
-
-      status: "active",
-
-      priorityScore: priority.priorityScore,
-
-      priorityLevel: priority.priorityLevel,
-
-      priorityReason: priority.priorityReason,
-    });
+    priorityScore: priority.priorityScore,
+    priorityLevel: priority.priorityLevel,
+    priorityReason: priority.priorityReason
+});
 
     console.log("Saved Application:", newApplication);
 
@@ -349,7 +341,6 @@ router.post("/application", upload.single("Photo"), async (req, res) => {
 
 router.patch("/application/close/:id", async (req, res) => {
   try {
-
     const check = await Application.findById(req.params.id);
 
     console.log("Application from DB:", check);
@@ -406,7 +397,6 @@ router.patch("/application/close/:id", async (req, res) => {
   }
 });
 
-
 // ----------------------------------------------------
 // GET ACTIVE APPLICATIONS
 // ----------------------------------------------------
@@ -425,13 +415,42 @@ router.get("/application", async (req, res) => {
     }).sort({ priorityScore: -1 });
 
     console.log(
-      `Guardian ${req.session.user.id} has ${applications.length} active cases`
+      `Guardian ${req.session.user.id} has ${applications.length} active cases`,
     );
 
     res.json(applications);
   } catch (error) {
     console.error(error);
     res.status(500).json({
+      message: "Server Error",
+    });
+  }
+});
+
+router.get("/application/:id", async (req, res) => {
+  try {
+    if (!req.session.user) {
+      return res.status(401).json({ message: "Please login first" });
+    }
+
+    const application = await Application.findById(req.params.id);
+
+    if (!application) {
+      return res.status(404).json({
+        success: false,
+        message: "Case not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      application,
+    });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      success: false,
       message: "Server Error",
     });
   }

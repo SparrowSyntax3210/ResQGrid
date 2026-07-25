@@ -4,133 +4,67 @@ module.exports = (io, socket) => {
   // =====================================================
   // JOIN CASE ROOM
   // =====================================================
-socket.on("join_case", async (data)=>{
+  socket.on("join_case", async (data) => {
+    try {
+      let caseId;
+      let role;
 
-    try{
+      // support old and new frontend
+      if (typeof data === "string") {
+        caseId = data;
+        role = "Unknown";
+      } else {
+        caseId = data.caseId;
+        role = data.role;
+      }
 
-        let caseId;
-        let role;
+      if (!caseId) {
+        console.log("Missing case id");
+        return;
+      }
 
+      const room = `case_${caseId}`;
 
-        // support old and new frontend
-        if(typeof data === "string"){
+      socket.join(room);
 
-            caseId = data;
-            role = "Unknown";
+      console.log(socket.id, "joined", room, {
+        caseId,
+        role,
+      });
 
-        }
-        else{
+      socket.caseId = caseId;
+      socket.role = role;
 
-            caseId = data.caseId;
-            role = data.role;
+      // send current case information if needed
 
-        }
+      const application = await Application.findById(caseId);
 
+      if (application) {
+        socket.emit("case_loaded", application);
+      }
 
-        if(!caseId){
-
-            console.log("Missing case id");
-            return;
-
-        }
-
-
-
-        const room = `case_${caseId}`;
-
-
-        socket.join(room);
-
-
-        console.log(
-            socket.id,
-            "joined",
-            room,
-            {
-                caseId,
-                role
-            }
-        );
-
-
-
-        socket.caseId = caseId;
-        socket.role = role;
-
-
-
-        // send current case information if needed
-
-        const application =
-        await Application.findById(caseId);
-
-
-
-        if(application){
-
-            socket.emit(
-                "case_loaded",
-                application
-            );
-
-        }
-
-
-
-        socket.to(room).emit(
-            "case_state",
-            {
-                caseId,
-                message:`${role} joined`
-            }
-        );
-
-
+      socket.to(room).emit("case_state", {
+        caseId,
+        message: `${role} joined`,
+      });
+    } catch (err) {
+      console.log("JOIN CASE ERROR", err);
     }
-
-    catch(err){
-
-        console.log(
-            "JOIN CASE ERROR",
-            err
-        );
-
-    }
-
-});
+  });
 
   // =====================================================
   // VOLUNTEER LIVE LOCATION
   // =====================================================
 
-socket.on(
-"volunteer_location",
-(data)=>{
+  socket.on("volunteer_location", (data) => {
+    console.log("SERVER RECEIVED LOCATION", data);
 
+    const room = `case_${data.caseId}`;
 
-console.log(
-"SERVER RECEIVED LOCATION",
-data
-);
+    console.log("EMITTING TO ROOM", room);
 
-
-const room=`case_${data.caseId}`;
-
-
-console.log(
-"EMITTING TO ROOM",
-room
-);
-
-
-
-io.to(room).emit(
-"volunteer_location",
-data
-);
-
-
-});
+    io.to(room).emit("volunteer_location", data);
+  });
 
   // =====================================================
   // CASE STATE UPDATE

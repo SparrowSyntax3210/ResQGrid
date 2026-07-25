@@ -16,154 +16,173 @@ let marker = null;
 
 let application = null;
 
-// ===============================
-// DOM
-// ===============================
+// =============================
+// DOM REFERENCES
+// =============================
 
-const photo = document.getElementById("photo");
+const casePhoto = document.getElementById("casePhoto");
 
-const nameBox = document.getElementById("name");
+const caseName = document.getElementById("caseName");
 
-const statusBox = document.getElementById("status");
+const caseStatus = document.getElementById("caseStatus");
 
-const locationBox = document.getElementById("location");
+const headerCaseType = document.getElementById("headerCaseType");
 
-const createdBox = document.getElementById("created");
+const caseTypeBox = document.getElementById("caseType");
 
-const priorityBox = document.getElementById("priority");
+const caseLocation = document.getElementById("caseLocation");
+
+const createdDate = document.getElementById("createdDate");
+
+const priority = document.getElementById("priority");
+
+const volunteerName = document.getElementById("volunteerName");
+
+const distance = document.getElementById("distance");
+
+const eta = document.getElementById("eta");
 
 const activity = document.getElementById("activityFeed");
 
-// ===============================
-// SOCKET CONNECT
-// ===============================
-
-socket.on("connect", () => {
-  console.log("Guardian connected", socket.id);
-
-  socket.emit("join_case", {
-    caseId,
-
-    role: "Guardian",
-  });
-
-  console.log("Joined Case Room:", caseId);
-});
-
-// ===============================
-// RECEIVE LOCATION
-// ===============================
-
-socket.on("volunteer_location", (data) => {
-  console.log("LIVE LOCATION:", data);
-
-  if (String(data.caseId) !== String(caseId)) return;
-
-  if (!map) initializeMap();
-
-  const pos = [data.lat, data.lng];
-
-  if (!marker) {
-    marker = L.marker(pos).addTo(map);
-  } else {
-    marker.setLatLng(pos);
-  }
-
-  map.setView(pos, 15);
-
-  document.getElementById("volunteerName").innerText = data.name || "Volunteer";
-
-  addActivity("Volunteer location updated");
-});
-
-// ===============================
-// CASE STATE
-// ===============================
-
-socket.on("case_state", (data) => {
-  console.log("CASE STATE", data);
-
-  addActivity(data.message || "Case updated");
-});
-
-// ===============================
+// =============================
 // LOAD CASE
-// ===============================
+// =============================
 
 async function loadCase() {
   try {
-    const res = await fetch(
-      `${API}/guardian/application`,
-
-      {
-        credentials: "include",
-      },
-    );
+    const res = await fetch(`${API}/guardian/application/${caseId}`, {
+      credentials: "include",
+    });
 
     const data = await res.json();
 
-    if (!res.ok) {
-      console.log(data);
+    console.log("Guardian Case:", data);
 
-      return;
-    }
-
-    let cases = [];
-
-    if (Array.isArray(data)) cases = data;
-    else if (data.applications) cases = data.applications;
-    else if (data.application) cases = [data.application];
-
-    application = cases.find((c) => String(c._id) === String(caseId));
-
-    if (!application) {
+    if (!data.success) {
       console.log("Case not found");
 
       return;
     }
 
+    application = data.application;
+
     renderCase();
 
-    if (caseType !== "missing-person") {
-      initializeMap();
-    } else {
+    if (caseType === "missing-person") {
       document.getElementById("mapSection").style.display = "none";
+    } else {
+      initializeMap();
     }
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error);
   }
 }
 
-// ===============================
-// RENDER
-// ===============================
+// =============================
+// RENDER CASE
+// =============================
 
 function renderCase() {
-  photo.src = application.Photo
+  if (!application) return;
+
+  console.log("Rendering Case", application);
+
+  casePhoto.src = application.Photo
     ? `${API}/uploads/${application.Photo}`
     : "/images/default-user.png";
 
-  nameBox.innerText = application.Name || "Emergency";
+  caseName.innerText = application.Name || "Emergency";
 
-  statusBox.innerText = application.status;
+  caseStatus.innerText = application.status || "Active";
 
-  document.getElementById("caseType").innerText = caseType;
+  caseTypeBox.innerText = application.caseType || "-";
 
-  locationBox.innerText =
+  headerCaseType.innerText = application.caseType || "Emergency Case";
+
+  caseLocation.innerText =
     application.LastSeen ||
     application.Hospital ||
     application.Address ||
     application.CurrentLocation ||
     "-";
 
-  createdBox.innerText = new Date(application.dateTime).toLocaleString();
+  createdDate.innerText = application.dateTime
+    ? new Date(application.dateTime).toLocaleString()
+    : "-";
 
-  priorityBox.innerText = application.priorityLevel || "Pending";
+  priority.innerText = application.priorityLevel || "Pending";
 }
 
-// ===============================
+// =============================
+// SOCKET CONNECTION
+// =============================
+
+socket.on("connect", () => {
+  console.log("Guardian Connected", socket.id);
+
+  socket.emit("join_case", {
+    caseId,
+    role: "Guardian",
+  });
+
+  console.log("Joined Case Room", caseId);
+});
+
+// =============================
+// LIVE LOCATION
+// =============================
+
+socket.on("volunteer_location", (data) => {
+  console.log("LIVE LOCATION", data);
+
+  if (String(data.caseId) !== String(caseId)) return;
+
+  volunteerName.innerText = data.name || data.volunteerName || "Volunteer";
+
+  distance.innerText = data.distance ? `${data.distance} km` : "-";
+
+  eta.innerText = data.eta ? `${data.eta} min` : "-";
+
+  if (!map) initializeMap();
+
+  const position = [data.lat, data.lng];
+
+  if (!marker) {
+    marker = L.marker(position).addTo(map);
+  } else {
+    marker.setLatLng(position);
+  }
+
+  map.setView(position, 15);
+
+  addActivity("Volunteer location updated");
+});
+
+// =============================
+// CASE STATE
+// =============================
+
+socket.on("case_state", (data) => {
+  console.log("CASE STATE", data);
+
+  if (data.message) addActivity(data.message);
+});
+
+// =============================
+// CASE LOADED
+// =============================
+
+socket.on("case_loaded", (app) => {
+  console.log("CASE LOADED", app);
+
+  application = app;
+
+  renderCase();
+});
+
+// =============================
 // MAP
-// ===============================
+// =============================
 
 function initializeMap() {
   if (map) return;
@@ -173,13 +192,14 @@ function initializeMap() {
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
 }
 
-// ===============================
+// =============================
 // ACTIVITY
-// ===============================
+// =============================
 
 function addActivity(text) {
   activity.innerHTML =
     `
+
 <div class="activity">
 
 <p>
@@ -190,14 +210,15 @@ ${text}
 ${new Date().toLocaleTimeString()}
 </small>
 
+
 </div>
 
 ` + activity.innerHTML;
 }
 
-// ===============================
+// =============================
 // BUTTONS
-// ===============================
+// =============================
 
 document.getElementById("refreshBtn").onclick = loadCase;
 
@@ -206,15 +227,11 @@ document.getElementById("chatBtn").onclick = () => {
 };
 
 document.getElementById("closeBtn").onclick = async () => {
-  await fetch(
-    `${API}/guardian/application/close/${caseId}`,
+  await fetch(`${API}/guardian/application/close/${caseId}`, {
+    method: "PATCH",
 
-    {
-      method: "PATCH",
-
-      credentials: "include",
-    },
-  );
+    credentials: "include",
+  });
 
   location.href = "/guardian.html";
 };

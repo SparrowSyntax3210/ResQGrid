@@ -110,13 +110,19 @@ router.post("/sightings", async (req, res) => {
     await sighting.save();
     const io = req.app.get("io");
 
-    io.to(req.body.caseId).emit("new_sighting", sighting);
+    io.to(`case_${req.body.caseId}`).emit(
+    "new_sighting",
+    sighting
+);
 
     res.status(201).json({
       success: true,
       sighting,
     });
-    res.redirect("/volunteer.html");
+    res.status(201).json({
+success:true,
+sighting
+});
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -127,26 +133,24 @@ router.post("/sightings", async (req, res) => {
 });
 
 router.get("/sightings/:id", async (req, res) => {
-    try {
-        const sightings = await Sighting.find({
-            caseId: req.params.id,
-        }).sort({
-            createdAt: -1,
-        });
+  try {
+    const sightings = await Sighting.find({
+      caseId: req.params.id,
+    }).sort({
+      createdAt: -1,
+    });
 
-        res.json({
-            success: true,
-            sightings,
-        });
+    res.json({
+      success: true,
+      sightings,
+    });
+  } catch (err) {
+    console.log(err);
 
-    } catch (err) {
-        console.log(err);
-
-        res.status(500).json({
-            success: false,
-        });
-    }
+    res.status(500).json({
+      success: false,
+    });
+  }
 });
-
 
 module.exports = router;

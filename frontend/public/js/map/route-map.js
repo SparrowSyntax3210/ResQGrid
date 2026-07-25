@@ -1,7 +1,15 @@
 function loadRouteMap({ application, socket, caseId }) {
-  const destination = application.LastSeen;
+  console.log("Route Map Loading");
 
-  const map = L.map("map").setView([20.5937, 78.9629], 6);
+  const destinationLat = Number(application.latitude);
+  const destinationLng = Number(application.longitude);
+
+  if (!Number.isFinite(destinationLat) || !Number.isFinite(destinationLng)) {
+    console.error("Invalid destination coordinates");
+    return;
+  }
+
+  const map = L.map("map").setView([destinationLat, destinationLng], 15);
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", {
     subdomains: "abcd",
@@ -9,62 +17,87 @@ function loadRouteMap({ application, socket, caseId }) {
     attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
   }).addTo(map);
 
-  socket.on("connect", () => {
-    socket.emit("join_case", caseId);
-  });
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 500);
 
-  showRoute();
+  // Destination marker
 
-  async function showRoute() {
-    try {
-      navigator.geolocation.getCurrentPosition(async (position) => {
-        const volunteerLat = position.coords.latitude;
-        const volunteerLng = position.coords.longitude;
+  L.marker([destinationLat, destinationLng])
+    .addTo(map)
+    .bindPopup("Destination")
+    .openPopup();
 
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(destination)}`,
-        );
+  let volunteerMarker = null;
 
-        const data = await response.json();
+  let routingControl = null;
 
-        if (!data.length) {
-          alert("Destination not found");
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const volunteerLat = position.coords.latitude;
 
-          return;
-        }
+      const volunteerLng = position.coords.longitude;
 
-        const guardianLat = Number(data[0].lat);
-        const guardianLng = Number(data[0].lon);
+      // Volunteer marker
 
-        map.setView([guardianLat, guardianLng], 14);
+      volunteerMarker = L.marker([volunteerLat, volunteerLng])
+        .addTo(map)
+        .bindPopup("Volunteer")
+        .openPopup();
 
-        L.marker([guardianLat, guardianLng])
-          .addTo(map)
-          .bindPopup("Destination")
-          .openPopup();
+      // CREATE ROUTE
 
-        L.marker([volunteerLat, volunteerLng]).addTo(map).bindPopup("You");
+      routingControl = L.Routing.control({
+        waypoints: [
+          L.latLng(volunteerLat, volunteerLng),
 
-        L.Routing.control({
-          waypoints: [
-            L.latLng(volunteerLat, volunteerLng),
+          L.latLng(destinationLat, destinationLng),
+        ],
 
-            L.latLng(guardianLat, guardianLng),
-          ],
+        routeWhileDragging: false,
 
-          routeWhileDragging: false,
+        addWaypoints: false,
 
-          addWaypoints: false,
+        draggableWaypoints: false,
 
-          draggableWaypoints: false,
+        fitSelectedRoutes: true,
 
-          fitSelectedRoutes: true,
+        showAlternatives: false,
 
-          showAlternatives: false,
-        }).addTo(map);
-      });
-    } catch (err) {
-      console.log(err);
+        createMarker: function () {
+          return null;
+        },
+      }).addTo(map);
+    },
+
+    (error) => {
+      console.log("Location Error", error);
+    },
+
+    {
+      enableHighAccuracy: true,
+    },
+  );
+
+  // LIVE VOLUNTEER MOVEMENT
+
+  socket.on("volunteer_location", (data) => {
+    if (data.caseId !== caseId) return;
+
+    const newPosition = [data.lat, data.lng];
+
+    if (volunteerMarker) {
+      volunteerMarker.setLatLng(newPosition);
     }
-  }
+
+    // UPDATE ROUTE
+
+    if (routingControl) {
+      routingControl.setWaypoints([
+        L.latLng(data.lat, data.lng),
+
+        L.latLng(destinationLat, destinationLng),
+      ]);
+    }
+  });
 }

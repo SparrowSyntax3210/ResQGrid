@@ -413,7 +413,11 @@ function attachHandlers() {
 
   currentCase = id;
 
-  socket.emit("join_case", id);
+  socket.emit("join_case",
+{
+    caseId:id,
+    role:"Volunteer"
+});
 
   window.location.href =
     `/case-tracking-volunteer.html?id=${id}&caseType=${caseType}`;
