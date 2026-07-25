@@ -90,9 +90,22 @@ router.post("/login", async (req, res) => {
             coins: existingUser.Coins
         };
 
-        return res.redirect(
-    `https://res-q-grid.vercel.app/${existingUser.Role.toLowerCase()}.html`
-);
+        req.session.save((err)=>{
+
+    if(err){
+        console.log("Session save error:",err);
+
+        return res.status(500).json({
+            message:"Session error"
+        });
+    }
+
+
+    return res.redirect(
+        `https://res-q-grid.vercel.app/${existingUser.Role.toLowerCase()}.html`
+    );
+
+});
 
     } catch (error) {
         console.error(error);

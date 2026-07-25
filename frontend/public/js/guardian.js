@@ -347,10 +347,12 @@ Close
 
 async function loadApplications() {
   try {
-    const res = await fetch(`${API}/guardian/application`, {
-      credentials: "include",
-    });
-
+    const res = await fetch(
+    "https://resqgrid-b1zt.onrender.com/auth/status",
+    {
+        credentials:"include",
+    }
+);
     const applications = await res.json();
 
     let html = "";
