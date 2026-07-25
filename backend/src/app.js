@@ -28,11 +28,6 @@ app.use("/guardian" , guardianroutes);
 app.use("/volunteer" , VolunteerRoutes);
 app.use("/uploads",express.static(path.join(__dirname, "../uploads")));
 
-app.get("/test" , (req,res)=>{
-    res.send("route is running")
-
-})
-
 app.get("/role-selection" , (req,res)=> {
     res.redirect("role-selection.html")
 })

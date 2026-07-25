@@ -6,6 +6,10 @@ const Application = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    caseType: {
+        type:String,
+        required:true,
+    },
     
     Name:{
         type:String,

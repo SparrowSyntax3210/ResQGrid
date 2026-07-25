@@ -328,26 +328,39 @@
         </div>
 
         <!-- Description -->
-        <div class="form-group">
-          <label for="description">Additional Details</label>
-          <textarea
-            id="description"
-            name="Description"
-            rows="5"
-            placeholder="Any distinguishing marks, tattoos, behaviour, etc."
-            required
-          ></textarea>
-        </div>
+<div class="form-group">
+  <label for="description">Additional Details</label>
+  <textarea
+    id="description"
+    name="Description"
+    rows="5"
+    placeholder="Any distinguishing marks, tattoos, behaviour, etc."
+    required
+  ></textarea>
+</div>
 
-        <div class="btn-container">
-          <button type="submit" class="btn btn-primary">Submit Case</button>
-        </div>
-      </form>
-    </div>
+<input
+    type="hidden"
+    id="caseType"
+    name="caseType"
+/>
 
-    <section class="dynamic-feilds"></section>
+<!-- Dynamic Fields Will Be Inserted Here -->
+<div class="dynamic-fields"></div>
+
+<div class="btn-container">
+  <button type="submit" class="btn btn-primary">
+    Submit Case
+  </button>
+</div>
+
+</form>
+</div>
+
+
 
     <script>
+
       function previewImage(event) {
         const file = event.target.files[0];
 
@@ -400,12 +413,54 @@
           }
         });
 
+        const pageContent = {
+  "missing-person": {
+    title: "Create Missing Person Case",
+    subtitle: "Fill in the details below to submit a missing person report."
+  },
+
+  "blood-report": {
+    title: "Blood & Medicine Emergency",
+    subtitle: "Provide the required information so nearby donors and volunteers can respond quickly."
+  },
+
+  "elderly-assistance": {
+    title: "Request Elderly Assistance",
+    subtitle: "Share the assistance required for the elderly person so nearby volunteers can help."
+  },
+
+  "community-sos": {
+    title: "Community SOS Request",
+    subtitle: "Tell us what happened so trusted community members can assist you immediately."
+  },
+
+  "civic-hazard": {
+    title: "Report Civic Hazard",
+    subtitle: "Report unsafe public infrastructure to alert nearby citizens and authorities."
+  },
+
+  "women-safety": {
+    title: "Women Safety Assistance",
+    subtitle: "Share your situation so verified volunteers can provide safe and timely assistance."
+  }
+};
+
+
       const params = new URLSearchParams(window.location.search);
 const caseType = params.get("case");
 
 console.log("Case Type:", caseType);
+document.getElementById("caseType").value = caseType;
 
-const dynamicFields = document.querySelector(".dynamic-feilds");
+if (pageContent[caseType]) {
+  document.querySelector(".header h1").textContent =
+    pageContent[caseType].title;
+
+  document.querySelector(".header p").textContent =
+    pageContent[caseType].subtitle;
+}
+
+const dynamicFields = document.querySelector(".dynamic-fields");
 
 const forms = {
   "missing-person": `
@@ -529,7 +584,7 @@ const forms = {
 
     <div class="form-group">
       <label>Medical Conditions</label>
-      <textarea name="MedicalConditions"></textarea>
+      <textarea name="HealthNotes"></textarea>
     </div>
 
     <div class="form-group">
@@ -642,6 +697,7 @@ const forms = {
   `
 };
 
+
 function showDynamicFields(type) {
 
   if (!dynamicFields) {
@@ -657,7 +713,7 @@ function showDynamicFields(type) {
 
   dynamicFields.innerHTML = forms[type];
 
-  if (type === "Blood-Report") {
+  if ((type === "blood-report")) {
 
     const emergencyType = document.getElementById("emergencyType");
     const bloodFields = document.getElementById("bloodFields");
@@ -680,6 +736,7 @@ function showDynamicFields(type) {
 }
 
 showDynamicFields(caseType);
+
     </script>
   </body>
 </html>

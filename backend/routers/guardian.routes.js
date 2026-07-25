@@ -284,9 +284,8 @@ router.post("/application", upload.single("Photo"), async (req, res) => {
 
     const newApplication = await Application.create({
       guardianId: req.session.user.id,
-
+      caseType: req.body.caseType,
       Photo,
-
       Name,
 
       Age,
