@@ -83,25 +83,23 @@ router.post("/login", async (req, res) => {
             });
         }
         req.session.user = {
-            id: existingUser._id,
-            name: existingUser.Name,
-            email: existingUser.Email,
-            role: existingUser.Role,
-            coins: existingUser.Coins
-        };
+    id: existingUser._id,
+    name: existingUser.Name,
+    email: existingUser.Email,
+    role: existingUser.Role,
+    coins: existingUser.Coins
+};
 
-        req.session.save((err)=>{
+
+req.session.save((err)=>{
 
     if(err){
-        console.log("Session save error:",err);
-
-        return res.status(500).json({
-            message:"Session error"
-        });
+        console.log(err);
+        return res.status(500).send("Session error");
     }
 
 
-    return res.redirect(
+    res.redirect(
         `https://res-q-grid.vercel.app/${existingUser.Role.toLowerCase()}.html`
     );
 
