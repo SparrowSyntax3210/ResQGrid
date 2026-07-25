@@ -174,6 +174,12 @@ Score must be between 0-100.
 
 router.post("/application", upload.single("Photo"), async (req, res) => {
   try {
+    if (!req.session.user) {
+      return res.status(401).json({
+        success:false,
+        message:"Login required"
+      });
+    }
     console.log("\n========== NEW APPLICATION ==========");
 
     const {
@@ -433,7 +439,10 @@ router.get("/application/:id", async (req, res) => {
       return res.status(401).json({ message: "Please login first" });
     }
 
-    const application = await Application.findById(req.params.id);
+    const application = await Application.findOne({
+    _id:req.params.id,
+    guardianId:req.session.user.id
+});
 
     if (!application) {
       return res.status(404).json({

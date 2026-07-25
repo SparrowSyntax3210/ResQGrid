@@ -80,6 +80,18 @@ const CASE_CONFIG = {
   },
 };
 
+const createCaseBtn = document.getElementById("createCaseBtn");
+
+if(createCaseBtn){
+
+    createCaseBtn.onclick = () => {
+
+        window.location.href="/create-case.html";
+
+    };
+
+}
+
 function getConfig(type) {
   return (
     CASE_CONFIG[type] || {
@@ -331,30 +343,32 @@ async function loadApplications() {
     let html = "";
 
     if (!applications.length) {
-  html = `
+      html = `
 <div class="case-card empty-case">
 
     <h3>No Active Cases</h3>
 
-    <p>Create a new emergency case to start receiving volunteer support.</p>
+    <p>
+        You currently have no active emergency cases.
+    </p>
+
+    <p>
+        Click "+ Create Case" to create a new request.
+    </p>
 
 </div>
 `;
-} else {
+    } else {
       applications.forEach((app) => {
         html += createCard(app);
       });
     }
 
-    const createButton = document.getElementById("createCaseBtn");
 
-caseContainer.innerHTML = html;
-
-if (createButton) {
-    caseContainer.prepend(createButton);
-}
+    caseContainer.innerHTML = html;
 
     attachHandlers();
+
   } catch (err) {
     console.log("Load Application Error", err);
   }
