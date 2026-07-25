@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ResQGrid | Login</title>
+    <title>ResQGrid | Register</title>
     <style>
       :root {
         --bg: #0a0a12;
@@ -66,7 +66,7 @@
       /* ---------- LEFT PANEL ---------- */
       .form-panel {
         flex: 1 1 50%;
-        padding: 40px 48px;
+        padding: 32px 48px;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -80,33 +80,41 @@
       }
 
       .logo-wrap img {
-        height: 48px;
+        height: 44px;
         width: auto;
         display: block;
+        position: relative;
+        top: 40px;
       }
 
       .tagline {
         color: var(--text-secondary);
         font-size: 13px;
-        margin-bottom: 28px;
+        margin-bottom: 20px;
         letter-spacing: 0.2px;
+        position: relative;
+        top: 34px;
       }
 
       .welcome-title {
         color: var(--text-primary);
-        font-size: 26px;
+        font-size: 24px;
         font-weight: 700;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
+        position: relative;
+        top: 20px;
       }
 
       .welcome-sub {
         color: var(--text-secondary);
         font-size: 13.5px;
-        margin-bottom: 24px;
+        margin-bottom: 18px;
+        position: relative;
+        top: 14px;
       }
 
       .field-group {
-        margin-bottom: 16px;
+        margin-bottom: 12px;
       }
 
       .field-label {
@@ -115,7 +123,7 @@
         align-items: center;
         font-size: 12.5px;
         color: var(--text-primary);
-        margin-bottom: 7px;
+        margin-bottom: 6px;
         font-weight: 500;
       }
 
@@ -150,7 +158,7 @@
         background: var(--input-bg);
         border: 1px solid var(--input-border);
         border-radius: 10px;
-        padding: 12px 14px 12px 40px;
+        padding: 11px 14px 11px 40px;
         color: var(--text-primary);
         font-size: 13.5px;
         outline: none;
@@ -190,7 +198,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
-        margin: 4px 0 22px;
+        margin: 6px 0 16px;
       }
 
       .remember-row input[type="checkbox"] {
@@ -200,10 +208,14 @@
         height: 16px;
         border-radius: 4px;
         border: 1px solid var(--input-border);
-        background: var(--purple);
+        background: var(--input-bg);
         position: relative;
         cursor: pointer;
         flex-shrink: 0;
+      }
+
+      .remember-row input[type="checkbox"]:checked {
+        background: var(--purple);
       }
 
       .remember-row input[type="checkbox"]:checked::after {
@@ -219,9 +231,20 @@
       }
 
       .remember-row label {
-        font-size: 13px;
+        font-size: 12.5px;
         color: var(--text-secondary);
         cursor: pointer;
+        line-height: 1.4;
+      }
+
+      .remember-row label a {
+        color: var(--purple-light);
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .remember-row label a:hover {
+        text-decoration: underline;
       }
 
       .btn-login {
@@ -237,6 +260,8 @@
         transition:
           filter 0.15s ease,
           transform 0.15s ease;
+        position: relative;
+        top: -6px;
       }
 
       .btn-login:hover {
@@ -249,7 +274,7 @@
 
       .register-text {
         text-align: center;
-        margin-top: 20px;
+        margin-top: 16px;
         font-size: 13px;
         color: var(--text-secondary);
       }
@@ -372,20 +397,27 @@
         }
 
         .form-panel {
-          padding: 26px 20px;
+          padding: 24px 20px;
         }
 
         .logo-wrap img {
-          height: 38px;
+          height: 36px;
+          top: 30px;
+        }
+
+        .tagline {
+          top: 26px;
         }
 
         .welcome-title {
-          font-size: 22px;
+          font-size: 20px;
+          top: 16px;
         }
 
         .welcome-sub {
           font-size: 13px;
-          margin-bottom: 20px;
+          margin-bottom: 16px;
+          top: 12px;
         }
 
         .field-label {
@@ -394,7 +426,11 @@
 
         .input-wrap input {
           font-size: 13px;
-          padding: 11px 12px 11px 38px;
+          padding: 10px 12px 10px 38px;
+        }
+
+        .remember-row label {
+          font-size: 12px;
         }
 
         .safety-card {
@@ -422,7 +458,7 @@
       }
 
       /* ===========================
-   Glass Background Glow
+   Background Glass Glow
 =========================== */
 
       body::before,
@@ -432,10 +468,10 @@
         width: 420px;
         height: 420px;
         border-radius: 50%;
-        filter: blur(120px);
         pointer-events: none;
+        filter: blur(120px);
         z-index: -1;
-        opacity: 0.24;
+        opacity: 0.25;
       }
 
       body::before {
@@ -446,11 +482,11 @@
 
       body::after {
         background: #6e56ef;
-        bottom: -170px;
+        bottom: -180px;
         right: -120px;
       }
 
-      /* Glass Card */
+      /* Glass enhancement */
 
       .auth-card {
         backdrop-filter: blur(18px);
@@ -475,7 +511,7 @@
         transform: translateY(-2px);
       }
 
-      /* Login Button */
+      /* Button */
 
       .btn-login {
         transition:
@@ -486,9 +522,8 @@
 
       .btn-login:hover {
         transform: translateY(-3px);
-
         box-shadow:
-          0 14px 32px rgba(110, 86, 239, 0.35),
+          0 12px 30px rgba(110, 86, 239, 0.35),
           0 0 18px rgba(110, 86, 239, 0.25);
       }
 
@@ -500,10 +535,10 @@
 
       .safety-card:hover {
         transform: translateY(-4px);
-        border-color: #3b82f6;
+        border-color: #4a63ff;
       }
 
-      /* Right Image */
+      /* Right image */
 
       .visual-inner img {
         transition: transform 1s ease;
@@ -523,13 +558,39 @@
         </div>
         <p class="tagline">Find. Connect. Reunite.</p>
 
-        <h1 class="welcome-title">Welcome back!</h1>
-        <p class="welcome-sub">Login to continue your mission.</p>
+        <h1 class="welcome-title">Create account!</h1>
+        <p class="welcome-sub">Register to join the mission.</p>
 
-        <form action="/auth/login" method="POST">
+        <form id="registerForm" action="/auth/register" method="POST">
           <div class="field-group">
             <div class="field-label">
-              <span>Email or Phone</span>
+              <span>Name</span>
+            </div>
+            <div class="input-wrap">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+              <input
+                type="text"
+                name="Name"
+                placeholder="Enter your full name"
+                required
+                autocomplete="name"
+              />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">
+              <span>Email</span>
             </div>
             <div class="input-wrap">
               <svg
@@ -545,11 +606,11 @@
                 <path d="M2 6h20v12H2z" />
               </svg>
               <input
-                type="text"
+                type="email"
                 name="Email"
-                placeholder="Enter email or phone"
+                placeholder="Enter email"
                 required
-                autocomplete="username"
+                autocomplete="email"
               />
             </div>
           </div>
@@ -557,7 +618,6 @@
           <div class="field-group">
             <div class="field-label">
               <span>Password</span>
-              <a href="/auth/forgot-password" class="forgot-link">Forgot?</a>
             </div>
             <div class="input-wrap">
               <svg
@@ -577,7 +637,7 @@
                 name="Password"
                 placeholder="Enter password"
                 required
-                autocomplete="current-password"
+                autocomplete="new-password"
               />
               <button
                 type="button"
@@ -601,16 +661,52 @@
             </div>
           </div>
 
-          <div class="remember-row">
-            <input type="checkbox" id="remember" name="remember" checked />
-            <label for="remember">Remember me</label>
+          <div class="field-group">
+            <div class="field-label">
+              <span>Contact Number</span>
+            </div>
+            <div class="input-wrap">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+                />
+              </svg>
+              <input
+                type="number"
+                name="ContactNumber"
+                placeholder="Enter contact number"
+                required
+                autocomplete="tel"
+              />
+            </div>
           </div>
 
-          <button type="submit" class="btn-login">Login</button>
+          <div class="remember-row">
+            <input type="checkbox" id="terms" name="terms" required />
+            <label for="terms"
+              >I agree to the <a href="/terms">Terms</a> &amp;
+              <a href="/privacy">Privacy Policy</a></label
+            >
+          </div>
+          <input
+            type="text"
+            id="inputrole"
+            name="Role"
+            style="visibility: hidden"
+          />
+
+          <button type="submit" class="btn-login">Register</button>
         </form>
 
         <p class="register-text">
-          Don't have an account? <a href="register.html">Register</a>
+          Already have an account? <a href="login.html">Login</a>
         </p>
       </div>
 
@@ -618,7 +714,7 @@
       <div class="visual-panel">
         <div class="visual-inner">
           <img
-            src="../assets/map-illustration.png"
+            src="./assets/map-illustration.png"
             alt="Rescue location map illustration"
           />
           <div class="safety-card">
@@ -645,30 +741,63 @@
         </div>
       </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 
     <script>
-      const togglePassword = document.getElementById("togglePassword");
-      const passwordInput = document.getElementById("password");
-      const eyeIcon = document.getElementById("eyeIcon");
+      document.addEventListener("DOMContentLoaded", () => {
+        // ==========================
+        // Password Toggle
+        // ==========================
+        const togglePassword = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("password");
+        const eyeIcon = document.getElementById("eyeIcon");
 
-      togglePassword.addEventListener("click", function () {
-        const isHidden = passwordInput.type === "password";
-        passwordInput.type = isHidden ? "text" : "password";
+        togglePassword.addEventListener("click", () => {
+          const hidden = passwordInput.type === "password";
 
-        eyeIcon.innerHTML = isHidden
-          ? '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A9.13 9.13 0 0 1 12 4c7 0 11 7 11 7a21.7 21.7 0 0 1-3.16 4.53M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>'
-          : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>';
+          passwordInput.type = hidden ? "text" : "password";
 
-        togglePassword.setAttribute(
-          "aria-label",
-          isHidden ? "Hide password" : "Show password",
+          eyeIcon.innerHTML = hidden
+            ? `<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.6 21.6 0 0 1 5.06-6.06M9.9 4.24A9.13 9.13 0 0 1 12 4c7 0 11 7 11 7a21.7 21.7 0 0 1-3.16 4.53M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+            : `<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>`;
+
+          togglePassword.setAttribute(
+            "aria-label",
+            hidden ? "Hide password" : "Show password",
+          );
+        });
+
+        // ==========================
+        // Role Handling
+        // ==========================
+        const params = new URLSearchParams(window.location.search);
+        let role = params.get("role");
+
+        if (role) {
+          role = role.toLowerCase();
+          localStorage.setItem("role", role);
+        } else {
+          role = localStorage.getItem("role");
+        }
+
+        if (!role) {
+          role = "guardian";
+          localStorage.setItem("role", role);
+        }
+
+        // Set hidden input value
+        document.getElementById("inputrole").value = role;
+
+        console.log("Selected Role:", role);
+        console.log(
+          "Hidden Input:",
+          document.getElementById("inputrole").value,
         );
+        console.log("LocalStorage:", localStorage.getItem("role"));
       });
 
       // ============================
-      // GSAP Intro Animation
+      // GSAP Animations
       // ============================
 
       window.addEventListener("load", () => {
@@ -678,11 +807,15 @@
           },
         });
 
+        // Card
+
         tl.from(".auth-card", {
           opacity: 0,
           y: 35,
           duration: 0.8,
         });
+
+        // Left content
 
         tl.from(
           [".logo-wrap", ".tagline", ".welcome-title", ".welcome-sub"],
@@ -694,6 +827,8 @@
           },
           "-=0.45",
         );
+
+        // Fields
 
         tl.from(
           ".field-group",
@@ -732,6 +867,8 @@
           duration: 0.35,
         });
 
+        // Right panel
+
         tl.from(
           ".visual-panel",
           {
@@ -751,34 +888,34 @@
           },
           "-=0.3",
         );
+
+        // Floating blobs
+
+        gsap.to("body::before", {}); // keeps parser happy
+
+        // Floating image
+
+        gsap.to(".visual-inner img", {
+          y: -10,
+          duration: 4,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
+
+        // Safety card breathing
+
+        gsap.to(".safety-card", {
+          y: -5,
+          duration: 2.8,
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+        });
       });
 
       // ============================
-      // Floating Illustration
-      // ============================
-
-      gsap.to(".visual-inner img", {
-        y: -10,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      // ============================
-      // Floating Safety Card
-      // ============================
-
-      gsap.to(".safety-card", {
-        y: -5,
-        duration: 2.8,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-
-      // ============================
-      // Inputs Hover
+      // Input Hover Animation
       // ============================
 
       document.querySelectorAll(".input-wrap input").forEach((input) => {
@@ -803,17 +940,17 @@
       // Button Hover
       // ============================
 
-      const loginBtn = document.querySelector(".btn-login");
+      const btn = document.querySelector(".btn-login");
 
-      loginBtn.addEventListener("mouseenter", () => {
-        gsap.to(loginBtn, {
+      btn.addEventListener("mouseenter", () => {
+        gsap.to(btn, {
           scale: 1.02,
           duration: 0.2,
         });
       });
 
-      loginBtn.addEventListener("mouseleave", () => {
-        gsap.to(loginBtn, {
+      btn.addEventListener("mouseleave", () => {
+        gsap.to(btn, {
           scale: 1,
           duration: 0.2,
         });

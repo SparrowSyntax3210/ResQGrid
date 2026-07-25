@@ -487,3 +487,66 @@ RESPONSIVE
           padding: 15px;
         }
       }
+
+      @media (max-width: 480px) {
+        .case-header {
+          padding: 18px;
+
+          gap: 16px;
+        }
+
+        .case-header img {
+          width: 90px;
+
+          height: 90px;
+        }
+
+        .case-info h1 {
+          font-size: 24px;
+        }
+
+        .status-row {
+          flex-wrap: wrap;
+
+          gap: 10px;
+        }
+
+        .stat-card {
+          padding: 18px;
+        }
+
+        .stat-card h3 {
+          font-size: 26px;
+        }
+
+        .progress-card,
+        .grid-card,
+        .report-card,
+        .timeline {
+          padding: 18px;
+        }
+
+        .progress-top {
+          flex-wrap: wrap;
+
+          gap: 8px;
+        }
+
+        .grid-box {
+          min-height: 110px;
+
+          padding: 14px;
+        }
+
+        .grid-box h3 {
+          font-size: 24px;
+        }
+
+        .detail {
+          flex-direction: column;
+
+          gap: 4px;
+
+          padding: 12px 0;
+        }
+      }
