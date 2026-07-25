@@ -331,26 +331,28 @@ async function loadApplications() {
     let html = "";
 
     if (!applications.length) {
-      html = `
+  html = `
+<div class="case-card empty-case">
 
-<div class="case-card">
+    <h3>No Active Cases</h3>
 
-<h3>
-
-No Active Cases
-
-</h3>
+    <p>Create a new emergency case to start receiving volunteer support.</p>
 
 </div>
-
 `;
-    } else {
+} else {
       applications.forEach((app) => {
         html += createCard(app);
       });
     }
 
-    caseContainer.innerHTML = html;
+    const createButton = document.getElementById("createCaseBtn");
+
+caseContainer.innerHTML = html;
+
+if (createButton) {
+    caseContainer.prepend(createButton);
+}
 
     attachHandlers();
   } catch (err) {
