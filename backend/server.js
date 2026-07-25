@@ -3,17 +3,20 @@ const connectDB = require("../backend/config/db");
 const http = require("http");
 const { Server } = require("socket.io");
 
-const Application = require("./models/application.schema");
-
-const chatSocket = require("./socket/chat.socket");
-
 const app = require("./src/app");
 
-// ==========================================
-// SERVER
-// ==========================================
+const caseSocket = require("./socket/case.socket");
+const chatSocket = require("./socket/chat.socket");
+
+// ======================================
+// HTTP SERVER
+// ======================================
 
 const server = http.createServer(app);
+
+// ======================================
+// SOCKET.IO
+// ======================================
 
 const io = new Server(server, {
   cors: {
@@ -23,453 +26,82 @@ const io = new Server(server, {
   },
 });
 
+// Make io available inside routes
 app.set("io", io);
 
-
-// ==========================================
-// LIVE CASE STORAGE
-// ==========================================
-
-const activeCases = {};
-
-const GRID_NAMES = ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"];
-
-// ==========================================
-// GRID TEMPLATE
-// ==========================================
-
-function createGrid() {
-  return {
-    volunteers: [],
-
-    count: 0,
-
-    priority: 0,
-
-    basePriority: 0,
-
-    searched: 0,
-
-    claimedBy: null,
-
-    completed: false,
-
-    locked: false,
-
-    startedAt: null,
-  };
-}
-
-// ==========================================
-// CREATE CASE STATE
-// ==========================================
-
-function createLiveCase(application) {
-  let grids = {};
-
-  GRID_NAMES.forEach((grid) => {
-    grids[grid] = createGrid();
-  });
-
-  return {
-    caseId: application._id,
-
-    casePriority: application.priorityScore || 50,
-
-    priorityLevel: application.priorityLevel || "Medium",
-
-    priorityReason: application.priorityReason || "",
-
-    totalVolunteers: 0,
-
-    volunteers: {},
-
-    grids,
-  };
-}
-
-// ==========================================
-// LOAD CASE INTO MEMORY
-// ==========================================
-
-async function loadCase(caseId) {
-  if (activeCases[caseId]) return activeCases[caseId];
-
-  const application = await Application.findById(caseId);
-
-  if (!application) return null;
-
-  activeCases[caseId] = createLiveCase(application);
-
-  generatePriority(activeCases[caseId]);
-
-  return activeCases[caseId];
-}
-
-// ==========================================
-// PRIORITY GENERATOR
-// ==========================================
-
-function generatePriority(caseData) {
-  const center = {
-    A1: -15,
-    A2: -5,
-    A3: -15,
-
-    B1: -5,
-    B2: 15,
-    B3: -5,
-
-    C1: -15,
-    C2: -5,
-    C3: -15,
-  };
-
-  GRID_NAMES.forEach((grid) => {
-    let score =
-      caseData.casePriority + center[grid] + Math.floor(Math.random() * 10);
-
-    caseData.grids[grid].basePriority = Math.max(0, Math.min(100, score));
-
-    caseData.grids[grid].priority = caseData.grids[grid].basePriority;
-  });
-}
-
-// ==========================================
-// BROADCAST STATE
-// ==========================================
-
-function broadcastCase(caseId) {
-  const data = activeCases[caseId];
-
-  if (!data) return;
-
-  io.to(caseId).emit("case_state", {
-    caseId,
-    ...data,
-  });
-}
-
-// ==========================================
+// ======================================
 // SOCKET CONNECTION
-// ==========================================
+// ======================================
 
 io.on("connection", (socket) => {
-  console.log("CONNECTED:", socket.id);
+  console.log("=================================");
+  console.log("CLIENT CONNECTED");
+  console.log("Socket:", socket.id);
+  console.log("=================================");
 
+  // Case / Tracking / Grid Socket
+  caseSocket(io, socket);
+
+  // Chat Socket
   chatSocket(io, socket);
-
-  // ==========================================
-  // JOIN CASE
-  // ==========================================
-
-  socket.on("join_case", async (data) => {
-    let caseId;
-
-    if (typeof data === "string") {
-      caseId = data;
-    } else {
-      caseId = data.caseId;
-    }
-
-    if (!caseId) return;
-
-    socket.caseId = caseId;
-
-    socket.join(caseId);
-
-    console.log(socket.id, "joined", caseId);
-
-    // load case
-
-    const state = await loadCase(caseId);
-
-    if (state) {
-      socket.emit("case_state", {
-        caseId,
-        ...state,
-      });
-    }
-  });
-
-  // ==========================================
-  // VOLUNTEER JOIN
-  // ==========================================
-
-  socket.on("volunteer_joined", async (data) => {
-    if (!data.caseId) return;
-
-    const state = await loadCase(data.caseId);
-
-    if (!state) return;
-
-    state.volunteers[socket.id] = {
-      name: data.name || "Volunteer",
-    };
-
-    state.totalVolunteers = Object.keys(state.volunteers).length;
-
-    broadcastCase(data.caseId);
-  });
-
-  // ==========================================
-  // VOLUNTEER LOCATION
-  // ==========================================
-
-  socket.on("volunteer_location", async (data) => {
-    console.log("LOCATION UPDATE");
-
-    console.table(data);
-
-    if (!data.caseId) return;
-
-    const state = await loadCase(data.caseId);
-
-    if (!state) return;
-
-    // store volunteer
-
-    state.volunteers[socket.id] = {
-      name: data.name,
-
-      lat: data.lat,
-
-      lng: data.lng,
-
-      gridId: data.gridId,
-    };
-
-    // GRID UPDATE
-
-    if (data.gridId && state.grids[data.gridId]) {
-      let grid = state.grids[data.gridId];
-
-      if (!grid.volunteers.includes(socket.id)) {
-        grid.volunteers.push(socket.id);
-
-        grid.count = grid.volunteers.length;
-      }
-
-      grid.startedAt = grid.startedAt || Date.now();
-    }
-
-    state.totalVolunteers = Object.keys(state.volunteers).length;
-
-    // send location
-
-    io.to(`case_${data.caseId}`).emit("volunteer_location",{
-      caseId: data.caseId,
-
-      name: data.name || "Volunteer",
-
-      lat: Number(data.lat),
-
-      lng: Number(data.lng),
-
-      distance: data.distance ?? null,
-
-      eta: data.eta ?? null,
-
-      accuracy: data.accuracy ?? null,
-
-      timestamp: Date.now(),
-
-      gridId:data.gridId || null,
-    });
-
-    // send grid update
-
-    broadcastCase(data.caseId);
-  });
-
-  socket.on("volunteer_grid_update",(data)=>{
-
-    const currentCase = activeCases[data.caseId];
-
-    if(!currentCase) return;
-
-
-    currentCase.volunteers[socket.id]={
-        gridId:data.gridId
-    };
-
-
-    broadcastCase(
-        io,
-        data.caseId
-    );
-
 });
 
-socket.on(
-"volunteer_grid_update",
-(data)=>{
+// ======================================
+// SOCKET ERROR
+// ======================================
 
-
-console.log(
-"GRID UPDATE RECEIVED:",
-data
-);
-
-
-
-const {
-caseId,
-gridId,
-name
-}=data;
-
-
-
-if(!activeCases[caseId]){
-return;
-}
-
-
-
-if(
-!activeCases[caseId].grids[gridId]
-){
-
-console.log(
-"Invalid Grid:",
-gridId
-);
-
-return;
-
-}
-
-
-
-
-activeCases[caseId].grids[gridId].count++;
-
-
-
-
-io.to(caseId)
-.emit(
-"case_state",
-activeCases[caseId]
-);
-
-
-
+io.engine.on("connection_error", (err) => {
+  console.log("Socket Connection Error");
+  console.log(err.req);
+  console.log(err.code);
+  console.log(err.message);
+  console.log(err.context);
 });
 
-socket.on("claim_grid",(data)=>{
+// ======================================
+// START SERVER
+// ======================================
 
+const PORT = process.env.PORT || 5000;
 
-    const {
-        caseId,
-        gridId
-    } = data;
-
-
-    const currentCase =
-    activeCases[caseId];
-
-
-    if(!currentCase)
-        return;
-
-
-
-    const grid =
-    currentCase.grids[gridId];
-
-
-    if(!grid)
-        return;
-
-
-
-    if(!grid.volunteers.includes(socket.id)){
-
-
-        grid.volunteers.push(socket.id);
-
-
-        grid.count =
-        grid.volunteers.length;
-
-
-    }
-
-
-
-    currentCase.totalVolunteers++;
-
-
-
-    broadcastCase(
-        io,
-        caseId
-    );
-
-
+server.listen(PORT, "0.0.0.0", () => {
+  console.log("=================================");
+  console.log(`🚀 Server Running On Port ${PORT}`);
+  console.log("=================================");
 });
 
-  // ==========================================
-  // GRID COMPLETED
-  // ==========================================
+// ======================================
+// DATABASE
+// ======================================
 
-  socket.on("complete_grid", async (data) => {
-    const state = await loadCase(data.caseId);
-
-    if (state && state.grids[data.gridId]) {
-      state.grids[data.gridId].completed = true;
-
-      broadcastCase(data.caseId);
-    }
+connectDB()
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.log("MongoDB Connection Error");
+    console.error(err);
   });
 
-  // ==========================================
-  // LEAVE
-  // ==========================================
+// ======================================
+// GRACEFUL SHUTDOWN
+// ======================================
 
-  socket.on("volunteer_left", (data) => {
-    if (!data.caseId) return;
+process.on("SIGINT", async () => {
+  console.log("\nStopping Server...");
 
-    io.to(data.caseId).emit("volunteer_left", data);
-  });
-
-  // ==========================================
-  // DISCONNECT
-  // ==========================================
-
-  socket.on("disconnect", () => {
-    console.log("DISCONNECTED:", socket.id);
-
-    for (const id in activeCases) {
-      const state = activeCases[id];
-
-      if (state.volunteers[socket.id]) {
-        delete state.volunteers[socket.id];
-
-        state.totalVolunteers = Object.keys(state.volunteers).length;
-
-        GRID_NAMES.forEach((grid) => {
-          let g = state.grids[grid];
-
-          g.volunteers = g.volunteers.filter((v) => v !== socket.id);
-
-          g.count = g.volunteers.length;
-        });
-
-        broadcastCase(id);
-      }
-    }
+  server.close(() => {
+    console.log("HTTP Server Closed");
+    process.exit(0);
   });
 });
 
-// ==========================================
-// START
-// ==========================================
-
-server.listen(5000, "0.0.0.0", () => {
-  console.log("Server running on port 5000");
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception");
+  console.error(err);
 });
 
-connectDB();
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled Promise Rejection");
+  console.error(err);
+});

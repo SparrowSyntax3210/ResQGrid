@@ -124,33 +124,25 @@ function initializeMap() {
     // ===============================
 
     case "missing-person":
+      if (typeof loadMissingPersonMap === "function") {
+        stopLocationTracking();
 
-  if (typeof loadMissingPersonMap === "function") {
+        socket.off("volunteer_location");
 
-    stopLocationTracking();
+        console.log("Missing Person Grid Mode");
 
-    socket.off("volunteer_location");
+        loadMissingPersonMap({
+          application,
 
-    console.log(
-      "Missing Person Grid Mode"
-    );
+          socket,
 
+          caseId,
 
-    loadMissingPersonMap({
+          startGridTracking,
+        });
+      }
 
-      application,
-
-      socket,
-
-      caseId,
-
-      startGridTracking
-
-    });
-
-  }
-
-break;
+      break;
 
     // ===============================
     // GPS CASES
