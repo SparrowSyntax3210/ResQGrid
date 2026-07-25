@@ -594,7 +594,6 @@ header p {
   width: 100%;
 }
 
-
 /* =====================================================
    PANEL
 ===================================================== */
@@ -669,54 +668,53 @@ header p {
 /* =====================================================
    CARD TOP
 ===================================================== */
-.case-top{
-    display:flex;
-    align-items:flex-start;
-    justify-content:flex-start;
-    margin-bottom:18px;
+.case-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-bottom: 18px;
 }
 
-.case-user{
-    display:flex;
-    align-items:flex-start;
-    gap:16px;
-    width:100%;
+.case-user {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  width: 100%;
 }
 
-.case-user img{
-    width:72px;
-    height:72px;
-    object-fit:cover;
-    border-radius:14px;
-    flex-shrink:0;
+.case-user img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 14px;
+  flex-shrink: 0;
 }
 
-.case-details{
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    flex:1;
+.case-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
 }
 
-.case-details h3{
-    margin:0;
-    font-size:1.15rem;
-    line-height:1.3;
+.case-details h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  line-height: 1.3;
 }
 
-.case-details p{
-    margin:5px 0 0;
-    color:var(--muted);
-    font-size:.9rem;
+.case-details p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
 }
 
-.emergency-type{
-    display:block;
-    margin-top:4px;
-    color:var(--muted);
-    font-size:.82rem;
+.emergency-type {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
-
 
 /* =====================================================
    STATUS
@@ -808,11 +806,7 @@ header p {
 
   border-radius: 12px;
 
-  background: linear-gradient(
-    90deg,
-    var(--primary),
-    #5b21b6
-  );
+  background: linear-gradient(90deg, var(--primary), #5b21b6);
 
   color: #fff;
 
@@ -831,29 +825,17 @@ header p {
   transition: var(--transition);
 }
 
-
 #createCaseBtn:hover {
-
   transform: translateY(-3px);
 
-  background: linear-gradient(
-    90deg,
-    #8b5cf6,
-    #6d28d9
-  );
+  background: linear-gradient(90deg, #8b5cf6, #6d28d9);
 
-  box-shadow: 
-  0 14px 30px rgba(124,58,237,0.35);
-
+  box-shadow: 0 14px 30px rgba(124, 58, 237, 0.35);
 }
-
 
 #createCaseBtn:active {
-
   transform: scale(0.96);
-
 }
-
 
 .case-buttons {
   display: flex;
@@ -1096,12 +1078,10 @@ header p {
 
 @media (max-width: 600px) {
   #createCaseBtn {
+    width: 100%;
 
-  width:100%;
-
-  height:44px;
-
-}
+    height: 44px;
+  }
 
   .content {
     padding: 14px;
@@ -1219,15 +1199,13 @@ header p {
   position: relative;
 }
 
-.case-user p{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:4px;
+.case-user p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
 }
-
-
 
 .panel::before,
 .stat-card::before,
