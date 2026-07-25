@@ -38,7 +38,9 @@ router.post("/register", async (req, res) => {
 
         await newUser.save();
 
-return res.redirect(`/${newUser.Role.toLowerCase()}.html`);
+        return res.redirect(
+    `https://res-q-grid.vercel.app/${newUser.Role.toLowerCase()}.html`
+);
 
     } catch (error) {
         console.error("Registration Error:", error);
@@ -88,8 +90,9 @@ router.post("/login", async (req, res) => {
             coins: existingUser.Coins
         };
 
-        return res.redirect(`/${existingUser.Role.toLowerCase()}.html`);
-
+        return res.redirect(
+    `https://res-q-grid.vercel.app/${existingUser.Role.toLowerCase()}.html`
+);
 
     } catch (error) {
         console.error(error);
