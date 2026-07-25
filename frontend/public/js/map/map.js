@@ -3,6 +3,7 @@ const API = "http://localhost:5000";
 const params = new URLSearchParams(window.location.search);
 
 const caseId = params.get("id");
+
 let caseType = params.get("caseType");
 
 const socket = io(API, {
@@ -10,6 +11,7 @@ const socket = io(API, {
 });
 
 let application = null;
+
 let watchId = null;
 
 // ======================================
@@ -28,6 +30,7 @@ async function loadApplication() {
   try {
     if (!caseId) {
       console.error("Missing Case ID");
+
       return;
     }
 
@@ -43,9 +46,9 @@ async function loadApplication() {
 
     application = data.application || data;
 
-    // -------------------------------
-    // Normalize Coordinates
-    // -------------------------------
+    // ===============================
+    // NORMALIZE COORDINATES
+    // ===============================
 
     application.latitude = Number(
       application.latitude ??
@@ -65,31 +68,26 @@ async function loadApplication() {
         application.LastSeen?.longitude,
     );
 
-    console.log("Application Loaded:", application);
-
-    console.log("Case Coordinates:", {
-      lat: application.latitude,
-      lng: application.longitude,
-    });
+    console.log("Application:", application);
 
     if (!caseType) {
       caseType = application.caseType;
     }
 
     joinCaseRoom();
+
     initializeMap();
-    startLocationTracking();
 
     if (typeof initializeChat === "function") {
       initializeChat(socket, caseId);
     }
-  } catch (err) {
-    console.error("Application Load Error:", err);
+  } catch (error) {
+    console.error("Application Load Error:", error);
   }
 }
 
 // ======================================
-// JOIN ROOM
+// JOIN CASE ROOM
 // ======================================
 
 function joinCaseRoom() {
@@ -100,6 +98,7 @@ function joinCaseRoom() {
 
   socket.emit("volunteer_joined", {
     caseId,
+
     name: localStorage.getItem("name") || "Volunteer",
   });
 
@@ -107,31 +106,55 @@ function joinCaseRoom() {
 }
 
 // ======================================
-// MAP
+// MAP SELECTOR
 // ======================================
 
 function initializeMap() {
-
-    if (!caseType) {
+  if (!caseType) {
     caseType = application.caseType;
-}
+  }
 
-// normalize case type
-caseType = caseType.toLowerCase();
+  caseType = caseType.toLowerCase();
 
-console.log("Normalized Case Type:", caseType);
+  console.log("Case Type:", caseType);
 
   switch (caseType) {
-    case "missing-person":
-      if (typeof loadMissingPersonMap === "function") {
-        loadMissingPersonMap({
-          application,
-          socket,
-          caseId,
-        });
-      }
+    // ===============================
+    // GRID BASED SEARCH
+    // ===============================
 
-      break;
+    case "missing-person":
+
+  if (typeof loadMissingPersonMap === "function") {
+
+    stopLocationTracking();
+
+    socket.off("volunteer_location");
+
+    console.log(
+      "Missing Person Grid Mode"
+    );
+
+
+    loadMissingPersonMap({
+
+      application,
+
+      socket,
+
+      caseId,
+
+      startGridTracking
+
+    });
+
+  }
+
+break;
+
+    // ===============================
+    // GPS CASES
+    // ===============================
 
     case "blood-report":
 
@@ -141,8 +164,12 @@ console.log("Normalized Case Type:", caseType);
       if (typeof loadRouteMap === "function") {
         loadRouteMap({
           application,
+
           socket,
+
           caseId,
+
+          startLocationTracking,
         });
       }
 
@@ -152,8 +179,12 @@ console.log("Normalized Case Type:", caseType);
       if (typeof loadEscortMap === "function") {
         loadEscortMap({
           application,
+
           socket,
+
           caseId,
+
+          startLocationTracking,
         });
       }
 
@@ -163,8 +194,12 @@ console.log("Normalized Case Type:", caseType);
       if (typeof loadHazardMap === "function") {
         loadHazardMap({
           application,
+
           socket,
+
           caseId,
+
+          startLocationTracking,
         });
       }
 
@@ -174,103 +209,105 @@ console.log("Normalized Case Type:", caseType);
       console.warn("Unknown Case Type:", caseType);
   }
 }
+
 // ======================================
-// CALCULATE DISTANCE
+// GRID ONLY TRACKING
 // ======================================
 
-function calculateDistance(lat1, lon1, lat2, lon2) {
+function startGridTracking(gridId) {
+  const payload = {
+    caseId,
 
-    const R = 6371;
+    name: localStorage.getItem("name") || "Volunteer",
 
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
+    gridId,
 
-    const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) *
-        Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
+    timestamp: Date.now(),
+  };
 
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  console.log("Sending Grid Update:", payload);
 
-    return Number((R * c).toFixed(2));
+  socket.emit("volunteer_grid_update", payload);
 }
 
 // ======================================
-// LOCATION TRACKING
+// GPS TRACKING
 // ======================================
 
 function startLocationTracking() {
+  if (caseType === "missing-person") {
+    console.log("GPS blocked for missing-person case");
+
+    return;
+  }
+
+  console.trace("GPS FUNCTION CALLED");
+
   if (!navigator.geolocation) {
     console.error("Geolocation Not Supported");
 
     return;
   }
 
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+  }
+
   watchId = navigator.geolocation.watchPosition(
     (position) => {
       const volunteerLat = position.coords.latitude;
+
       const volunteerLng = position.coords.longitude;
 
       const targetLat = Number(application.latitude);
+
       const targetLng = Number(application.longitude);
 
       let distance = null;
+
       let eta = null;
 
       if (Number.isFinite(targetLat) && Number.isFinite(targetLng)) {
         distance = calculateDistance(
           volunteerLat,
+
           volunteerLng,
+
           targetLat,
+
           targetLng,
         );
 
         eta = Math.round((distance / 40) * 60);
-      } else {
-        console.warn("Case location missing.");
       }
 
-      const payload={
+      const payload = {
+        caseId,
 
-caseId,
+        name: localStorage.getItem("name") || "Volunteer",
 
-name:
-localStorage.getItem("name") || "Volunteer",
+        lat: volunteerLat,
 
-lat: volunteerLat,
+        lng: volunteerLng,
 
-lng: volunteerLng,
+        targetLat,
 
+        targetLng,
 
-targetLat,
+        distance,
 
-targetLng,
+        eta,
 
+        timestamp: Date.now(),
+      };
 
-distance,
-
-eta,
-
-
-gridId:
-window.activeGrid || null,
-
-
-timestamp:Date.now()
-
-};
-
-      console.log("Sending Volunteer Location");
-
-      console.table(payload);
+      console.log("Sending GPS:", payload);
 
       socket.emit("volunteer_location", payload);
     },
 
-    (err) => {
-      console.error("Location Error:", err);
+    (error) => {
+      console.error("GPS Error:", error);
     },
 
     {
@@ -283,8 +320,41 @@ timestamp:Date.now()
   );
 }
 
+function stopLocationTracking() {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+
+    watchId = null;
+
+    console.log("GPS stopped");
+  }
+}
+
 // ======================================
-// CHAT BUTTON
+// DISTANCE
+// ======================================
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371;
+
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return Number((R * c).toFixed(2));
+}
+
+// ======================================
+// CHAT
 // ======================================
 
 document.addEventListener("DOMContentLoaded", () => {

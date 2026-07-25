@@ -257,7 +257,7 @@ io.on("connection", (socket) => {
 
     // send location
 
-    io.to(data.caseId).emit("volunteer_location", {
+    io.to(`case_${data.caseId}`).emit("volunteer_location",{
       caseId: data.caseId,
 
       name: data.name || "Volunteer",
@@ -273,12 +273,143 @@ io.on("connection", (socket) => {
       accuracy: data.accuracy ?? null,
 
       timestamp: Date.now(),
+
+      gridId:data.gridId || null,
     });
 
     // send grid update
 
     broadcastCase(data.caseId);
   });
+
+  socket.on("volunteer_grid_update",(data)=>{
+
+    const currentCase = activeCases[data.caseId];
+
+    if(!currentCase) return;
+
+
+    currentCase.volunteers[socket.id]={
+        gridId:data.gridId
+    };
+
+
+    broadcastCase(
+        io,
+        data.caseId
+    );
+
+});
+
+socket.on(
+"volunteer_grid_update",
+(data)=>{
+
+
+console.log(
+"GRID UPDATE RECEIVED:",
+data
+);
+
+
+
+const {
+caseId,
+gridId,
+name
+}=data;
+
+
+
+if(!activeCases[caseId]){
+return;
+}
+
+
+
+if(
+!activeCases[caseId].grids[gridId]
+){
+
+console.log(
+"Invalid Grid:",
+gridId
+);
+
+return;
+
+}
+
+
+
+
+activeCases[caseId].grids[gridId].count++;
+
+
+
+
+io.to(caseId)
+.emit(
+"case_state",
+activeCases[caseId]
+);
+
+
+
+});
+
+socket.on("claim_grid",(data)=>{
+
+
+    const {
+        caseId,
+        gridId
+    } = data;
+
+
+    const currentCase =
+    activeCases[caseId];
+
+
+    if(!currentCase)
+        return;
+
+
+
+    const grid =
+    currentCase.grids[gridId];
+
+
+    if(!grid)
+        return;
+
+
+
+    if(!grid.volunteers.includes(socket.id)){
+
+
+        grid.volunteers.push(socket.id);
+
+
+        grid.count =
+        grid.volunteers.length;
+
+
+    }
+
+
+
+    currentCase.totalVolunteers++;
+
+
+
+    broadcastCase(
+        io,
+        caseId
+    );
+
+
+});
 
   // ==========================================
   // GRID COMPLETED

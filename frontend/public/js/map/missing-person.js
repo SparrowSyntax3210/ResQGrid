@@ -1,102 +1,140 @@
-function loadMissingPersonMap({ application, socket, caseId }) {
+function stopLocationTracking(){
+
+if(watchId !== null){
+
+navigator.geolocation.clearWatch(
+watchId
+);
+
+watchId = null;
+
+console.log(
+"GPS stopped"
+);
+
+}
+
+}
+
+function loadMissingPersonMap({
+  application,
+  socket,
+  caseId,
+  startGridTracking,
+}) {
+
+
+  if(navigator.geolocation){
+
+    navigator.geolocation.clearWatch(
+      watchId
+    );
+
+  }
+
+
+  socket.off("volunteer_location");
+
+
+  console.log(
+    "Missing Person Grid Map Loading"
+  );
+
+
+
   const lastSeenLocation = application.LastSeen;
 
   const gridRectangles = {};
 
   let activeMission = false;
+
   let activeGrid = null;
 
-  // ======================================
-  // CREATE MAP
-  // ======================================
+  // =====================================
+  // MAP CREATE
+  // =====================================
 
   const map = L.map("map").setView([20.5937, 78.9629], 5);
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", {
     subdomains: "abcd",
+
     maxZoom: 20,
+
     attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
   }).addTo(map);
 
-  // ======================================
-  // SOCKET CONNECTION
-  // ======================================
+  setTimeout(() => {
+    map.invalidateSize();
+  }, 500);
 
-  socket.on("connect", () => {
-    console.log("Socket Connected:", socket.id);
+  
 
-    console.log("Joining Case:", caseId);
-
-    socket.emit("join_case", caseId);
-  });
-
-  // ======================================
-  // HEARTBEAT
-  // ======================================
-
-  setInterval(() => {
-    socket.emit("heartbeat", {
-      caseId,
-    });
-  }, 20000);
-
-  // ======================================
-  // RECEIVE LIVE GRID DATA
-  // ======================================
+  // =====================================
+  // RECEIVE GRID STATE
+  // =====================================
 
   socket.on("case_state", (state) => {
     if (!state.grids) return;
 
-    for (const grid in state.grids) {
-      const data = state.grids[grid];
+    Object.keys(state.grids).forEach((gridId) => {
+      const rectangle = gridRectangles[gridId];
 
-      const rectangle = gridRectangles[grid];
+      if (!rectangle) return;
 
-      if (!rectangle) continue;
-
-      // Don't overwrite volunteer's active grid
-
-      if (grid === activeGrid) continue;
+      const data = state.grids[gridId];
 
       let color = "#22c55e";
-      let level = "Low";
 
       if (data.priority >= 80) {
         color = "#ef4444";
-        level = "Critical";
       } else if (data.priority >= 50) {
         color = "#f59e0b";
-        level = "Medium";
+      }
+
+      if (gridId === activeGrid) {
+        color = "#7c3aed";
       }
 
       rectangle.setStyle({
         color,
+
         fillColor: color,
-        fillOpacity: 0.3,
-        weight: 2,
+
+        fillOpacity: 0.35,
+
+        weight: 3,
       });
 
-      rectangle.setTooltipContent(`
-                <div>
-                    <b>${grid}</b><br>
-                    Priority: ${data.priority}/100<br>
-                    Status: ${level}<br>
-                    Searched: ${data.searched}%<br>
-                    Volunteers: ${data.count}
-                </div>
-            `);
-    }
+      rectangle.setTooltipContent(
+        `
+<b>${gridId}</b>
+
+<br>
+
+Priority:
+${data.priority}/100
+
+<br>
+
+Volunteers:
+${data.count}
+
+<br>
+
+Searched:
+${data.searched}%
+
+`,
+      );
+    });
   });
 
-  // ======================================
-  // PART 2 STARTS HERE
-  // ======================================
+  // =====================================
+  // LOAD LOCATION
+  // =====================================
 
-  // ======================================
-  // LOAD LAST SEEN LOCATION
-  // ======================================
-
-  async function showLocation() {
+  async function loadLocation() {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(lastSeenLocation)}`,
@@ -105,98 +143,123 @@ function loadMissingPersonMap({ application, socket, caseId }) {
       const data = await response.json();
 
       if (!data.length) {
-        alert("Location not found");
+        console.log("Location not found");
 
         return;
       }
 
-      const lat = parseFloat(data[0].lat);
-      const lon = parseFloat(data[0].lon);
+      const lat = Number(data[0].lat);
 
-      console.log("Coordinates:", lat, lon);
+      const lng = Number(data[0].lon);
 
-      map.setView([lat, lon], 16);
+      console.log("Last Seen:", lat, lng);
 
-      L.circle([lat, lon], {
+      map.setView([lat, lng], 16);
+
+      L.marker([lat, lng])
+        .addTo(map)
+        .bindPopup("Last Seen Location")
+        .openPopup();
+
+      L.circle([lat, lng], {
         radius: 1000,
+
+        color: "#ef4444",
       }).addTo(map);
 
-      createGrid(lat, lon);
-    } catch (err) {
-      console.log("Map Error:", err);
+      createGrid(lat, lng);
+    } catch (error) {
+      console.error("Map Error:", error);
     }
   }
 
-  // ======================================
+  // =====================================
   // CREATE SEARCH GRID
-  // ======================================
+  // =====================================
 
-  function createGrid(lat, lon) {
-    const latStep = 0.003;
-    const lonStep = 0.003;
+  function createGrid(lat, lng) {
+    const step = 0.003;
 
     const rows = ["A", "B", "C"];
 
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
-        const southWest = [lat + (i - 1) * latStep, lon + (j - 1) * lonStep];
+        const southWest = [lat + (i - 1) * step, lng + (j - 1) * step];
 
-        const northEast = [lat + i * latStep, lon + j * lonStep];
+        const northEast = [lat + i * step, lng + j * step];
 
-        const gridName = `${rows[i]}${j + 1}`;
+        const gridId = `${rows[i]}${j + 1}`;
 
-        const rectangle = L.rectangle([southWest, northEast], {
-          color: "#22c55e",
-          fillColor: "#22c55e",
-          fillOpacity: 0.25,
-          weight: 2,
-        }).addTo(map);
+        const rectangle = L.rectangle(
+          [southWest, northEast],
 
-        gridRectangles[gridName] = rectangle;
+          {
+            color: "#22c55e",
+
+            fillColor: "#22c55e",
+
+            fillOpacity: 0.25,
+
+            weight: 2,
+          },
+        ).addTo(map);
+
+        gridRectangles[gridId] = rectangle;
 
         rectangle.bindTooltip(
           `
-                    <div>
-                        <b>${gridName}</b><br>
-                        Priority: 0/100<br>
-                        Searched: 0%<br>
-                        Volunteers: 0
-                    </div>
-                    `,
+
+<b>${gridId}</b>
+
+<br>
+
+Volunteers:0
+
+<br>
+
+Priority:0
+
+`,
+
           {
             permanent: true,
+
             direction: "center",
+
             className: "grid-label",
           },
         );
 
-        // ======================================
-        // PART 3 CONTINUES HERE
-        // ======================================
-
-        // ======================================
+        // =================================
         // CLAIM GRID
-        // ======================================
+        // =================================
 
         rectangle.on("click", () => {
           if (activeMission) return;
 
           activeMission = true;
-          activeGrid = gridName;
 
-          console.log("Claimed Grid:", gridName);
+          activeGrid = gridId;
+
+          console.log("Claimed Grid:", gridId);
+
+          // =============================
+          // ONLY GRID IS SENT HERE
+          // =============================
+
+          startGridTracking(gridId);
 
           socket.emit("claim_grid", {
             caseId,
-            gridId: gridName,
+
+            gridId,
           });
 
-          // Hide all other grids
-
-          Object.entries(gridRectangles).forEach(([name, rect]) => {
-            if (name !== gridName) {
+          Object.entries(gridRectangles).forEach(([id, rect]) => {
+            if (id !== gridId) {
               rect.setStyle({
                 opacity: 0,
+
                 fillOpacity: 0,
               });
 
@@ -204,65 +267,68 @@ function loadMissingPersonMap({ application, socket, caseId }) {
             }
           });
 
-          // Highlight selected grid
-
           rectangle.setStyle({
-            color: "#ff4d4f",
-            fillColor: "#ff4d4f",
-            fillOpacity: 0.18,
-            weight: 3,
+            color: "#7c3aed",
+
+            fillColor: "#7c3aed",
+
+            fillOpacity: 0.4,
+
+            weight: 4,
           });
-
-          rectangle.bringToFront();
-
-          rectangle.unbindTooltip();
 
           rectangle.bindTooltip(
             `
-                        <div style="text-align:center">
 
-                            <b>MISSION ACTIVE</b><br>
+<b>ACTIVE MISSION</b>
 
-                            Grid: ${gridName}<br>
+<br>
 
-                            Coverage: 0%
+Grid:
+${gridId}
 
-                        </div>
-                        `,
+`,
 
             {
               permanent: true,
+
               direction: "center",
+
               className: "grid-label",
             },
           );
 
-          // Zoom to selected grid
+          map.flyToBounds(
+            rectangle.getBounds(),
 
-          map.flyToBounds(rectangle.getBounds(), {
-            padding: [20, 20],
-            maxZoom: 20,
-            duration: 2,
-          });
+            {
+              padding: [30, 30],
+
+              maxZoom: 19,
+            },
+          );
         });
 
-        // ======================================
-        // MARK GRID SEARCHED
-        // ======================================
+        // =================================
+        // COMPLETE SEARCH
+        // =================================
 
         rectangle.on("contextmenu", () => {
+          console.log("Completed:", gridId);
+
           socket.emit("search_grid", {
             caseId,
-            gridId: gridName,
+
+            gridId,
           });
         });
       }
     }
   }
 
-  // ======================================
-  // START MAP
-  // ======================================
+  // =====================================
+  // START
+  // =====================================
 
-  showLocation();
+  loadLocation();
 }

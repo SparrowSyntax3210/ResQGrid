@@ -1,19 +1,29 @@
-function loadRouteMap({ application, socket, caseId }) {
+function loadRouteMap({ application, socket, caseId, startLocationTracking }) {
+  socket.off("volunteer_location");
+
   console.log("Route Map Loading");
 
   const destinationLat = Number(application.latitude);
+
   const destinationLng = Number(application.longitude);
 
   if (!Number.isFinite(destinationLat) || !Number.isFinite(destinationLng)) {
     console.error("Invalid destination coordinates");
+
     return;
   }
+
+  // =====================================
+  // CREATE MAP
+  // =====================================
 
   const map = L.map("map").setView([destinationLat, destinationLng], 15);
 
   L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", {
     subdomains: "abcd",
+
     maxZoom: 20,
+
     attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
   }).addTo(map);
 
@@ -21,7 +31,9 @@ function loadRouteMap({ application, socket, caseId }) {
     map.invalidateSize();
   }, 500);
 
-  // Destination marker
+  // =====================================
+  // DESTINATION
+  // =====================================
 
   L.marker([destinationLat, destinationLng])
     .addTo(map)
@@ -32,46 +44,30 @@ function loadRouteMap({ application, socket, caseId }) {
 
   let routingControl = null;
 
+  // =====================================
+  // INITIAL VOLUNTEER LOCATION
+  // =====================================
+
   navigator.geolocation.getCurrentPosition(
     (position) => {
       const volunteerLat = position.coords.latitude;
 
       const volunteerLng = position.coords.longitude;
 
-      // Volunteer marker
-
       volunteerMarker = L.marker([volunteerLat, volunteerLng])
         .addTo(map)
         .bindPopup("Volunteer")
         .openPopup();
 
-      // CREATE ROUTE
+      createRoute(
+        volunteerLat,
 
-      routingControl = L.Routing.control({
-        waypoints: [
-          L.latLng(volunteerLat, volunteerLng),
-
-          L.latLng(destinationLat, destinationLng),
-        ],
-
-        routeWhileDragging: false,
-
-        addWaypoints: false,
-
-        draggableWaypoints: false,
-
-        fitSelectedRoutes: true,
-
-        showAlternatives: false,
-
-        createMarker: function () {
-          return null;
-        },
-      }).addTo(map);
+        volunteerLng,
+      );
     },
 
     (error) => {
-      console.log("Location Error", error);
+      console.log("Initial Location Error:", error);
     },
 
     {
@@ -79,7 +75,37 @@ function loadRouteMap({ application, socket, caseId }) {
     },
   );
 
-  // LIVE VOLUNTEER MOVEMENT
+  // =====================================
+  // CREATE ROUTE
+  // =====================================
+
+  function createRoute(lat, lng) {
+    if (routingControl) {
+      map.removeControl(routingControl);
+    }
+
+    routingControl = L.Routing.control({
+      waypoints: [L.latLng(lat, lng), L.latLng(destinationLat, destinationLng)],
+
+      routeWhileDragging: false,
+
+      addWaypoints: false,
+
+      draggableWaypoints: false,
+
+      fitSelectedRoutes: true,
+
+      showAlternatives: false,
+
+      createMarker: function () {
+        return null;
+      },
+    }).addTo(map);
+  }
+
+  // =====================================
+  // RECEIVE LIVE VOLUNTEER LOCATION
+  // =====================================
 
   socket.on("volunteer_location", (data) => {
     if (data.caseId !== caseId) return;
@@ -88,9 +114,11 @@ function loadRouteMap({ application, socket, caseId }) {
 
     if (volunteerMarker) {
       volunteerMarker.setLatLng(newPosition);
+    } else {
+      volunteerMarker = L.marker(newPosition).addTo(map).bindPopup("Volunteer");
     }
 
-    // UPDATE ROUTE
+    // update route
 
     if (routingControl) {
       routingControl.setWaypoints([
@@ -100,4 +128,10 @@ function loadRouteMap({ application, socket, caseId }) {
       ]);
     }
   });
+
+  // =====================================
+  // START GPS TRACKING
+  // =====================================
+
+  startLocationTracking();
 }
