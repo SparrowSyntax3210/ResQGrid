@@ -458,7 +458,7 @@ socket.on("case_closed", () => {
 
 async function checkAuth() {
   try {
-    const res = await fetch("/auth/status", {
+    const res = await fetch(`${API}/auth/status`, {
       credentials: "include",
     });
 

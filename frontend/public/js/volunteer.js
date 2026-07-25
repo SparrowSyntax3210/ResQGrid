@@ -160,6 +160,7 @@ function pulseCard(card) {
 // LOAD USER
 // =====================================================
 
+
 async function loadUser() {
   try {
     const res = await fetch(`${API}/auth/me`, {
@@ -472,9 +473,7 @@ function updateDashboardStats(stats) {
 // ===============================================
 
 async function checkAuth() {
-
   try {
-
     const res = await fetch(`${API}/auth/status`, {
       credentials: "include",
     });
