@@ -17,72 +17,67 @@ function initGuardian() {
   //------------------------------------
 
   //------------------------------------
-// Dashboard Animation
-//------------------------------------
+  // Dashboard Animation
+  //------------------------------------
 
-gsap.to(".ring1",{
-rotation:360,
-duration:22,
-repeat:-1,
-ease:"none"
-});
+  gsap.to(".ring1", {
+    rotation: 360,
+    duration: 22,
+    repeat: -1,
+    ease: "none",
+  });
 
-gsap.to(".ring2",{
-rotation:-360,
-duration:30,
-repeat:-1,
-ease:"none"
-});
+  gsap.to(".ring2", {
+    rotation: -360,
+    duration: 30,
+    repeat: -1,
+    ease: "none",
+  });
 
-gsap.to(".center-node",{
+  gsap.to(".center-node", {
+    scale: 1.06,
 
-scale:1.06,
+    repeat: -1,
 
-repeat:-1,
+    yoyo: true,
 
-yoyo:true,
+    duration: 1.8,
 
-duration:1.8,
+    ease: "sine.inOut",
+  });
 
-ease:"sine.inOut"
+  gsap.to(".node", {
+    scale: 1.12,
 
-});
+    repeat: -1,
 
-gsap.to(".node",{
+    yoyo: true,
 
-scale:1.12,
+    duration: 1.6,
 
-repeat:-1,
+    stagger: 0.2,
 
-yoyo:true,
+    ease: "sine.inOut",
+  });
 
-duration:1.6,
+  gsap.fromTo(
+    ".guardian-lines line",
+    {
+      opacity: 0.25,
+    },
 
-stagger:.2,
+    {
+      opacity: 1,
 
-ease:"sine.inOut"
+      repeat: -1,
 
-});
+      yoyo: true,
 
-gsap.fromTo(".guardian-lines line",{
+      duration: 1.4,
 
-opacity:.25
-
-},
-
-{
-
-opacity:1,
-
-repeat:-1,
-
-yoyo:true,
-
-duration:1.4,
-
-stagger:.2
-
-});
+      stagger: 0.2,
+    },
+  );
 
   gsap.set(".guardian-left", {
     x: -80,

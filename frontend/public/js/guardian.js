@@ -162,45 +162,30 @@ function createCard(app) {
 
 <div class="case-card">
 
-
 <div class="case-top">
 
+    <div class="case-user">
 
-<img src="${image}">
+        <img src="${image}" alt="${app.Name}">
 
+        <div class="case-details">
 
-<div>
+            <h3>
+                ${config.icon}
+                ${app.Name}
+            </h3>
 
-<h3>
+            <p>${config.title}</p>
 
-${config.icon}
+            <small class="emergency-type">
+                ${getPrimaryInfo(app)}
+            </small>
 
-${app.Name}
+        </div>
 
-</h3>
-
-
-<p>
-
-${config.title}
-
-</p>
-
-
-<small>
-
-${getPrimaryInfo(app)}
-
-</small>
-
+    </div>
 
 </div>
-
-
-</div>
-
-
-
 
 <div class="case-info">
 
@@ -382,22 +367,17 @@ function attachHandlers() {
 
   document.querySelectorAll(".track-btn").forEach((btn) => {
     btn.onclick = () => {
+      const id = btn.dataset.id;
+      const type = btn.dataset.type;
 
-    const id = btn.dataset.id;
-    const type = btn.dataset.type;
+      currentCase = id;
 
-    currentCase = id;
-
-    if(type === "missing-person"){
-        window.location.href =
-        `/case-grid-guardian.html?id=${id}&caseType=${type}`;
-    }
-    else{
-        window.location.href =
-        `/case-tracking-guardian.html?id=${id}&caseType=${type}`;
-    }
-
-};
+      if (type === "missing-person") {
+        window.location.href = `/case-grid-guardian.html?id=${id}&caseType=${type}`;
+      } else {
+        window.location.href = `/case-tracking-guardian.html?id=${id}&caseType=${type}`;
+      }
+    };
   });
 
   // CHAT
