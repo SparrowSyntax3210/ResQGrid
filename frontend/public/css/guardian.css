@@ -201,6 +201,16 @@ img {
   font-size: 15px;
 }
 
+.panel-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+}
+
 .menu li:hover {
   background: #16233a;
 

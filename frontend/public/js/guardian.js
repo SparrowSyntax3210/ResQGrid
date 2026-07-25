@@ -80,17 +80,30 @@ const CASE_CONFIG = {
   },
 };
 
-const createCaseBtn = document.getElementById("createCaseBtn");
+document.addEventListener("DOMContentLoaded", () => {
 
-if(createCaseBtn){
+    const createCaseBtn = document.getElementById("createCaseBtn");
 
-    createCaseBtn.onclick = () => {
+    console.log("Create Button:", createCaseBtn);
 
-        window.location.href="/case-selection.html";
+    if(createCaseBtn){
 
-    };
+        createCaseBtn.addEventListener("click", () => {
 
-}
+            window.location.href = "/case-selection.html";
+
+        });
+
+    }
+
+
+    checkAuth();
+
+    loadUser();
+
+    loadApplications();
+
+});
 
 function getConfig(type) {
   return (
@@ -467,8 +480,3 @@ async function checkAuth() {
 // START
 // =====================================================
 
-checkAuth();
-
-loadUser();
-
-loadApplications();
