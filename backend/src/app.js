@@ -9,8 +9,7 @@ const cors = require("cors");
 
 app.use(cors({
     origin:[
-        "http://localhost:5500",
-        "https://resqgrid.vercel.app"
+        "https://res-q-grid.vercel.app/"
     ],
     credentials:true
 }));
