@@ -117,10 +117,6 @@ router.post("/login", async (req, res) => {
           guardianId: existingUser._id,
           status: "active",
         }).sort({ createdAt: -1 });
-
-        if (latestCase) {
-          redirectUrl += `&caseId=${latestCase._id}`;
-        }
       }
 
       res.redirect(redirectUrl);
