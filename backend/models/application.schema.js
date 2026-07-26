@@ -1,88 +1,114 @@
 const mongoose = require("mongoose");
 
-const Application = new mongoose.Schema({
+const applicationSchema = new mongoose.Schema(
+  {
     guardianId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
     },
+
     caseType: {
-        type:String,
-        required:true,
+      type: String,
+      required: true,
+      trim: true,
     },
-    
-    Name:{
-        type:String,
-        required:true
+
+    Name: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    Age:{
-        type:Number,
-        required:true
+
+    Age: {
+      type: Number,
+      required: true,
+      min: 0,
     },
-    Gender:{
-        type:String,
-        required:true
+
+    Gender: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    Height:{
-        type:String,
-        required:true
+
+    Height: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    Clothing:{
-        type:String,
-        required:true
+
+    Clothing: {
+      type: String,
+      required: true,
     },
-    MedicalConditions:{
-        type:String,
-        required:true
+
+    MedicalConditions: {
+      type: String,
+      default: "",
     },
-    LastSeen:{
-        type:String,
-        required:true
+
+    LastSeen: {
+      type: String,
+      required: true,
     },
+
     latitude: {
-    type: Number,
-    required: true
-},
+      type: Number,
+      default: null,
+    },
 
-longitude: {
-    type: Number,
-    required: true
-},
-    dateTime:{
-        type:Date,
-        required:true
+    longitude: {
+      type: Number,
+      default: null,
     },
-    Description:{
-        type:String,
-        required:true
+
+    dateTime: {
+      type: Date,
+      required: true,
     },
-    GuardianContact:{
-        type:Number,
-        required:true
+
+    Description: {
+      type: String,
+      required: true,
     },
-    Photo:{
-        type:String,
+
+    GuardianContact: {
+      type: String,
+      required: true,
+      trim: true,
     },
-    
+
+    Photo: {
+      type: String,
+      default: "",
+    },
+
     status: {
-        type: String,
-        enum: ["active", "closed"],
-        default: "active"
+      type: String,
+      enum: ["active", "closed"],
+      default: "active",
     },
+
     priorityScore: {
-    type: Number,
-    default: 0
-},
+      type: Number,
+      default: 0,
+    },
 
-priorityLevel: {
-    type: String,
-    default: "Low"
-},
+    priorityLevel: {
+      type: String,
+      enum: ["Low", "Medium", "High", "Critical"],
+      default: "Low",
+    },
 
-priorityReason: {
-    type: String,
-    default: ""
-},
-})
+    priorityReason: {
+      type: String,
+      default: "",
+    }
+  },
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model ("application" , Application);
+module.exports = mongoose.model("application", applicationSchema);

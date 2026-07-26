@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -24,36 +25,40 @@
       }
 
       body {
-        background: var(--bg-main);
-        color: var(--text-main);
-        min-height: 100vh;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        background-image:
-          radial-gradient(
-            circle at 10% 20%,
-            rgba(99, 102, 241, 0.15) 0%,
-            transparent 40%
-          ),
-          radial-gradient(
-            circle at 90% 80%,
-            rgba(255, 107, 0, 0.1) 0%,
-            transparent 40%
-          );
-      }
+    background: var(--bg-main);
+    color: var(--text-main);
 
-      .container {
-        width: 100%;
-        max-width: 650px;
-        background: var(--bg-card);
-        border: 1px solid var(--border-color);
-        border-radius: 16px;
-        padding: 40px;
-        position: relative;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-      }
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+
+    padding: 40px 20px;
+
+    overflow-y: auto;
+
+    background-image:
+      radial-gradient(circle at 10% 20%, rgba(99,102,241,.15) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(255,107,0,.1) 0%, transparent 40%);
+}
+
+      .container{
+    width:100%;
+    max-width:650px;
+
+    margin:40px 0;
+
+    background:var(--bg-card);
+
+    border:1px solid var(--border-color);
+
+    border-radius:16px;
+
+    padding:40px;
+
+    position:relative;
+}
 
       .container::before {
         content: "";
@@ -385,39 +390,29 @@
         </div>
 
         <!-- Description -->
-<div class="form-group">
-  <label for="description">Additional Details</label>
-  <textarea
-    id="description"
-    name="Description"
-    rows="5"
-    placeholder="Any distinguishing marks, tattoos, behaviour, etc."
-    required
-  ></textarea>
-</div>
+        <div class="form-group">
+          <label for="description">Additional Details</label>
+          <textarea
+            id="description"
+            name="Description"
+            rows="5"
+            placeholder="Any distinguishing marks, tattoos, behaviour, etc."
+            required
+          ></textarea>
+        </div>
 
-<input
-    type="hidden"
-    id="caseType"
-    name="caseType"
-/>
+        <input type="hidden" id="caseType" name="caseType" />
 
-<!-- Dynamic Fields Will Be Inserted Here -->
-<div class="dynamic-fields"></div>
+        <!-- Dynamic Fields Will Be Inserted Here -->
+        <div class="dynamic-fields"></div>
 
-<div class="btn-container">
-  <button type="submit" class="btn btn-primary">
-    Submit Case
-  </button>
-</div>
-
-</form>
-</div>
-
-
+        <div class="btn-container">
+          <button type="submit" class="btn btn-primary">Submit Case</button>
+        </div>
+      </form>
+    </div>
 
     <script>
-
       function previewImage(event) {
         const file = event.target.files[0];
 
@@ -453,74 +448,88 @@
                 credentials: "include",
               },
             );
+            const contentType = res.headers.get("content-type");
 
-            const data = await res.json();
+            let data;
+
+            if (contentType && contentType.includes("application/json")) {
+              data = await res.json();
+            } else {
+              const text = await res.text();
+              console.log(text);
+              throw new Error("Server returned HTML instead of JSON.");
+            }
 
             if (!res.ok) {
-              throw new Error(data.message || "Failed to submit case");
+              throw new Error(data.message || "Submission failed");
             }
 
             alert("Case submitted successfully");
 
-            // redirect AFTER success
-            window.location.href="https://res-q-grid.vercel.app//guardian.html";
+            window.location.href =
+              "https://res-q-grid.vercel.app/guardian.html";
           } catch (err) {
             console.error(err);
             alert(err.message);
           }
         });
 
-        const pageContent = {
-  "missing-person": {
-    title: "Create Missing Person Case",
-    subtitle: "Fill in the details below to submit a missing person report."
-  },
+      const pageContent = {
+        "missing-person": {
+          title: "Create Missing Person Case",
+          subtitle:
+            "Fill in the details below to submit a missing person report.",
+        },
 
-  "blood-report": {
-    title: "Blood & Medicine Emergency",
-    subtitle: "Provide the required information so nearby donors and volunteers can respond quickly."
-  },
+        "blood-report": {
+          title: "Blood & Medicine Emergency",
+          subtitle:
+            "Provide the required information so nearby donors and volunteers can respond quickly.",
+        },
 
-  "elderly-assistance": {
-    title: "Request Elderly Assistance",
-    subtitle: "Share the assistance required for the elderly person so nearby volunteers can help."
-  },
+        "elderly-assistance": {
+          title: "Request Elderly Assistance",
+          subtitle:
+            "Share the assistance required for the elderly person so nearby volunteers can help.",
+        },
 
-  "community-sos": {
-    title: "Community SOS Request",
-    subtitle: "Tell us what happened so trusted community members can assist you immediately."
-  },
+        "community-sos": {
+          title: "Community SOS Request",
+          subtitle:
+            "Tell us what happened so trusted community members can assist you immediately.",
+        },
 
-  "civic-hazard": {
-    title: "Report Civic Hazard",
-    subtitle: "Report unsafe public infrastructure to alert nearby citizens and authorities."
-  },
+        "civic-hazard": {
+          title: "Report Civic Hazard",
+          subtitle:
+            "Report unsafe public infrastructure to alert nearby citizens and authorities.",
+        },
 
-  "women-safety": {
-    title: "Women Safety Assistance",
-    subtitle: "Share your situation so verified volunteers can provide safe and timely assistance."
-  }
-};
-
+        "women-safety": {
+          title: "Women Safety Assistance",
+          subtitle:
+            "Share your situation so verified volunteers can provide safe and timely assistance.",
+        },
+      };
 
       const params = new URLSearchParams(window.location.search);
-const caseType = params.get("case");
+      const caseType = params.get("case");
 
-console.log("Case Type:", caseType);
-document.getElementById("caseType").value = caseType;
+      console.log("Case Type:", caseType);
+      document.getElementById("caseType").value = caseType;
 
-if (pageContent[caseType]) {
-  document.querySelector(".header h1").textContent =
-    pageContent[caseType].title;
+      if (pageContent[caseType]) {
+        document.querySelector(".header h1").textContent =
+          pageContent[caseType].title;
 
-  document.querySelector(".header p").textContent =
-    pageContent[caseType].subtitle;
-}
+        document.querySelector(".header p").textContent =
+          pageContent[caseType].subtitle;
+      }
 
-const dynamicFields = document.querySelector(".dynamic-fields");
+      const dynamicFields = document.querySelector(".dynamic-fields");
 
-const forms = {
-  "missing-person": `
+      const forms = {
+        "missing-person": `
     <div class="form-group">
       <label>Eye Color</label>
       <input type="text" name="EyeColor" placeholder="Brown">
@@ -559,7 +568,7 @@ const forms = {
     </div>
   `,
 
-  "blood-report": `
+        "blood-report": `
     <div class="form-group">
       <label>Emergency Type</label>
 
@@ -621,7 +630,7 @@ const forms = {
     </div>
   `,
 
-  "elderly-assistance": `
+        "elderly-assistance": `
     <div class="form-group">
       <label>Elderly Person Name</label>
       <input type="text" name="PersonName">
@@ -650,7 +659,7 @@ const forms = {
     </div>
   `,
 
-  "commumity-sos": `
+        "community-sos": `
     <div class="form-group">
       <label>SOS Category</label>
 
@@ -679,7 +688,7 @@ const forms = {
     </div>
   `,
 
-  "civic-hazard": `
+        "civic-hazard": `
     <div class="form-group">
       <label>Hazard Type</label>
 
@@ -720,7 +729,7 @@ const forms = {
     </div>
   `,
 
-  "women-safety": `
+        "women-safety": `
     <div class="form-group">
       <label>Request Type</label>
 
@@ -751,49 +760,43 @@ const forms = {
         <option>No</option>
       </select>
     </div>
-  `
-};
+  `,
+      };
 
-
-function showDynamicFields(type) {
-
-  if (!dynamicFields) {
-    console.error("'.dynamic-feilds' section not found.");
-    return;
-  }
-
-  if (!forms[type]) {
-    console.warn("No form found for:", type);
-    dynamicFields.innerHTML = "";
-    return;
-  }
-
-  dynamicFields.innerHTML = forms[type];
-
-  if ((type === "blood-report")) {
-
-    const emergencyType = document.getElementById("emergencyType");
-    const bloodFields = document.getElementById("bloodFields");
-    const medicineFields = document.getElementById("medicineFields");
-
-    if (emergencyType) {
-      emergencyType.addEventListener("change", () => {
-
-        if (emergencyType.value === "blood") {
-          bloodFields.style.display = "block";
-          medicineFields.style.display = "none";
-        } else {
-          bloodFields.style.display = "none";
-          medicineFields.style.display = "block";
+      function showDynamicFields(type) {
+        if (!dynamicFields) {
+          console.error("'.dynamic-feilds' section not found.");
+          return;
         }
 
-      });
-    }
-  }
-}
+        if (!forms[type]) {
+          console.warn("No form found for:", type);
+          dynamicFields.innerHTML = "";
+          return;
+        }
 
-showDynamicFields(caseType);
+        dynamicFields.innerHTML = forms[type];
 
+        if (type === "blood-report") {
+          const emergencyType = document.getElementById("emergencyType");
+          const bloodFields = document.getElementById("bloodFields");
+          const medicineFields = document.getElementById("medicineFields");
+
+          if (emergencyType) {
+            emergencyType.addEventListener("change", () => {
+              if (emergencyType.value === "blood") {
+                bloodFields.style.display = "block";
+                medicineFields.style.display = "none";
+              } else {
+                bloodFields.style.display = "none";
+                medicineFields.style.display = "block";
+              }
+            });
+          }
+        }
+      }
+
+      showDynamicFields(caseType);
     </script>
   </body>
-  </html>
+</html>

@@ -20,24 +20,19 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 
-app.set("trust proxy", 1);
-
-
 app.use(session({
+    secret: process.env.SESSION_SECRET || "your-secret",
+    resave: false,
+    saveUninitialized: false,
 
-    secret:"your-secret",
+    proxy: true,
 
-    resave:false,
-
-    saveUninitialized:false,
-
-    cookie:{
-        secure:true,
-        sameSite:"none",
-        httpOnly:true,
-        maxAge:1000*60*60*24
+    cookie: {
+        secure: true,
+        sameSite: "none",
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24
     }
-
 }));
 
 app.use(express.json());
