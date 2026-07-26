@@ -5,9 +5,7 @@
 const API = "https://resqgrid-b1zt.onrender.com";
 
 const caseContainer = document.getElementById("caseContainer");
-
 const profileName = document.querySelector("#profileName h4");
-
 const profileRole = document.querySelector("#profileName small");
 
 let currentCase = null;
@@ -33,83 +31,81 @@ socket.on("connect", () => {
 const CASE_CONFIG = {
   "missing-person": {
     icon: "👤",
-
     title: "Missing Person",
-
     locationLabel: "Last Seen",
   },
 
   "blood-report": {
     icon: "🩸",
-
     title: "Blood Emergency",
-
     locationLabel: "Hospital",
   },
 
   "elderly-assistance": {
     icon: "👴",
-
     title: "Elderly Assistance",
-
     locationLabel: "Address",
   },
 
   "community-sos": {
     icon: "🚨",
-
     title: "Community SOS",
-
     locationLabel: "Location",
   },
 
   "women-safety": {
     icon: "🛡️",
-
     title: "Women Safety",
-
     locationLabel: "Pickup Point",
   },
 
   "civic-hazard": {
     icon: "⚠️",
-
     title: "Civic Hazard",
-
     locationLabel: "Hazard Location",
   },
 };
 
+// =====================================================
+// PAGE LOAD
+// =====================================================
+
 document.addEventListener("DOMContentLoaded", () => {
+  const createCaseBtn = document.getElementById("createCaseBtn");
 
-    const createCaseBtn = document.getElementById("createCaseBtn");
+  if (createCaseBtn) {
+    createCaseBtn.addEventListener("click", () => {
+      window.location.href = "/case-selection.html";
+    });
+  }
 
-    console.log("Create Button:", createCaseBtn);
+  loadUser();
 
-    if(createCaseBtn){
+  // Read application id from URL
+  const params = new URLSearchParams(window.location.search);
+  const applicationId = params.get("id");
 
-        createCaseBtn.addEventListener("click", () => {
-
-            window.location.href = "/case-selection.html";
-
-        });
-
-    }
-
-
-    loadUser();
-
-    loadApplications();
-
+  if (applicationId) {
+    loadApplication(applicationId);
+  } else {
+    caseContainer.innerHTML = `
+      <div class="case-card empty-case">
+        <h3>No Active Case</h3>
+        <p>Create a new emergency case.</p>
+      </div>
+    `;
+  }
 });
+
+// =====================================================
+// HELPERS
+// =====================================================
 
 function getConfig(type) {
   return (
     CASE_CONFIG[type] || {
       icon: "📌",
-
       title: "Emergency",
-
       locationLabel: "Location",
     }
   );
@@ -162,10 +158,9 @@ async function loadUser() {
     const user = await res.json();
 
     profileName.innerText = user.name;
-
     profileRole.innerText = "Guardian";
   } catch (err) {
-    console.log(err);
+    console.error("Load User Error:", err);
   }
 }
 
@@ -182,208 +177,125 @@ function createCard(app) {
 
   return `
 
-
 <div class="case-card">
 
-<div class="case-top">
+    <div class="case-top">
 
-    <div class="case-user">
+        <div class="case-user">
 
-        <img src="${image}" alt="${app.Name}">
+            <img src="${image}" alt="${app.Name}">
 
-        <div class="case-details">
+            <div class="case-details">
 
-            <h3>
-                ${config.icon}
-                ${app.Name}
-            </h3>
+                <h3>
+                    ${config.icon}
+                    ${app.Name}
+                </h3>
 
-            <p>${config.title}</p>
+                <p>${config.title}</p>
 
-            <small class="emergency-type">
-                ${getPrimaryInfo(app)}
-            </small>
+                <small class="emergency-type">
+                    ${getPrimaryInfo(app)}
+                </small>
+
+            </div>
 
         </div>
 
     </div>
 
-</div>
+    <div class="case-info">
 
-<div class="case-info">
+        <div>
 
+            <h4>${config.locationLabel}</h4>
 
-<div>
+            <p>${getLocation(app)}</p>
 
-<h4>
+        </div>
 
-${config.locationLabel}
+        <div>
 
-</h4>
+            <h4>Created</h4>
 
+            <p>${new Date(app.createdAt || app.dateTime).toLocaleString()}</p>
 
-<p>
+        </div>
 
-${getLocation(app)}
+        <div>
 
-</p>
+            <h4>Priority</h4>
 
+            <p>${app.priorityLevel || "Pending"}</p>
 
-</div>
+        </div>
 
+    </div>
 
+    <div class="case-buttons">
 
+        <button
+            class="track-btn"
+            data-id="${app._id}"
+            data-type="${app.caseType}"
+        >
+            Track
+        </button>
 
-<div>
+        <button
+            class="chat-btn"
+            data-id="${app._id}"
+        >
+            💬 Chat
+        </button>
 
-<h4>
+        <button
+            class="close-btn"
+            data-id="${app._id}"
+        >
+            Close
+        </button>
 
-Created
-
-</h4>
-
-
-<p>
-
-${new Date(app.dateTime).toLocaleString()}
-
-</p>
-
-
-</div>
-
-
-
-<div>
-
-<h4>
-
-Priority
-
-</h4>
-
-
-<p>
-
-${app.priorityLevel || "Pending"}
-
-</p>
-
+    </div>
 
 </div>
-
-
-
-</div>
-
-
-
-
-<div class="case-buttons">
-
-
-
-<button
-
-class="track-btn"
-
-data-id="${app._id}"
-
-data-type="${app.caseType}"
-
->
-
-Track
-
-</button>
-
-
-
-<button
-
-class="chat-btn"
-
-data-id="${app._id}"
-
->
-
-💬 Chat
-
-</button>
-
-
-
-
-<button
-
-class="close-btn"
-
-data-id="${app._id}"
-
->
-
-Close
-
-</button>
-
-
-
-</div>
-
-
-
-</div>
-
-
 
 `;
 }
 
 // =====================================================
-// LOAD CASES
+// LOAD APPLICATION
 // =====================================================
 
-async function loadApplications() {
+async function loadApplication(id) {
   try {
-    const res = await fetch(
-    "https://resqgrid-b1zt.onrender.com/auth/status",
-    {
-        credentials:"include",
-    }
-);
-    const applications = await res.json();
+    const res = await fetch(`${API}/guardian/application/${id}`, {
+      credentials: "include",
+    });
 
-    let html = "";
-
-    if (!applications.length) {
-      html = `
-<div class="case-card empty-case">
-
-    <h3>No Active Cases</h3>
-
-    <p>
-        You currently have no active emergency cases.
-    </p>
-
-    <p>
-        Click "+ Create Case" to create a new request.
-    </p>
-
-</div>
-`;
-    } else {
-      applications.forEach((app) => {
-        html += createCard(app);
-      });
+    if (!res.ok) {
+      throw new Error("Application not found");
     }
 
+    const application = await res.json();
 
-    caseContainer.innerHTML = html;
+    caseContainer.innerHTML = createCard(application);
 
     attachHandlers();
-
   } catch (err) {
-    console.log("Load Application Error", err);
+    console.error("Load Application Error:", err);
+
+    caseContainer.innerHTML = `
+            <div class="case-card empty-case">
+
+                <h3>No Active Case</h3>
+
+                <p>
+                    You currently have no active emergency case.
+                </p>
+
+            </div>
+        `;
   }
 }
 
@@ -392,7 +304,9 @@ async function loadApplications() {
 // =====================================================
 
 function attachHandlers() {
+  // -----------------------------
   // TRACK
+  // -----------------------------
 
   document.querySelectorAll(".track-btn").forEach((btn) => {
     btn.onclick = () => {
@@ -409,7 +323,9 @@ function attachHandlers() {
     };
   });
 
+  // -----------------------------
   // CHAT
+  // -----------------------------
 
   document.querySelectorAll(".chat-btn").forEach((btn) => {
     btn.onclick = () => {
@@ -417,45 +333,96 @@ function attachHandlers() {
     };
   });
 
+  // -----------------------------
   // CLOSE
+  // -----------------------------
 
   document.querySelectorAll(".close-btn").forEach((btn) => {
     btn.onclick = async () => {
-      if (!confirm("Close this case?")) return;
+      const confirmClose = confirm("Are you sure you want to close this case?");
 
-      await fetch(
-        `${API}/guardian/application/close/${btn.dataset.id}`,
+      if (!confirmClose) return;
 
-        {
-          method: "PATCH",
+      try {
+        const res = await fetch(
+          `${API}/guardian/application/close/${btn.dataset.id}`,
 
-          credentials: "include",
-        },
-      );
+          {
+            method: "PATCH",
+            credentials: "include",
+          },
+        );
 
-      loadApplications();
+        if (!res.ok) {
+          throw new Error("Unable to close case.");
+        }
+
+        caseContainer.innerHTML = `
+                    <div class="case-card empty-case">
+
+                        <h3>Case Closed</h3>
+
+                        <p>
+                            This emergency has been successfully closed.
+                        </p>
+
+                    </div>
+                `;
+      } catch (err) {
+        console.error(err);
+
+        alert(err.message);
+      }
     };
   });
 }
 
 // =====================================================
-// SOCKET EVENTS
+// BUTTON HANDLERS
 // =====================================================
 
-socket.on("new_case", () => {
-  loadApplications();
-});
+function attachHandlers() {
+  // Track
+  document.querySelectorAll(".track-btn").forEach((btn) => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const type = btn.dataset.type;
 
-socket.on("case_closed", () => {
-  loadApplications();
-});
+      currentCase = id;
 
-// =====================================================
-// AUTH CHECK
-// =====================================================
+      if (type === "missing-person") {
+        window.location.href = `/case-grid-guardian.html?id=${id}&caseType=${type}`;
+      } else {
+        window.location.href = `/case-tracking-guardian.html?id=${id}&caseType=${type}`;
+      }
+    };
+  });
 
+  // Chat
+  document.querySelectorAll(".chat-btn").forEach((btn) => {
+    btn.onclick = () => {
+      window.location.href = `/chat-guardian.html?id=${btn.dataset.id}`;
+    };
+  });
 
-// =====================================================
-// START
-// =====================================================
+  // Close Case
+  document.querySelectorAll(".close-btn").forEach((btn) => {
+    btn.onclick = async () => {
+      if (!confirm("Close this case?")) return;
 
+      try {
+        await fetch(`${API}/guardian/application/close/${btn.dataset.id}`, {
+          method: "PATCH",
+          credentials: "include",
+        });
+
+        // Remove id from URL
+        history.replaceState({}, "", `${window.location.origin}/guardian.html`);
+
+        loadApplication();
+      } catch (err) {
+        console.log(err);
+      }
+    };
+  });
+}
