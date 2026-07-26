@@ -1,8 +1,13 @@
 // =====================================================
 // RESQGRID GUARDIAN DASHBOARD
+// PART 1
 // =====================================================
 
 const API = "https://resqgrid-b1zt.onrender.com";
+
+// =====================================================
+// DOM
+// =====================================================
 
 const caseContainer = document.getElementById("caseContainer");
 const profileName = document.querySelector("#profileName h4");
@@ -24,8 +29,14 @@ socket.on("connect", () => {
   socket.emit("join_guardians");
 });
 
+// Optional live update
+socket.on("new_case", () => {
+  console.log("New case received");
+  loadApplications();
+});
+
 // =====================================================
-// CASE CONFIG
+// CASE CONFIGURATION
 // =====================================================
 
 const CASE_CONFIG = {
@@ -81,20 +92,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadUser();
 
-  // Read application id from URL
-  const params = new URLSearchParams(window.location.search);
-  const applicationId = params.get("id");
-
-  if (applicationId) {
-    loadApplication(applicationId);
-  } else {
-    caseContainer.innerHTML = `
-      <div class="case-card empty-case">
-        <h3>No Active Case</h3>
-        <p>Create a new emergency case.</p>
-      </div>
-    `;
-  }
+  // Load all active cases of logged in guardian
+  loadApplications();
 });
 
 // =====================================================
@@ -117,6 +116,7 @@ function getLocation(app) {
     app.Hospital ||
     app.Address ||
     app.CurrentLocation ||
+    app.Location ||
     "Not Available"
   );
 }
@@ -153,19 +153,66 @@ async function loadUser() {
       credentials: "include",
     });
 
-    if (!res.ok) return;
+    if (!res.ok) {
+      throw new Error("Unable to load user");
+    }
 
     const user = await res.json();
 
     profileName.innerText = user.name;
-    profileRole.innerText = "Guardian";
+    profileRole.innerText = user.role || "Guardian";
   } catch (err) {
     console.error("Load User Error:", err);
   }
 }
 
 // =====================================================
-// CARD
+// LOAD ALL ACTIVE APPLICATIONS
+// =====================================================
+
+async function loadApplications() {
+  try {
+    const res = await fetch(`${API}/guardian/application`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error("Unable to load applications");
+    }
+
+    const applications = await res.json();
+
+    console.log("Applications:", applications);
+
+    if (!applications || applications.length === 0) {
+      caseContainer.innerHTML = `
+        <div class="case-card empty-case">
+            <h3>No Active Case</h3>
+            <p>You currently have no active emergency case.</p>
+        </div>
+      `;
+      return;
+    }
+
+    caseContainer.innerHTML = applications
+      .map((app) => createCard(app))
+      .join("");
+
+    attachHandlers();
+  } catch (err) {
+    console.error("Load Applications Error:", err);
+
+    caseContainer.innerHTML = `
+      <div class="case-card empty-case">
+          <h3>No Active Case</h3>
+          <p>Unable to load your applications.</p>
+      </div>
+    `;
+  }
+}
+
+// =====================================================
+// CREATE CASE CARD
 // =====================================================
 
 function createCard(app) {
@@ -207,27 +254,18 @@ function createCard(app) {
     <div class="case-info">
 
         <div>
-
             <h4>${config.locationLabel}</h4>
-
             <p>${getLocation(app)}</p>
-
         </div>
 
         <div>
-
             <h4>Created</h4>
-
             <p>${new Date(app.createdAt || app.dateTime).toLocaleString()}</p>
-
         </div>
 
         <div>
-
             <h4>Priority</h4>
-
             <p>${app.priorityLevel || "Pending"}</p>
-
         </div>
 
     </div>
@@ -264,49 +302,13 @@ function createCard(app) {
 }
 
 // =====================================================
-// LOAD APPLICATION
-// =====================================================
-
-async function loadApplication(id) {
-  try {
-    const res = await fetch(`${API}/guardian/application/${id}`, {
-      credentials: "include",
-    });
-
-    if (!res.ok) {
-      throw new Error("Application not found");
-    }
-
-    const application = await res.json();
-
-    caseContainer.innerHTML = createCard(application);
-
-    attachHandlers();
-  } catch (err) {
-    console.error("Load Application Error:", err);
-
-    caseContainer.innerHTML = `
-            <div class="case-card empty-case">
-
-                <h3>No Active Case</h3>
-
-                <p>
-                    You currently have no active emergency case.
-                </p>
-
-            </div>
-        `;
-  }
-}
-
-// =====================================================
 // BUTTON HANDLERS
 // =====================================================
 
 function attachHandlers() {
-  // -----------------------------
-  // TRACK
-  // -----------------------------
+  // ------------------------------------
+  // TRACK CASE
+  // ------------------------------------
 
   document.querySelectorAll(".track-btn").forEach((btn) => {
     btn.onclick = () => {
@@ -323,53 +325,50 @@ function attachHandlers() {
     };
   });
 
-  // -----------------------------
+  // ------------------------------------
   // CHAT
-  // -----------------------------
+  // ------------------------------------
 
   document.querySelectorAll(".chat-btn").forEach((btn) => {
     btn.onclick = () => {
-      window.location.href = `/chat-guardian.html?id=${btn.dataset.id}`;
+      const id = btn.dataset.id;
+
+      window.location.href = `/chat-guardian.html?id=${id}`;
     };
   });
 
-  // -----------------------------
-  // CLOSE
-  // -----------------------------
+  // ------------------------------------
+  // CLOSE CASE
+  // ------------------------------------
 
   document.querySelectorAll(".close-btn").forEach((btn) => {
     btn.onclick = async () => {
-      const confirmClose = confirm("Are you sure you want to close this case?");
+      const id = btn.dataset.id;
+
+      const confirmClose = confirm(
+        "Are you sure you want to close this emergency?",
+      );
 
       if (!confirmClose) return;
 
       try {
-        const res = await fetch(
-          `${API}/guardian/application/close/${btn.dataset.id}`,
+        const res = await fetch(`${API}/guardian/application/close/${id}`, {
+          method: "PATCH",
+          credentials: "include",
+        });
 
-          {
-            method: "PATCH",
-            credentials: "include",
-          },
-        );
+        const data = await res.json();
 
         if (!res.ok) {
-          throw new Error("Unable to close case.");
+          throw new Error(data.message || "Unable to close case");
         }
 
-        caseContainer.innerHTML = `
-                    <div class="case-card empty-case">
+        alert("Case closed successfully.");
 
-                        <h3>Case Closed</h3>
-
-                        <p>
-                            This emergency has been successfully closed.
-                        </p>
-
-                    </div>
-                `;
+        // Reload all active cases
+        loadApplications();
       } catch (err) {
-        console.error(err);
+        console.error("Close Case Error:", err);
 
         alert(err.message);
       }
@@ -378,51 +377,43 @@ function attachHandlers() {
 }
 
 // =====================================================
-// BUTTON HANDLERS
+// SOCKET EVENTS
 // =====================================================
 
-function attachHandlers() {
-  // Track
-  document.querySelectorAll(".track-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const id = btn.dataset.id;
-      const type = btn.dataset.type;
+// New volunteer joined
+socket.on("volunteer_joined", () => {
+  console.log("Volunteer joined.");
 
-      currentCase = id;
+  loadApplications();
+});
 
-      if (type === "missing-person") {
-        window.location.href = `/case-grid-guardian.html?id=${id}&caseType=${type}`;
-      } else {
-        window.location.href = `/case-tracking-guardian.html?id=${id}&caseType=${type}`;
-      }
-    };
-  });
+// Volunteer updated case
+socket.on("case_updated", () => {
+  console.log("Case updated.");
 
-  // Chat
-  document.querySelectorAll(".chat-btn").forEach((btn) => {
-    btn.onclick = () => {
-      window.location.href = `/chat-guardian.html?id=${btn.dataset.id}`;
-    };
-  });
+  loadApplications();
+});
 
-  // Close Case
-  document.querySelectorAll(".close-btn").forEach((btn) => {
-    btn.onclick = async () => {
-      if (!confirm("Close this case?")) return;
+// Case closed
+socket.on("case_closed", () => {
+  console.log("Case closed.");
 
-      try {
-        await fetch(`${API}/guardian/application/close/${btn.dataset.id}`, {
-          method: "PATCH",
-          credentials: "include",
-        });
+  loadApplications();
+});
 
-        // Remove id from URL
-        history.replaceState({}, "", `${window.location.origin}/guardian.html`);
+// Guardian's new case created
+socket.on("guardian_case_created", () => {
+  console.log("Guardian created a new case.");
 
-        loadApplication();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-  });
-}
+  loadApplications();
+});
+
+// =====================================================
+// AUTO REFRESH
+// =====================================================
+
+// Refresh every 20 seconds
+
+setInterval(() => {
+  loadApplications();
+}, 20000);
