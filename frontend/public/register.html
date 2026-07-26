@@ -486,7 +486,7 @@
         <h1 class="welcome-title">Create account!</h1>
         <p class="welcome-sub">Register to join the mission.</p>
 
-        <form id="registerForm"></form>
+        <form action="https://resqgrid-b1zt.onrender.com/auth/register" method="POST">
           <div class="field-group">
             <div class="field-label">
               <span>Name</span>
@@ -670,41 +670,6 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-
-        const registerForm = document.getElementById("registerForm");
-
-registerForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new URLSearchParams(
-        new FormData(registerForm)
-    );
-
-    try {
-
-        const res = await fetch(
-            "https://resqgrid-b1zt.onrender.com/auth/register",
-            {
-                method: "POST",
-                body: formData,
-                credentials: "include"
-            }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            return alert(data.message);
-        }
-
-        window.location.href = data.redirect;
-
-    } catch (err) {
-        console.log(err);
-        alert("Registration Failed");
-    }
-
-});
         // ==========================
         // Password Toggle
         // ==========================

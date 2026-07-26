@@ -526,7 +526,7 @@
         <h1 class="welcome-title">Welcome back!</h1>
         <p class="welcome-sub">Login to continue your mission.</p>
 
-        <form id="loginForm">
+        <form action="https://resqgrid-b1zt.onrender.com/auth/login" method="POST">
           <div class="field-group">
             <div class="field-label">
               <span>Email or Phone</span>
@@ -650,44 +650,7 @@
 
     <script>
 
-      const loginForm = document.getElementById("loginForm");
-
-loginForm.addEventListener("submit", async (e) => {
-
-    e.preventDefault();
-
-    const formData = new URLSearchParams(
-        new FormData(loginForm)
-    );
-
-    try {
-
-        const res = await fetch(
-            "https://resqgrid-b1zt.onrender.com/auth/login",
-            {
-                method: "POST",
-                body: formData,
-                credentials: "include"
-            }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            return alert(data.message);
-        }
-
-        window.location.href = data.redirect;
-
-    } catch (err) {
-
-        console.log(err);
-
-        alert("Login Failed");
-
-    }
-
-});
+      
       const togglePassword = document.getElementById("togglePassword");
       const passwordInput = document.getElementById("password");
       const eyeIcon = document.getElementById("eyeIcon");

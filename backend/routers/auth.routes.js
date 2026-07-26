@@ -4,6 +4,7 @@ const User = require("../models/user.schema");
 const bcrypt = require("bcrypt");
 const expresssession = require("express-session");
 const jwt = require("jsonwebtoken");
+const Application = require("../models/application.schema");
 
 router.post("/register", async (req, res) => {
   try {
