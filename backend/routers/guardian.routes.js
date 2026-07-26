@@ -173,7 +173,14 @@ Score must be between 0-100.
 // ----------------------------------------------------
 
 router.post("/application", upload.single("Photo"), async (req, res) => {
+  console.log("========== POST /guardian/application ==========");
+  console.log("Request received");
+
   try {
+    console.log("Body:", req.body);
+console.log("File:", req.file);
+    console.log("Session:", req.session);
+    console.log("User:", req.session?.user);
     if (!req.session.user) {
       return res.status(401).json({
         success:false,
