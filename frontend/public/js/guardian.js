@@ -220,17 +220,21 @@ function createCard(app) {
 
   const image = app.Photo
     ? `${API}/uploads/${app.Photo}`
-    : "/images/default-user.png";
+    : "images/default-user.png";
 
   return `
 
-<div class="case-card">
+<div class="case-card fade-in">
 
     <div class="case-top">
 
         <div class="case-user">
 
-            <img src="${image}" alt="${app.Name}">
+            <img
+                src="${image}"
+                alt="${app.Name}"
+                onerror="this.src='images/default-user.png'"
+            >
 
             <div class="case-details">
 
@@ -249,23 +253,54 @@ function createCard(app) {
 
         </div>
 
+        <span class="status ${app.status}">
+            ${app.status.toUpperCase()}
+        </span>
+
     </div>
 
     <div class="case-info">
 
-        <div>
+        <div class="info-box">
+
             <h4>${config.locationLabel}</h4>
-            <p>${getLocation(app)}</p>
+
+            <p>
+                ${getLocation(app)}
+            </p>
+
         </div>
 
-        <div>
+        <div class="info-box">
+
             <h4>Created</h4>
-            <p>${new Date(app.createdAt || app.dateTime).toLocaleString()}</p>
+
+            <p>
+                ${new Date(
+                  app.createdAt || app.dateTime
+                ).toLocaleString()}
+            </p>
+
         </div>
 
-        <div>
+        <div class="info-box">
+
             <h4>Priority</h4>
-            <p>${app.priorityLevel || "Pending"}</p>
+
+            <p class="priority-${(app.priorityLevel || "medium").toLowerCase()}">
+                ${app.priorityLevel || "Medium"}
+            </p>
+
+        </div>
+
+        <div class="info-box">
+
+            <h4>Case Type</h4>
+
+            <p>
+                ${config.title}
+            </p>
+
         </div>
 
     </div>
@@ -277,7 +312,7 @@ function createCard(app) {
             data-id="${app._id}"
             data-type="${app.caseType}"
         >
-            Track
+            📍 Track
         </button>
 
         <button
@@ -291,7 +326,7 @@ function createCard(app) {
             class="close-btn"
             data-id="${app._id}"
         >
-            Close
+            ❌ Close
         </button>
 
     </div>

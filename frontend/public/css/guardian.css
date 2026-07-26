@@ -203,11 +203,12 @@ img {
 
 .panel-actions{
 
-    display:flex;
+display:flex;
+align-items:center;
 
-    align-items:center;
+gap:14px;
 
-    gap:15px;
+flex-shrink:0;
 
 }
 
@@ -617,12 +618,16 @@ header p {
   overflow: hidden;
 }
 
-.panel-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 20px;
+.panel-header{
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+margin-bottom:24px;
+
+gap:20px;
+
 }
 
 .panel-header h2 {
@@ -651,11 +656,18 @@ header p {
    CASE CONTAINER
 ===================================================== */
 
-#caseContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  width: 100%;
+#caseContainer{
+
+display:flex;
+
+flex-direction:column;
+
+gap:20px;
+
+width:100%;
+
+margin-top:10px;
+
 }
 
 /* =====================================================
@@ -833,6 +845,11 @@ header p {
   box-shadow: 0 10px 25px rgba(124, 58, 237, 0.25);
 
   transition: var(--transition);
+  display:flex;
+align-items:center;
+justify-content:center;
+
+white-space:nowrap;
 }
 
 #createCaseBtn:hover {
