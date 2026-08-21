@@ -85,7 +85,10 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(Password, existingUser.Password);
+    const isMatch = await bcrypt.compare(
+      Password,
+      existingUser.Password
+    );
 
     if (!isMatch) {
       return res.status(401).json({
@@ -94,35 +97,60 @@ router.post("/login", async (req, res) => {
       });
     }
 
+    // ==========================
+    // CHECK ROLE
+    // ==========================
+
+    if (!existingUser.Role) {
+      console.error(
+        "LOGIN ERROR: User has no Role:",
+        existingUser._id
+      );
+
+      return res.status(500).json({
+        success: false,
+        message: "User role is missing.",
+      });
+    }
+
+    // ==========================
+    // CREATE SESSION
+    // ==========================
+
     req.session.user = {
       id: existingUser._id,
       name: existingUser.Name,
       email: existingUser.Email,
       role: existingUser.Role,
-      coins: existingUser.coins,
+      coins: existingUser.coins || 0,
     };
 
     console.log("SESSION CREATED:", req.session.user);
 
-    req.session.save(async (err) => {
+    req.session.save((err) => {
       if (err) {
-        console.log(err);
-        return res.status(500).send("Session error");
+        console.error("SESSION SAVE ERROR:", err);
+
+        return res.status(500).json({
+          success: false,
+          message: "Session error",
+        });
       }
 
-      let redirectUrl = `https://resqgrid-b1zt.onrender.com/${existingUser.Role.toLowerCase()}.html?id=${existingUser._id}`;
+      const role = existingUser.Role.toLowerCase();
 
-      if (existingUser.Role.toLowerCase() === "guardian") {
-        const latestCase = await Application.findOne({
-          guardianId: existingUser._id,
-          status: "active",
-        }).sort({ createdAt: -1 });
-      }
+      const redirectUrl =
+        `https://resqgrid-b1zt.onrender.com/${role}.html?id=${existingUser._id}`;
 
-      res.redirect(redirectUrl);
+      console.log("LOGIN SUCCESS");
+      console.log("ROLE:", role);
+      console.log("REDIRECT:", redirectUrl);
+
+      return res.redirect(redirectUrl);
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("LOGIN ERROR:", error);
 
     return res.status(500).json({
       success: false,
