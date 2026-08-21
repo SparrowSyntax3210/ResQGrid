@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const connectDB = require("../backend/config/db");
 
 const http = require("http");
@@ -9,6 +11,12 @@ const caseSocket = require("./socket/case.socket");
 const chatSocket = require("./socket/chat.socket");
 
 // ======================================
+// ENVIRONMENT
+// ======================================
+
+const isProduction = process.env.NODE_ENV === "production";
+
+// ======================================
 // HTTP SERVER
 // ======================================
 
@@ -18,10 +26,22 @@ const server = http.createServer(app);
 // SOCKET.IO
 // ======================================
 
+const allowedOrigins = isProduction
+  ? [
+      "http://localhost:5000",
+    ]
+  : [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "http://localhost:5500",
+      "http://127.0.0.1:5500",
+      "https://res-q-grid.vercel.app"
+    ];
+
 const io = new Server(server, {
   cors: {
-    origin: "https://res-q-grid.vercel.app",
-    methods: ["GET", "POST", "PATCH"],
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
     credentials: true,
   },
 });
@@ -44,6 +64,13 @@ io.on("connection", (socket) => {
 
   // Chat Socket
   chatSocket(io, socket);
+
+  // Disconnect
+  socket.on("disconnect", (reason) => {
+    console.log("CLIENT DISCONNECTED");
+    console.log("Socket:", socket.id);
+    console.log("Reason:", reason);
+  });
 });
 
 // ======================================
@@ -51,37 +78,49 @@ io.on("connection", (socket) => {
 // ======================================
 
 io.engine.on("connection_error", (err) => {
+  console.log("=================================");
   console.log("Socket Connection Error");
-  console.log(err.req);
-  console.log(err.code);
-  console.log(err.message);
-  console.log(err.context);
+  console.log("=================================");
+
+  console.log("Code:", err.code);
+  console.log("Message:", err.message);
+  console.log("Context:", err.context);
 });
 
 // ======================================
-// START SERVER
+// DATABASE + START SERVER
 // ======================================
 
 const PORT = process.env.PORT || 5000;
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log("=================================");
-  console.log(`🚀 Server Running On Port ${PORT}`);
-  console.log("=================================");
-});
+async function startServer() {
+  try {
+    await connectDB();
 
-// ======================================
-// DATABASE
-// ======================================
-
-connectDB()
-  .then(() => {
+    console.log("=================================");
     console.log("MongoDB Connected");
-  })
-  .catch((err) => {
-    console.log("MongoDB Connection Error");
+    console.log("=================================");
+
+    server.listen(PORT, "0.0.0.0", () => {
+      console.log("=================================");
+      console.log(`🚀 ResQGrid Server Running`);
+      console.log(`📡 Port: ${PORT}`);
+      console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(`🔗 http://localhost:${PORT}`);
+      console.log("=================================");
+    });
+
+  } catch (err) {
+    console.error("=================================");
+    console.error("MongoDB Connection Error");
+    console.error("=================================");
     console.error(err);
-  });
+
+    process.exit(1);
+  }
+}
+
+startServer();
 
 // ======================================
 // GRACEFUL SHUTDOWN
@@ -95,6 +134,10 @@ process.on("SIGINT", async () => {
     process.exit(0);
   });
 });
+
+// ======================================
+// ERROR HANDLING
+// ======================================
 
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception");

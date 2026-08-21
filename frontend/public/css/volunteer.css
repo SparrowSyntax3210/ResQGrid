@@ -1738,3 +1738,488 @@ header p {
     align-items: flex-start;
   }
 }
+
+/* =====================================================
+   LIVE SOS SECTION
+===================================================== */
+
+.sos-section {
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.sos-panel {
+  width: 100%;
+  overflow: hidden;
+}
+
+.sos-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sos-panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sos-panel-header h2 i {
+  color: #ef4444;
+}
+
+.sos-subtitle {
+  margin-top: 5px;
+  font-size: 13px;
+  opacity: 0.65;
+}
+
+/* =====================================================
+   LIVE INDICATOR
+===================================================== */
+
+.sos-live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 13px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+  font-weight: 800;
+
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.sos-live-indicator span {
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #ef4444;
+
+  animation: sosPulse 1.2s infinite;
+}
+
+@keyframes sosPulse {
+
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.45;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+}
+
+/* =====================================================
+   SOS CONTAINER
+===================================================== */
+
+#sosContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  padding: 5px 0;
+}
+
+/* =====================================================
+   SOS CARD
+===================================================== */
+
+.sos-alert-card {
+
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  padding: 20px;
+
+  border-radius: 15px;
+
+  border: 1px solid rgba(239, 68, 68, 0.2);
+
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.08),
+    rgba(255, 255, 255, 0.02)
+  );
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+}
+
+.sos-alert-card:hover {
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.12);
+
+}
+
+/* =====================================================
+   SOS TOP
+===================================================== */
+
+.sos-alert-top {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 15px;
+
+}
+
+.sos-alert-title {
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+}
+
+.sos-alert-icon {
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: rgba(239, 68, 68, 0.12);
+
+  color: #ef4444;
+
+  font-size: 20px;
+
+}
+
+.sos-alert-title h3 {
+
+  margin: 0;
+
+  font-size: 16px;
+
+}
+
+.sos-alert-title p {
+
+  margin: 4px 0 0;
+
+  font-size: 12px;
+
+  opacity: 0.65;
+
+}
+
+/* =====================================================
+   PRIORITY
+===================================================== */
+
+.sos-priority {
+
+  padding: 6px 12px;
+
+  border-radius: 20px;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  white-space: nowrap;
+
+}
+
+.sos-priority.low {
+
+  background: rgba(34, 197, 94, 0.12);
+
+  color: #16a34a;
+
+}
+
+.sos-priority.medium {
+
+  background: rgba(234, 179, 8, 0.12);
+
+  color: #ca8a04;
+
+}
+
+.sos-priority.high {
+
+  background: rgba(249, 115, 22, 0.12);
+
+  color: #ea580c;
+
+}
+
+.sos-priority.critical {
+
+  background: rgba(239, 68, 68, 0.15);
+
+  color: #dc2626;
+
+  animation: criticalPulse 1s infinite;
+
+}
+
+@keyframes criticalPulse {
+
+  0% {
+    box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.35);
+  }
+
+  100% {
+    box-shadow: 0 0 0 rgba(239, 68, 68, 0);
+  }
+
+}
+
+/* =====================================================
+   SOS INFORMATION
+===================================================== */
+
+.sos-alert-info {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+}
+
+.sos-info-box {
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.025);
+
+}
+
+.sos-info-box span {
+
+  display: block;
+
+  font-size: 10px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.5px;
+
+  opacity: 0.55;
+
+  margin-bottom: 5px;
+
+}
+
+.sos-info-box strong {
+
+  font-size: 13px;
+
+}
+
+/* =====================================================
+   TRANSCRIPT
+===================================================== */
+
+.sos-transcript {
+
+  padding: 13px 15px;
+
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.025);
+
+}
+
+.sos-transcript-title {
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  text-transform: uppercase;
+
+  opacity: 0.55;
+
+  margin-bottom: 6px;
+
+}
+
+.sos-transcript p {
+
+  margin: 0;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+}
+
+/* =====================================================
+   SOS FOOTER
+===================================================== */
+
+.sos-alert-footer {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 10px;
+
+}
+
+.sos-status {
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+}
+
+.sos-status-dot {
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #f59e0b;
+
+}
+
+.sos-track-btn {
+
+  border: none;
+
+  padding: 9px 15px;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+
+  font-weight: 700;
+
+  font-size: 12px;
+
+  background: #111827;
+
+  color: white;
+
+  transition: 0.2s;
+
+}
+
+.sos-track-btn:hover {
+
+  transform: translateY(-1px);
+
+  opacity: 0.9;
+
+}
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.sos-empty {
+
+  text-align: center;
+
+  padding: 35px 20px;
+
+  opacity: 0.6;
+
+}
+
+.sos-empty i {
+
+  font-size: 35px;
+
+  margin-bottom: 10px;
+
+}
+
+.sos-empty h3 {
+
+  margin: 5px 0;
+
+}
+
+.sos-empty p {
+
+  font-size: 13px;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .sos-alert-info {
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+  }
+
+}
+
+@media (max-width: 600px) {
+
+  .sos-alert-top {
+
+    flex-direction: column;
+
+  }
+
+  .sos-alert-info {
+
+    grid-template-columns: 1fr;
+
+  }
+
+}

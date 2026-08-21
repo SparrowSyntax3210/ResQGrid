@@ -3,33 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>ResQGrid | Guardian</title>
 
-    <!-- CSS -->
+    <!-- ==============================
+         CSS
+    =============================== -->
+
     <link rel="stylesheet" href="./css/guardian.css" />
 
-    <!-- Icons -->
+    <!-- ==============================
+         FONT AWESOME
+    =============================== -->
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
 
-    <!-- Google Font -->
+    <!-- ==============================
+         GOOGLE FONT
+    =============================== -->
+
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Chart -->
+    <!-- ==============================
+         CHART.JS
+    =============================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="./css/guardian.css" />
   </head>
 
   <body>
     <div class="dashboard">
-      <!-- ================= Sidebar ================= -->
+      <!-- =====================================================
+           SIDEBAR
+      ====================================================== -->
 
       <aside class="sidebar">
+        <!-- LOGO -->
+
         <div class="logo">
           <div class="logo-icon">
             <i class="fa-solid fa-shield-halved"></i>
@@ -40,32 +56,45 @@
           </div>
         </div>
 
+        <!-- MENU -->
+
         <ul class="menu">
+          <!-- Dashboard -->
+
           <li class="active">
             <i class="fa-solid fa-house"></i>
             Dashboard
           </li>
+
+          <!-- Active Cases -->
 
           <li>
             <i class="fa-regular fa-calendar-check"></i>
             Active Cases
           </li>
 
+          <!-- Case Listing -->
+
           <li class="case-listing">
             <i class="fa-regular fa-folder-open"></i>
             Case Listing
           </li>
 
+          <!-- Map -->
+
           <li onclick="window.location.href = '/map.html'">
             <i class="fa-solid fa-location-dot"></i>
-
             Map View
           </li>
+
+          <!-- Volunteers -->
 
           <li>
             <i class="fa-solid fa-users"></i>
             Volunteers
           </li>
+
+          <!-- Messages -->
 
           <li>
             <i class="fa-regular fa-envelope"></i>
@@ -73,33 +102,44 @@
             <span>3</span>
           </li>
 
+          <!-- Notifications -->
+
           <li>
             <i class="fa-regular fa-bell"></i>
             Notifications
             <span>5</span>
           </li>
 
-          <li
-     class="report-btn"
-        data-id="${app._id}">
-    Reports
-        </li>
+          <!-- Reports -->
+
+          <li class="report-btn">
+            <i class="fa-solid fa-file-lines"></i>
+            Reports
+          </li>
+
+          <!-- Analytics -->
 
           <li>
             <i class="fa-solid fa-chart-line"></i>
             Analytics
           </li>
 
+          <!-- Settings -->
+
           <li>
             <i class="fa-solid fa-gear"></i>
             Settings
           </li>
+
+          <!-- Help -->
 
           <li>
             <i class="fa-regular fa-circle-question"></i>
             Help & Support
           </li>
         </ul>
+
+        <!-- SUPPORT CARD -->
 
         <div class="support-card">
           <h3>Need Immediate Help?</h3>
@@ -110,28 +150,42 @@
         </div>
       </aside>
 
-      <!-- ================= Main ================= -->
+      <!-- =====================================================
+           MAIN CONTENT
+      ====================================================== -->
 
       <main class="content">
-        <!-- Header -->
+        <!-- =================================================
+             HEADER
+        ================================================== -->
 
         <header>
+          <!-- HEADER MESSAGE -->
+
           <div>
             <p>You're an active Guardian. We're here to help.</p>
           </div>
 
+          <!-- HEADER RIGHT -->
+
           <div class="header-right">
+            <!-- SEARCH -->
+
             <div class="search">
               <input type="text" placeholder="Search cases, volunteers..." />
 
               <i class="fa-solid fa-magnifying-glass"></i>
             </div>
 
+            <!-- NOTIFICATION -->
+
             <button class="notify">
               <i class="fa-regular fa-bell"></i>
 
               <span></span>
             </button>
+
+            <!-- PROFILE -->
 
             <div class="profile">
               <div id="profileName">
@@ -145,9 +199,78 @@
           </div>
         </header>
 
-        <!-- ================= Statistics ================= -->
+        <!-- =================================================
+             EMERGENCY SOS
+        ================================================== -->
+
+        <section class="guardian-sos-section">
+          <div class="guardian-sos-card">
+            <!-- SOS INFORMATION -->
+
+            <div class="sos-card-info">
+              <!-- ICON -->
+
+              <div class="sos-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+
+              <!-- TEXT -->
+
+              <div>
+                <h2>Emergency SOS</h2>
+
+                <p>
+                  Send your current location and voice emergency report to the
+                  ResQGrid volunteer network.
+                </p>
+
+                <!-- STATUS -->
+
+                <div id="sosStatus" class="sos-status">Ready</div>
+              </div>
+            </div>
+
+            <!-- SOS CONTROLS -->
+
+            <div class="sos-controls">
+              <!-- START -->
+
+              <button id="sosBtn" class="guardian-sos-btn">
+                <i class="fa-solid fa-microphone"></i>
+
+                Start SOS
+              </button>
+
+              <!-- STOP -->
+
+              <button id="stopSosBtn" class="guardian-sos-stop-btn" disabled>
+                <i class="fa-solid fa-stop"></i>
+
+                Stop
+              </button>
+
+              <!-- SUBMIT -->
+
+              <button
+                id="submitSosBtn"
+                class="guardian-sos-submit-btn"
+                disabled
+              >
+                <i class="fa-solid fa-paper-plane"></i>
+
+                Send SOS
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================
+             STATISTICS
+        ================================================== -->
 
         <section class="stats">
+          <!-- ACTIVE CASES -->
+
           <div class="stat-card purple">
             <div class="icon">
               <i class="fa-solid fa-folder"></i>
@@ -161,6 +284,8 @@
               <p>Currently Tracking</p>
             </div>
           </div>
+
+          <!-- VOLUNTEERS -->
 
           <div class="stat-card blue">
             <div class="icon">
@@ -176,6 +301,8 @@
             </div>
           </div>
 
+          <!-- AREAS -->
+
           <div class="stat-card green">
             <div class="icon">
               <i class="fa-solid fa-crosshairs"></i>
@@ -189,6 +316,8 @@
               <p>Across all cases</p>
             </div>
           </div>
+
+          <!-- SIGHTINGS -->
 
           <div class="stat-card orange">
             <div class="icon">
@@ -205,38 +334,52 @@
           </div>
         </section>
 
-        <!-- ================= Middle ================= -->
+        <!-- =================================================
+             MIDDLE GRID
+        ================================================== -->
 
         <section class="middle-grid">
-          <!-- Active Cases -->
+          <!-- =================================================
+               ACTIVE CASES
+          ================================================== -->
 
           <div class="panel">
+            <!-- PANEL HEADER -->
 
-    <div class="panel-header">
+            <div class="panel-header">
+              <h2>Active Cases</h2>
 
-        <h2>Active Cases</h2>
+              <div class="panel-actions">
+                <!-- CREATE CASE -->
 
-        <div class="panel-actions">
+                <button id="createCaseBtn" class="create-case-btn">
+                  + Create Case
+                </button>
 
-            <button id="createCaseBtn" class="create-case-btn">
-                + Create Case
-            </button>
+                <!-- MORE -->
 
-            <i class="fa-solid fa-ellipsis"></i>
+                <i class="fa-solid fa-ellipsis"></i>
+              </div>
+            </div>
 
-        </div>
+            <!-- CASE CONTAINER -->
 
-    </div>
+            <div id="caseContainer">
+              <!--
+                Guardian.js dynamically inserts
+                active case cards here.
+              -->
+            </div>
+          </div>
 
-    <div id="caseContainer">
-        <!-- JS inserts cards -->
-    </div>
-
-</div>
-          <!-- Map -->
+          <!-- =================================================
+               LIVE SEARCH MAP
+          ================================================== -->
 
           <div class="right-column">
             <div class="panel map-panel">
+              <!-- MAP HEADER -->
+
               <div class="panel-header">
                 <h2>Live Search Map</h2>
 
@@ -245,12 +388,19 @@
                 </select>
               </div>
 
+              <!-- MAP -->
+
               <div class="map">
                 <div class="grid"></div>
 
+                <!-- MAP PINS -->
+
                 <div class="pin one"></div>
+
                 <div class="pin two"></div>
+
                 <div class="pin three"></div>
+
                 <div class="pin four"></div>
               </div>
             </div>
@@ -259,10 +409,23 @@
       </main>
     </div>
 
+    <!-- =====================================================
+         GSAP
+    ====================================================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+
+    <!-- =====================================================
+         SOCKET.IO CLIENT
+    ====================================================== -->
+
+    <script src="https://resqgrid-b1zt.onrender.com/socket.io/socket.io.js"></script>
+
+    <!-- =====================================================
+         GUARDIAN JAVASCRIPT
+    ====================================================== -->
 
     <script src="./js/guardian.js"></script>
   </body>

@@ -9,6 +9,10 @@
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
   </head>
   <body>
     <div class="dashboard">
@@ -83,7 +87,9 @@
 
         <header>
           <div>
-            <p>You're an active Volunteer. Please review the following cases.</p>
+            <p>
+              You're an active Volunteer. Please review the following cases.
+            </p>
           </div>
 
           <div class="header-right">
@@ -102,7 +108,7 @@
             <div class="profile">
               <div>
                 <h4 id="profileName"></h4>
-                <small id="profileRole"></small><br>
+                <small id="profileRole"></small><br />
                 <small id="coinBalance">Coins : </small>
               </div>
 
@@ -110,6 +116,46 @@
             </div>
           </div>
         </header>
+
+        <!-- =====================================================
+     LIVE SOS ALERTS
+====================================================== -->
+
+        <section class="sos-section">
+          <div class="panel sos-panel">
+            <div class="panel-header sos-panel-header">
+              <div>
+                <h2>
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                  Live SOS Alerts
+                </h2>
+
+                <p class="sos-subtitle">
+                  Real-time emergency requests from Guardians
+                </p>
+              </div>
+
+              <div class="sos-live-indicator">
+                <span></span>
+                LIVE
+              </div>
+            </div>
+
+            <!-- SOS CARDS -->
+
+            <div id="sosContainer">
+              <div class="sos-empty">
+                <i class="fa-solid fa-shield-heart"></i>
+
+                <h3>No Active SOS Alerts</h3>
+
+                <p>
+                  New emergency SOS requests will appear here automatically.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- ================= Statistics ================= -->
 

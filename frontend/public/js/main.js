@@ -47,7 +47,7 @@ GuardianHomeBtn.addEventListener("click", () => {
 
 const VolunteerHomeBtn = document.querySelector(".secondary-btn");
 
-VolunteerHomeBtn.addEventListener("click", () => {
+VolunteerHomeBtn.addEventListener("click", () => {  
   window.location.href = "https://resqgrid-b1zt.onrender.com/register.html?role=Volunteer";
 });
 

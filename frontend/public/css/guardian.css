@@ -201,15 +201,13 @@ img {
   font-size: 15px;
 }
 
-.panel-actions{
+.panel-actions {
+  display: flex;
+  align-items: center;
 
-display:flex;
-align-items:center;
+  gap: 14px;
 
-gap:14px;
-
-flex-shrink:0;
-
+  flex-shrink: 0;
 }
 
 .menu li:hover {
@@ -618,16 +616,14 @@ header p {
   overflow: hidden;
 }
 
-.panel-header{
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-display:flex;
-justify-content:space-between;
-align-items:center;
+  margin-bottom: 24px;
 
-margin-bottom:24px;
-
-gap:20px;
-
+  gap: 20px;
 }
 
 .panel-header h2 {
@@ -656,18 +652,16 @@ gap:20px;
    CASE CONTAINER
 ===================================================== */
 
-#caseContainer{
+#caseContainer {
+  display: flex;
 
-display:flex;
+  flex-direction: column;
 
-flex-direction:column;
+  gap: 20px;
 
-gap:20px;
+  width: 100%;
 
-width:100%;
-
-margin-top:10px;
-
+  margin-top: 10px;
 }
 
 /* =====================================================
@@ -845,11 +839,11 @@ margin-top:10px;
   box-shadow: 0 10px 25px rgba(124, 58, 237, 0.25);
 
   transition: var(--transition);
-  display:flex;
-align-items:center;
-justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-white-space:nowrap;
+  white-space: nowrap;
 }
 
 #createCaseBtn:hover {
@@ -1378,6 +1372,221 @@ white-space:nowrap;
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* ==========================================================
+   GUARDIAN SOS
+   ========================================================== */
+
+.guardian-sos-section {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.guardian-sos-card {
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  padding: 24px 28px;
+
+  border-radius: 18px;
+
+  background: linear-gradient(135deg, #fff5f5, #ffffff);
+
+  border: 1px solid #ffd6d6;
+
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+}
+
+/* ==========================================================
+   INFO
+   ========================================================== */
+
+.sos-card-info {
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+
+  min-width: 0;
+}
+
+.sos-icon {
+  width: 58px;
+  height: 58px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #ffe1e1;
+
+  color: #dc2626;
+
+  font-size: 24px;
+}
+
+.sos-card-info h2 {
+  margin: 0 0 5px;
+
+  font-size: 20px;
+
+  font-weight: 700;
+
+  color: #111827;
+}
+
+.sos-card-info p {
+  margin: 0;
+
+  max-width: 650px;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+
+  color: #6b7280;
+}
+
+/* ==========================================================
+   STATUS
+   ========================================================== */
+
+.sos-status {
+  margin-top: 7px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  color: #dc2626;
+}
+
+/* ==========================================================
+   CONTROLS
+   ========================================================== */
+
+.sos-controls {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  flex-shrink: 0;
+}
+
+.sos-controls button {
+  border: none;
+
+  padding: 12px 17px;
+
+  border-radius: 10px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.sos-controls button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.sos-controls button:disabled {
+  opacity: 0.45;
+
+  cursor: not-allowed;
+}
+
+/* ==========================================================
+   START SOS
+   ========================================================== */
+
+.guardian-sos-btn {
+  background: #dc2626;
+
+  color: white;
+
+  box-shadow: 0 5px 15px rgba(220, 38, 38, 0.25);
+}
+
+.guardian-sos-btn:hover:not(:disabled) {
+  box-shadow: 0 7px 20px rgba(220, 38, 38, 0.35);
+}
+
+/* ==========================================================
+   STOP
+   ========================================================== */
+
+.guardian-sos-stop-btn {
+  background: #1f2937;
+
+  color: white;
+}
+
+/* ==========================================================
+   SEND
+   ========================================================== */
+
+.guardian-sos-submit-btn {
+  background: #059669;
+
+  color: white;
+
+  box-shadow: 0 5px 15px rgba(5, 150, 105, 0.2);
+}
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 900px) {
+  .guardian-sos-card {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .sos-controls {
+    width: 100%;
+  }
+
+  .sos-controls button {
+    flex: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .sos-card-info {
+    align-items: flex-start;
+  }
+
+  .sos-controls {
+    flex-direction: column;
+  }
+
+  .sos-controls button {
+    width: 100%;
   }
 }
 

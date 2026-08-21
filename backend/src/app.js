@@ -6,26 +6,58 @@ const cors = require("cors");
 const authrouter = require("../routers/auth.routes");
 const guardianroutes = require("../routers/guardian.routes");
 const VolunteerRoutes = require("../routers/volunteer.routes");
+const sosroutes = require("../routers/sos.routes");
 
 const app = express();
 
+const isProduction = process.env.NODE_ENV === "production";
+
 // ========================================
-// TRUST PROXY (Required for Render + Secure Cookies)
+// TRUST PROXY
 // ========================================
 
-app.set("trust proxy", 1);
+if (isProduction) {
+  app.set("trust proxy", 1);
+}
 
 // ========================================
 // CORS
 // ========================================
 
+const allowedOrigins = [
+  // Production frontend
+  "https://resqgrid-b1zt.onrender.com",
+
+  // Local development
+  "https://resqgrid-b1zt.onrender.com",
+  "http://127.0.0.1:5000",
+
+  "http://localhost:5500",
+  "http://127.0.0.1:5500",
+
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
 app.use(
   cors({
-    origin: [
-      "https://res-q-grid.vercel.app",
-      "http://localhost:3000",
-      "http://127.0.0.1:5500",
-    ],
+    origin: function (origin, callback) {
+      // Allow requests such as Postman/server-to-server
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      console.log("❌ CORS BLOCKED:", origin);
+
+      return callback(
+        new Error(`CORS blocked for origin: ${origin}`)
+      );
+    },
+
     credentials: true,
   })
 );
@@ -35,7 +67,12 @@ app.use(
 // ========================================
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
 
 // ========================================
 // SESSION
@@ -43,19 +80,25 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "your-secret",
+    secret:
+      process.env.SESSION_SECRET || "dev-secret",
 
     resave: false,
 
     saveUninitialized: false,
 
-    proxy: true,
+    proxy: isProduction,
 
     cookie: {
-      secure: true,
-      sameSite: "none",
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+
+      secure: isProduction,
+
+      sameSite: isProduction
+        ? "none"
+        : "lax",
+
+      maxAge: 1000 * 60 * 60 * 24,
     },
   })
 );
@@ -64,40 +107,96 @@ app.use(
 // STATIC FILES
 // ========================================
 
-// Frontend
-app.use(express.static(path.join(__dirname, "../../frontend/public")));
+app.use(
+  express.static(
+    path.join(
+      __dirname,
+      "../../frontend/public"
+    )
+  )
+);
 
-// Uploaded Images
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+app.use(
+  "/uploads",
+  express.static(
+    path.join(__dirname, "../uploads")
+  )
+);
 
 // ========================================
 // ROUTES
 // ========================================
 
 app.use("/auth", authrouter);
-app.use("/guardian", guardianroutes);
-app.use("/volunteer", VolunteerRoutes);
 
-app.get("/role-selection", (req, res) => {
-  res.redirect("/role-selection.html");
-});
+app.use(
+  "/guardian",
+  guardianroutes
+);
+
+app.use(
+  "/volunteer",
+  VolunteerRoutes
+);
+
+app.use(
+  "/api/sos",
+  sosroutes
+);
 
 // ========================================
-// GLOBAL ERROR HANDLER
+// ROLE SELECTION
 // ========================================
 
-app.use((err, req, res, next) => {
-  console.error("========== SERVER ERROR ==========");
-  console.error(err);
+app.get(
+  "/role-selection",
+  (req, res) => {
+    res.redirect("/role-selection.html");
+  }
+);
 
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || "Internal Server Error",
-    stack:
-      process.env.NODE_ENV === "production"
-        ? undefined
-        : err.stack,
-  });
-});
+// ========================================
+// HEALTH CHECK
+// ========================================
+
+app.get(
+  "/api/health",
+  (req, res) => {
+    res.json({
+      success: true,
+      message:
+        "ResQGrid server is running",
+      environment: isProduction
+        ? "production"
+        : "development",
+    });
+  }
+);
+
+// ========================================
+// ERROR HANDLER
+// ========================================
+
+app.use(
+  (err, req, res, next) => {
+    console.error(
+      "========== SERVER ERROR =========="
+    );
+
+    console.error(err);
+
+    res.status(err.status || 500).json({
+      success: false,
+
+      message:
+        err.message ||
+        "Internal Server Error",
+
+      stack: !isProduction
+        ? err.stack
+        : undefined,
+    });
+  }
+);
 
 module.exports = app;
