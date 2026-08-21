@@ -24,10 +24,10 @@ const server = http.createServer(app);
 
 // ======================================
 // SOCKET.IO
-// ======================================
 
 const allowedOrigins = [
   "https://res-q-grid.vercel.app",
+  "https://resqgrid-b1zt.onrender.com",
 
   "http://localhost:3000",
   "http://127.0.0.1:3000",
@@ -42,7 +42,13 @@ const allowedOrigins = [
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
-    methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
+    methods: [
+      "GET",
+      "POST",
+      "PATCH",
+      "PUT",
+      "DELETE",
+    ],
     credentials: true,
   },
 });

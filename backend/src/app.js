@@ -24,15 +24,18 @@ if (isProduction) {
 // CORS
 // ========================================
 
+// ========================================
+// CORS
+// ========================================
+
 const allowedOrigins = [
-  // =========================
-  // PRODUCTION FRONTEND
-  // =========================
+  // Vercel frontend
   "https://res-q-grid.vercel.app",
 
-  // =========================
-  // LOCAL DEVELOPMENT
-  // =========================
+  // Render frontend/backend origin
+  "https://resqgrid-b1zt.onrender.com",
+
+  // Local development
   "http://localhost:5500",
   "http://127.0.0.1:5500",
 
@@ -46,7 +49,9 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests such as Postman/server-to-server
+
+      // Requests without Origin
+      // e.g. Postman, server-to-server
       if (!origin) {
         return callback(null, true);
       }
@@ -63,6 +68,20 @@ app.use(
     },
 
     credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
