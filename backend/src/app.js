@@ -25,16 +25,17 @@ if (isProduction) {
 // ========================================
 
 const allowedOrigins = [
-  // Production frontend
+  // Vercel frontend
+  "https://res-q-grid.vercel.app",
+
+  // Render backend
   "https://resqgrid-b1zt.onrender.com",
 
   // Local development
-  "https://resqgrid-b1zt.onrender.com",
+  "http://localhost:5000",
   "http://127.0.0.1:5000",
-
   "http://localhost:5500",
   "http://127.0.0.1:5500",
-
   "http://localhost:3000",
   "http://127.0.0.1:3000",
 ];
