@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const Application = require("../models/application.schema");
-const upload = require("../config/multer");
+const upload = require("../config/multer.application");
 
 const { askAi } = require("../src/services/openrouter.service");
 

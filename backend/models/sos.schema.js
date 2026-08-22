@@ -10,7 +10,6 @@ const AIAnalysisSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-
     priorityScore: {
       type: Number,
       default: 0,
