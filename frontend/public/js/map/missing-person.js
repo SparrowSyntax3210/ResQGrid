@@ -1,19 +1,11 @@
-function stopLocationTracking(){
+function stopLocationTracking() {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
 
-if(watchId !== null){
+    watchId = null;
 
-navigator.geolocation.clearWatch(
-watchId
-);
-
-watchId = null;
-
-console.log(
-"GPS stopped"
-);
-
-}
-
+    console.log("GPS stopped");
+  }
 }
 
 function loadMissingPersonMap({
@@ -22,25 +14,13 @@ function loadMissingPersonMap({
   caseId,
   startGridTracking,
 }) {
-
-
-  if(navigator.geolocation){
-
-    navigator.geolocation.clearWatch(
-      watchId
-    );
-
+  if (navigator.geolocation) {
+    navigator.geolocation.clearWatch(watchId);
   }
-
 
   socket.off("volunteer_location");
 
-
-  console.log(
-    "Missing Person Grid Map Loading"
-  );
-
-
+  console.log("Missing Person Grid Map Loading");
 
   const lastSeenLocation = application.LastSeen;
 
@@ -56,19 +36,15 @@ function loadMissingPersonMap({
 
   const map = L.map("map").setView([20.5937, 78.9629], 5);
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", {
-    subdomains: "abcd",
-
-    maxZoom: 20,
-
-    attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
   }).addTo(map);
 
   setTimeout(() => {
     map.invalidateSize();
   }, 500);
-
-  
 
   // =====================================
   // RECEIVE GRID STATE

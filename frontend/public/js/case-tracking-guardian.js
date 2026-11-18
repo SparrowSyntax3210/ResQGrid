@@ -235,9 +235,14 @@ function initializeMap() {
 
   map = L.map("map").setView([28.6139, 77.209], 13);
 
-  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
-  }).addTo(map);
+  L.tileLayer(
+  'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19
+  }
+).addTo(map);
 }
 
 // =========================

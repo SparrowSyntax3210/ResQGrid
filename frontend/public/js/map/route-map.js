@@ -19,12 +19,10 @@ function loadRouteMap({ application, socket, caseId, startLocationTracking }) {
 
   const map = L.map("map").setView([destinationLat, destinationLng], 15);
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", {
-    subdomains: "abcd",
-
-    maxZoom: 20,
-
-    attribution: "&copy; OpenStreetMap contributors &copy; CARTO",
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
   }).addTo(map);
 
   setTimeout(() => {
