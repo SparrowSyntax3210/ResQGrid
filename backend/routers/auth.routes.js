@@ -17,7 +17,16 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ Email });
+    const role = Role.trim().toLowerCase();
+    if (!["guardian", "volunteer"].includes(role)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please select a valid account role.",
+      });
+    }
+
+    const normalizedEmail = Email.trim().toLowerCase();
+    const existingUser = await User.findOne({ Email: normalizedEmail });
 
     if (existingUser) {
       return res.status(409).json({
@@ -30,10 +39,10 @@ router.post("/register", async (req, res) => {
 
     const newUser = await User.create({
       Name,
-      Email,
+      Email: normalizedEmail,
       Password: hashedPassword,
       ContactNumber,
-      Role,
+      Role: role,
     });
 
     // Auto login after registration
@@ -42,7 +51,7 @@ router.post("/register", async (req, res) => {
       name: newUser.Name,
       email: newUser.Email,
       role: newUser.Role,
-      coins: newUser.coins,
+      coins: newUser.Coins,
     };
 
     req.session.save((err) => {
@@ -51,12 +60,17 @@ router.post("/register", async (req, res) => {
         return res.status(500).send("Session error");
       }
 
-      res.redirect(
-        `https://resqgrid-b1zt.onrender.com/${newUser.Role.toLowerCase()}.html?id=${newUser._id}`,
-      );
+      res.redirect(`/${newUser.Role}.html?id=${newUser._id}`);
     });
   } catch (error) {
     console.error("Registration Error:", error);
+
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "User already exists.",
+      });
+    }
 
     return res.status(500).json({
       success: false,
@@ -76,7 +90,7 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ Email });
+    const existingUser = await User.findOne({ Email: Email.trim().toLowerCase() });
 
     if (!existingUser) {
       return res.status(404).json({
@@ -122,7 +136,7 @@ router.post("/login", async (req, res) => {
       name: existingUser.Name,
       email: existingUser.Email,
       role: existingUser.Role,
-      coins: existingUser.coins || 0,
+      coins: existingUser.Coins || 0,
     };
 
     console.log("SESSION CREATED:", req.session.user);
@@ -139,8 +153,7 @@ router.post("/login", async (req, res) => {
 
       const role = existingUser.Role.toLowerCase();
 
-      const redirectUrl =
-        `https://resqgrid-b1zt.onrender.com/${role}.html?id=${existingUser._id}`;
+      const redirectUrl = `/${role}.html?id=${existingUser._id}`;
 
       console.log("LOGIN SUCCESS");
       console.log("ROLE:", role);

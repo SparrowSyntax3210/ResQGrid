@@ -1,4 +1,4 @@
-const API = "https://resqgrid-b1zt.onrender.com"
+const API = ""
 
 const params = new URLSearchParams(window.location.search);
 const caseId = params.get("id");
@@ -436,7 +436,7 @@ document.getElementById("closeCaseBtn").onclick=async()=>{
 
     if(!confirm("Close Case?")) return;
 
-    await fetch(`${API}/application/close/${caseId}`,{
+    await fetch(`${API}/guardian/application/close/${caseId}`,{
         method:"PATCH",
         credentials:"include"
     });

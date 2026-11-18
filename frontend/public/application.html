@@ -441,7 +441,7 @@
 
           try {
             const res = await fetch(
-              "https://resqgrid-b1zt.onrender.com/guardian/application",
+              "/guardian/application",
               {
                 method: "POST",
                 body: formData,
@@ -467,7 +467,7 @@
             alert("Case submitted successfully");
 
               window.location.href =
-`https://resqgrid-b1zt.onrender.com/guardian.html?id=${data.id}`;
+`/guardian.html?id=${data.application?._id || data.id}`;
           } catch (err) {
             console.error(err);
             alert(err.message);

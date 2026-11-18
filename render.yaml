@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: resqgrid
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: MONGO_URL
+        sync: false

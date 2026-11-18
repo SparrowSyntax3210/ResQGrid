@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "outputDirectory": "frontend/public",
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/socket.io/:path*", "destination": "https://resqgrid-b1zt.onrender.com/socket.io/:path*" },
+    { "source": "/uploads/:path*", "destination": "https://resqgrid-b1zt.onrender.com/uploads/:path*" },
+    { "source": "/auth/:path*", "destination": "https://resqgrid-b1zt.onrender.com/auth/:path*" },
+    { "source": "/guardian/:path*", "destination": "https://resqgrid-b1zt.onrender.com/guardian/:path*" },
+    { "source": "/volunteer/:path*", "destination": "https://resqgrid-b1zt.onrender.com/volunteer/:path*" },
+    { "source": "/api/:path*", "destination": "https://resqgrid-b1zt.onrender.com/api/:path*" }
+  ]
+}

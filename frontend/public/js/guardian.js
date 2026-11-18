@@ -3,7 +3,7 @@
 // COMPLETE GUARDIAN.JS
 // =====================================================
 
-const API = "https://resqgrid-b1zt.onrender.com";
+const API = "";
 
 // =====================================================
 // DOM

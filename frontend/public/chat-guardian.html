@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title> ResQGrid | Guardian Chat</title>
 
-    <script src="https://resqgrid-b1zt.onrender.com/socket.io/socket.io.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 
     <style>
       * {
@@ -265,7 +265,7 @@
     </div>
 
     <script>
-      const API = "https://resqgrid-b1zt.onrender.com";
+      const API = "";
 
       const socket = io(API, {
         withCredentials: true,
@@ -335,7 +335,9 @@
 
       async function loadCase() {
         try {
-          const res = await fetch(`${API}/application/${caseId}`);
+          const res = await fetch(`${API}/guardian/application/${caseId}`, {
+            credentials: "include",
+          });
 
           if (!res.ok) return;
 

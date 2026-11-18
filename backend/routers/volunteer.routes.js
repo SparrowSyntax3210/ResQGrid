@@ -119,10 +119,6 @@ router.post("/sightings", async (req, res) => {
       success: true,
       sighting,
     });
-    res.status(201).json({
-success:true,
-sighting
-});
   } catch (error) {
     console.log(error);
     res.status(500).json({
