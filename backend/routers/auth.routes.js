@@ -6,6 +6,10 @@ const expresssession = require("express-session");
 const jwt = require("jsonwebtoken");
 const Application = require("../models/application.schema");
 
+// Let direct browser visits open the corresponding form pages.
+router.get("/login", (req, res) => res.redirect("/login.html"));
+router.get("/register", (req, res) => res.redirect("/register.html"));
+
 router.post("/register", async (req, res) => {
   try {
     const { Name, Email, Password, ContactNumber, Role } = req.body;
